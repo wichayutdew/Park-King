@@ -2,9 +2,9 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <script type="text/javascript" src="qrcode.js">
+    <script type="text/javascript" src="qrCode.js">
 </script>
-    <script type="text/javascript" src="html5-qrcode.js">
+    <script type="text/javascript" src="html5-qr.js">
 </script>
     <style type="text/css" media="screen">
       body { text-align:center; }
@@ -12,7 +12,7 @@
   </head>
   <body>
     <form name="QRform" id="QRform">
-      <textarea name="textField" rows="8" cols="70" onkeyup='updateQRCode(this.value)' onclick="this.focus();this.select();">Tutorialspoint.com.</textarea>
+      <textarea name="textField" rows="8" cols="70" onkeyup='updateQRCode(this.value)' onclick="this.focus();this.select();">google.com</textarea>
     </form>
 
     <!-- This is where our QRCode will appear in. -->
@@ -31,7 +31,7 @@
 
       }
 
-      updateQRCode('mycourseville.com');
+      updateQRCode('google.com');
     </script>
   </body>
 </html>
