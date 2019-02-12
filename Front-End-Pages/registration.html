@@ -20,7 +20,7 @@
                                 John Doe
                                 <img src="profilePic.png" width="30" height="30" class="d-inline-block align-top ml-2" alt="">
                         </a>
-                </section>    
+                </section>
         </nav>
 
 
@@ -39,16 +39,55 @@
                     <label for="emailInput">email</label>
                     <input type="email" class="form-control" id="emailInput" placeholder="example@domain.com">
                 </div>
+
+
+
                 <div class="form-group">
-                  <label for="exampleFormControlSelect1">Example select</label>
-                  <select class="form-control" id="exampleFormControlSelect1">
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
+                  <label for="occupationInput">Select your occupation</label>
+                  <select class="form-control" id="occupationInput" onchange="occupationCheck(this)">
+                    <option>Select your occupation</option>
+                    <option value="student">Student</option>
+                    <option value="professor">Professor</option>
+                    <option value="others">Others</option>
                   </select>
                 </div>
+
+                <!-- hidden input for student id -->
+                  <div class="form-group" id="ifStudent" style="display: none;">
+                      <label for="studentIdInput">Student ID</label>
+                      <input type="email" class="form-control" id="studentIdInput" placeholder="5931252121">
+                  </div>
+                  <!-- hidden input for professor id -->
+                  <div class="form-group" id="ifProfessor" style="display: none;">
+                        <label for="professorIdInput">Professor ID</label>
+                        <input type="email" class="form-control" id="professorIdInput" placeholder="5931252121">
+                  </div>
+                    <!-- hidden input for national id -->
+                  <div class="form-group" id="ifOthers" style="display: none;">
+                          <label for="nationalIdInput">National ID</label>
+                          <input type="email" class="form-control" id="nationalIdInput" placeholder="1103900025354">
+                  </div>
+
+                  <!-- JS for occupation checking -->
+                  <script type="text/javascript">
+                    function occupationCheck(that){
+                      if(that.value == "student"){
+                        document.getElementById("ifStudent").style.display = "block";
+                        document.getElementById("ifProfessor").style.display = "none";
+                        document.getElementById("ifOthers").style.display = "none";
+                      } else if(that.value == "professor"){
+                        document.getElementById("ifStudent").style.display = "none";
+                        document.getElementById("ifProfessor").style.display = "block";
+                        document.getElementById("ifOthers").style.display = "none";
+                      } else if(that.value == "others"){
+                        document.getElementById("ifStudent").style.display = "none";
+                        document.getElementById("ifProfessor").style.display = "none";
+                        document.getElementById("ifOthers").style.display = "block";
+                      }
+                    }
+                  </script>
+
+
                 <div class="form-group">
                   <label for="exampleFormControlTextarea1">Example textarea</label>
                   <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
@@ -63,7 +102,7 @@
 
 
 
-    
+
 
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
