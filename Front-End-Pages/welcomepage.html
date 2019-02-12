@@ -6,15 +6,32 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css"
         integrity="sha384-PDle/QlgIONtM1aqA2Qemk5gPOE7wFq8+Em+G/hmo5Iq0CCmYZLv3fVRDJ4MMwEA" crossorigin="anonymous">
+    <style>
+        body {
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
 </head>
 
-<body>
-    <br><div align="center"><img src="img/carking.png" style="width:200px;height:200px;" vspace="30" ></img></div>
-    <p align="center" >Username : <input type=text name=user size=30></p>
-    <p align="center">Password : <input type=password name=user size=30></p><br>
-    <p align="center"><a href="forgot password">forgot password</a></p> <br>
-    <p align ="center"><button onClick=“window.location=‘http://เว็บไซต์’”> Login </button></p><br>
-    <p align="center"><button onClick=“window.location=‘http://เว็บไซต์’”> Register </button> </p><br>
+<body class="text-center">
+
+    <form style="width: 100%, max-width: 330px; padding: 15px; margin: 0 auto;">
+        <img src="carking.png" class="mb-4" style="width: 200px; height: 200px;">
+        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+        <input type="text" id="inpoutUsername" class="form-control" placeholder="Username" required="" autofocus="">
+        <input type="password" id="inputPassword" class="form-control" placeholder="Password" required="">
+        <div class="checkbox mt-2 mb-3">
+            <label>
+                    <input type="checkbox" value="remember-me">
+                    Remember me
+            </label>
+            <br>
+            <a href="#" class="mb-3">Forgot password?</a>
+        </div>
+
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    </form>
 
     </p><br>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
