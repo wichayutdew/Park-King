@@ -1,3 +1,7 @@
+document.getElementById("checkOutBut").addEventListener("click", function() {
+  window.location = 'receipt.html';
+});
+
 //Create Timer
 function Stopwatch(elem) {
     var time = 0;
