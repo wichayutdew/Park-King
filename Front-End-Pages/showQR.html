@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Menu bar Template</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script type="text/javascript" src="qrCode.js">
+</script>
+    <script type="text/javascript" src="html5QR.js">
+</script>
+    <style type="text/css" media="screen">
+      body { text-align:center; }
+    </style>
+</head>
+
+<body>
+        <!-- Menu Bar Version 1 -->
+        <nav class="navbar navbar-dark bg-dark justify-content-between">
+
+                <!-- At logo change to fucking logo pic -->
+                <a class="navbar-brand" style="color: whitesmoke;">
+                <img src="img/carking.png" alt="" style="width: 50px; height: 50px;">
+              </a>
+
+
+                <section class="float-right">
+                        <a class="navbar-brand" href="#">
+                                John Doe
+                                <img src="img/profilePic.png" width="30" height="30" class="d-inline-block align-top ml-2" alt="">
+                        </a>
+                </section>
+        </nav>
+
+        <div id="qrcode"></div>
+
+        <script type="text/javascript">
+          function updateQRCode(text) {
+    
+            var element = document.getElementById("qrcode");
+    
+            var bodyElement = document.body;
+            if(element.lastChild)
+              element.replaceChild(showQRCode(text), element.lastChild);
+            else
+              element.appendChild(showQRCode(text));
+    
+          }
+    
+          updateQRCode('google.com');
+        </script>
+
+
+
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+
+
+</html>
