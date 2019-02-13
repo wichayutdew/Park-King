@@ -72,6 +72,8 @@ document.getElementById("timerBut").addEventListener("click",function timerStart
 if(watchRunning==false){
 watchRunning= true;;
 watch.start();
+
+$('#countdown').countdown360().start();
 }
 
 else{

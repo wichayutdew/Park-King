@@ -6,29 +6,24 @@
 
 <link rel="stylesheet" type="text/css" href="style.css">
 <script src="countdown.js"></script>
-<!-- duration picker -->
-<link href="/path/to/bootstrap.min.css" rel="stylesheet">
-<link href="TimeInput/timingfield.css" rel="stylesheet">
-<!-- duration picker -->
-<script src="//code.jquery.com/jquery.min.js"></script>
-<script src="TimeInput/timingfield.js"></script>
+
 
 <!-- Menu Bar Version 1 -->
 <nav class="navbar navbar-dark bg-dark justify-content-between">
 
-    <!-- At logo change to fucking logo pic -->
-    <a class="navbar-brand" style="color: whitesmoke;">
-      <img src="img/carking.png" alt="" style="width: 50px; height: 50px;">
-    </a>
+  <!-- At logo change to fucking logo pic -->
+  <a class="navbar-brand" style="color: whitesmoke;">
+    <img src="img/carking.png" alt="" style="width: 50px; height: 50px;">
+  </a>
 
   <a class="navbar-brand" style="color: whitesmoke;">Reserve</a>
 
-    <section class="float-right">
-        <a class="navbar-brand" href="#">
-            John Doe
-            <img src="img/profilePic.png" width="30" height="30" class="d-inline-block align-top ml-2" alt="">
-        </a>
-    </section>
+  <section class="float-right">
+    <a class="navbar-brand" href="#">
+      John Doe
+      <img src="img/profilePic.png" width="30" height="30" class="d-inline-block align-top ml-2" alt="">
+    </a>
+  </section>
 </nav>
 
 <body style="background-color: white">
@@ -36,14 +31,9 @@
     <text>Building</text>
 
 
-    <div class="row">
-      <!-- <text>Building</text> -->
-      <div class="col-sm-6 ">
-        <button type="button" class="btn btn-lg">ARTS</button>
-      </div>
-      <div class="col-sm-6 ">
-        <button type="button" class="btn btn-lg">POLITICAL SCIENCE</button>
-      </div>
+    <div class="d-flex justify-content-around mt-2">
+      <button type="button" class="btn btn-sm w-50 "><img src="img/artbuilding.jpg" class="img-thumbnail"></img></button>
+      <button type="button" class="btn btn-sm w-50 "><img src="img/polibuilding.jpg" class="img-thumbnail"></img></button>
     </div>
 
     <text>Car</text>
@@ -58,38 +48,18 @@
       </div>
     </div>
 
-    <!-- <text>Will Arrive In</text>
-    <div class="row"> -->
-      <!-- <div class="col-sm-12">
-        <input type="text" class="timing">
-        <div class="timingfield">
+    <!-- for dropdown -->
+    <div class="row">
 
-          <script>
-            $(".timing").timingfield({
+    </div>
 
+    <div class="row">
+      <button type="button" class="btn btn-dark btn-lg mt-4" button id="confirmBut">CONFIRM</button>
 
-              maxHour: 59,
-              width: 200,
-              hoursText: 'Min',
-              minutesText: 'Sec',
-              secondsText: 'S',
-              hasSeconds: false
-            }
-            );
-          </script>
+    </div>
+  </div>
 
-
-        </div>
-        </div> -->
-        <div class="row">
-          <button type="button" class="btn btn-dark btn-lg" button id = "confirmBut">CONFIRM</button>
-
-        </div>
-      </div>
-
-      <script src="reserveScript.js"></script>
-
-
+  <script src="reserveScript.js"></script>
 
 
 
