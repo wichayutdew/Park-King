@@ -7,6 +7,10 @@
 <link rel="stylesheet" type="text/css" href="style.css">
 <script src="countDownClock.js"></script>
 
+<link rel="stylesheet" href="timer/timer.css">
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="timer/timer.js"></script>
+
 <html>
 
 <!-- Menu Bar Version 1 -->
@@ -38,7 +42,7 @@
     <div class="row">
       <div class="col-sm-3"></div>
       <div class="text-center col-sm-6">
-        <img src="img/car1.png" class="img-thumbnail mx-auto"></img>
+        <img src="img/car1.png" class="img" width=60%></img>
       </div>
       <div class="col-sm-3"></div>
 
@@ -56,9 +60,21 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-sm-12 text-center">
+      <div id="demo" class="col-sm-12 justify-content-center" style="padding-left: 40%">
+
+
+        <!-- <div id="demo"></div> -->
+        <script type="text/javascript">
+          $('#demo').timer({
+            duration: 30,
+            unit: 'm' // 's', 'm', or 'h'
+          });
+        </script>
+
+
+
         <!-- new countdown -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <div class="item html">
           <h2>0</h2>
           <svg width="160" height="160" xmlns="http://www.w3.org/2000/svg">
@@ -67,7 +83,7 @@
               <circle id="circle" class="circle_animation" r="69.85699" cy="81" cx="81" stroke-width="8" stroke="#1edb1e" fill="none" />
             </g>
           </svg>
-        </div>
+        </div> -->
 
 
 
@@ -84,7 +100,12 @@
     </div>
     <div class="row">
       <div class="col-sm-12 text-center">
-        <button type="button" class="btn btn-lg">CHECK OUT</button>
+        <button type="button" class="btn-dark btn-lg">TIMER</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12 text-center">
+        <button type="button" class="btn-dark btn-lg">CHECK OUT</button>
       </div>
     </div>
   </div>
