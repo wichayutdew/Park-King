@@ -27,7 +27,7 @@ function Stopwatch(elem) {
 
       var minutes = time.getMinutes().toString();
       var seconds = time.getSeconds().toString();
-      var intHours = 7 - time.getHours();
+      var intHours = time.getHours() - 7;
       var hours = intHours.toString();
 
       if (minutes.length < 2) {
