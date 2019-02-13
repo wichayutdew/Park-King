@@ -7,14 +7,9 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
     <style>
-            /* body {
-                    background: #000122;
+            body{
+              background: #eaeaea;
             }
-            .navbar {
-                    background: #000122 !important;
-
-            } */
-
             .nav-item :hover{
                     background: grey;
             }
@@ -26,28 +21,33 @@
                     float: right;
             }
             .homeBtn{
-                background: black;
-                border-color: black;
+                background-image: linear-gradient(to right, #202020 , black);
+                /* border-color: black;
                 border-style: solid;
-                border-radius: 15px;
+                border-radius: 15px; */
+                border-radius: 10px;
                 height: 100%;
                 width: 40%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                box-shadow: 10px 6px 20px 0 grey;
             }
 
             #homeMenuArea :hover{
-                background: black;
-                border-color: black;
+                background-image: linear-gradient(to right, #202020 , black);
                 transform: scale(1.1);
             }
             .infoDiv{
-                border-style: solid;
-                border-radius: 15px;
-                background: black;
-                height: 300px;
+                /* border-style: solid;
+                border-radius: 15px; */
+                /* background: black; */
+                border-radius: 10px;
+                background-image: linear-gradient(to right, #202020 , black);
+                height: 150px;
                 width: 98%;
+                color: white;
+                box-shadow: 10px 6px 20px 0 grey;
             }
     </style>
 
@@ -68,7 +68,7 @@
                   <!-- Section appears when user has log in -->
                   <section id="userInfoMenu" class="border rounded mt-3 p-2 text-center">
                           <a class="" href="#">
-                                  <img src="profilePic.png" width="30" height="30" class="" alt="">
+                                  <img src="img/profilePic.png" width="30" height="30" class="" alt="">
                           </a>
                           <p>John Doe</p>
                           <a href="#" class="">Log out</a>
