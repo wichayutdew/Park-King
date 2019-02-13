@@ -4,12 +4,13 @@
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 
-<link rel="stylesheet" type="text/css" href="style.css">
-<script src="countDownClock.js"></script>
+<!-- <link rel="stylesheet" type="text/css" href="style.css">
+<script src="countDownClock.js"></script> -->
 
-<link rel="stylesheet" href="timer/timer.css">
+<!-- <link rel="stylesheet" href="timer/timer.css">
 <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
-<script src="timer/timer.js"></script>
+<script src="timer/timer.js"></script> -->
+
 
 <html>
 
@@ -56,20 +57,45 @@
     </div>
     <div class="row">
       <div class="col-sm-12 text-center">
-        <text class="display-2" id = "timer">00:00:00</text>
+        <text class="display-3" id="timer">00 : 00 : 00</text>
       </div>
     </div>
     <div class="row">
-      <div id="demo" class="col-sm-12 justify-content-center" style="padding-left: 40%">
+      <div id="demo" class="col-sm-12 justify-content-center">
 
 
-        <!-- <div id="demo"></div> -->
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+        <script src="timer/jquery.countdown360.min.js"></script>
+        <div id="countdown"></div>
+
         <script type="text/javascript">
+          $('#countdown').countdown360(
+          // {
+          //   radius: 80,
+          //   seconds: 60,
+          //   strokeWidth: 15,
+          //   fillStyle: '#000000',
+          //   strokeStyle: '#66f215',
+          //   fontSize: 50,
+          //   fontColor: '#FFFFFF',
+          //   autostart: false,
+          //   onComplete: function() {
+          //     console.log('completed')
+          //   }
+          // }
+          )
+          // .start()
+        </script>
+
+
+
+
+        <!-- <script type="text/javascript">
           $('#demo').timer({
-            duration: 30,
+            duration: 60,
             unit: 'm' // 's', 'm', or 'h'
           });
-        </script>
+        </script> -->
 
 
 
@@ -100,21 +126,17 @@
     </div>
     <div class="row">
       <div class="col-sm-12 text-center">
-<<<<<<< HEAD
-        <button type="button" class="btn-dark btn-lg">TIMER</button>
+        <button type="button" class="btn-dark btn-lg" id="timerBut">TIMER</button>
       </div>
     </div>
     <div class="row">
       <div class="col-sm-12 text-center">
-        <button type="button" class="btn-dark btn-lg">CHECK OUT</button>
-=======
-        <button type="button" class="btn btn-lg" id = "checkOutBut">CHECK OUT</button>
->>>>>>> b514464e0bb7608bab2c99fe60bc1a41d6c7589c
+        <button type="button" class="btn-dark btn-lg" id="checkOutBut">CHECK OUT</button>
       </div>
     </div>
   </div>
 
-  <script src = "statusScript.js"></script>
+  <script src="statusScript.js"></script>
 
 
 </body>
