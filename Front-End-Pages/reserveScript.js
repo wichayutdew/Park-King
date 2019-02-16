@@ -17,3 +17,7 @@ document.getElementById("reserveQRBtn").addEventListener("click", function() {
 document.getElementById("reserveProfileBtn").addEventListener("click", function() {
   window.location = 'userInfo.html';
 });
+
+document.getElementById("reserveReserveBtn").addEventListener("click", function() {
+  window.location = 'reserve.html';
+});
