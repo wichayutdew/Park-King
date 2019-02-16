@@ -1,11 +1,17 @@
 document.getElementById("homeBut").addEventListener("click", function() {
   window.location = 'home.html';
 });
+
 document.getElementById("myQRBut").addEventListener("click", function() {
   window.location = 'showQR.html';
 });
+
 document.getElementById("checkOutBut").addEventListener("click", function() {
   window.location = 'receipt.html';
+});
+
+document.getElementById("statusProfileBtn").addEventListener("click", function() {
+  window.location = 'userInfo.html';
 });
 
 

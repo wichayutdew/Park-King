@@ -1244,3 +1244,8 @@ function showQRCode(text) {
        return imgElement;
 
   }
+
+
+	document.getElementById("QRProfileBtn").addEventListener("click", function() {
+		window.location = 'userInfo.html';
+	});
