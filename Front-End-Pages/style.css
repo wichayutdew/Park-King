@@ -75,3 +75,10 @@ svg {
 	border-color: #3a56e0;
 	outline: none !important;
 }
+
+img{
+  max-width:180px;
+}
+input[type=file]{
+padding:10px;
+background:#ffffff;}
