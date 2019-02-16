@@ -75,3 +75,45 @@ svg {
 	border-color: #3a56e0;
 	outline: none !important;
 }
+
+body{
+  background-color: #eaeaea !important;
+}
+.nav-item :hover{
+        background: grey;
+}
+#logInBtn{
+        width: 48%;
+}
+#registerBtn{
+        width: 48%;
+        float: right;
+}
+.homeBtn{
+    background-image: linear-gradient(to right, #202020 , black);
+    /* border-color: black;
+    border-style: solid;
+    border-radius: 15px; */
+    border-radius: 10px;
+    height: 100%;
+    width: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 10px 6px 20px 0 grey;
+}
+
+#homeMenuArea :hover{
+    background-image: linear-gradient(to right, #202020 , black);
+    transform: scale(1.1);
+}
+.infoDiv{
+    /* border-style: solid;
+    border-radius: 15px; */
+    /* background: black; */
+    border-radius: 10px;
+    background-image: linear-gradient(to right, #202020 , black);
+    height: 150px;
+    width: 98%;
+    color: white;
+    box-shadow: 10px 6px 20px 0 grey;

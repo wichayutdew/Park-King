@@ -1,26 +1,22 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+
+<html>
 
 <head>
-  <meta charset="utf-8">
-  <title></title>
-  <link rel="stylesheet" href="style.css">
+  <title>Status Page</title>
+
+
+
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css" integrity="sha384-PDle/QlgIONtM1aqA2Qemk5gPOE7wFq8+Em+G/hmo5Iq0CCmYZLv3fVRDJ4MMwEA" crossorigin="anonymous">
 
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <script type="text/javascript" src="qrCode.js">
-  </script>
-  <script type="text/javascript" src="html5QR.js">
-  </script>
-  <style type="text/css" media="screen">
-    body {
-      text-align: center;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
+
+
 
 </head>
 
 <body>
+
 
   <!-- Menu Bar version 2 -->
   <nav class="navbar navbar-expand-lg navbar-light">
@@ -46,44 +42,58 @@
       <!-- Menu Items -->
       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
         <li class="nav-item active border rounded">
-          <a class="nav-link pl-2" href="#" id="menuHomeBut">Home<span class="sr-only">(current)</span></a>
-        </li>
-        <!-- <li class="nav-item active border rounded">
-          <a class="nav-link pl-2" href="#">Menu 2 <span class="sr-only">(current)</span></a>
+          <a class="nav-link pl-2" href="#" id="homeBut">Home<span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item active border rounded">
-          <a class="nav-link pl-2" href="#">Menu 3 <span class="sr-only">(current)</span></a>
-        </li> -->
+          <a class="nav-link pl-2" href="#" id="myQRBut">My QR<span class="sr-only">(current)</span></a>
+        </li>
+        <!-- <li class="nav-item active border rounded">
+                                      <a class="nav-link pl-2" href="#"><span class="sr-only">(current)</span></a>
+                              </li> -->
       </ul>
     </div>
   </nav>
-<div  class="d-flex justify-content-around mt-2">
-  <div id="qrcode"></div>
-</div>
-
-  <script type="text/javascript">
-    function updateQRCode(text) {
-
-      var element = document.getElementById("qrcode");
-
-      var bodyElement = document.body;
-      if (element.lastChild)
-        element.replaceChild(showQRCode(text), element.lastChild);
-      else
-        element.appendChild(showQRCode(text));
-
-    }
-
-    updateQRCode('google.com');
-  </script>
 
 
+
+  <div id="info1Div" class="infoDiv d-flex mt-2 mx-1">Profile
+    <div class="d-flex">
+      <div class="col text-center"><img src="img/profilePic.png" height=50% alt=""></div>
+    </div>
+  </div>
+  <a class="homeBtn text-white mx-1 mt-2" id="checkOutBut">
+    <p class="mt-2">Edit Profile</p>
+  </a>
+
+
+
+  <div id="info1Div" class="infoDiv d-flex mt-2 mx-1">MyCars
+    <div class="d-flex">
+      <div class="col text-center"><img src="img/car1.png" width="100%" alt=""></div>
+    </div>
+
+  </div>
+  <a class="homeBtn text-white mx-1 mt-2" id="checkOutBut">
+    <p class="mt-2">Edit Cars</p>
+  </a>
+
+
+  <div id="info1Div" class="infoDiv d-flex mt-2 mx-1">History
+    <div class="d-flex">
+      <div class="col text-center"></div>
+    </div>
+    <div class="col-sm">
+      <div class="col text-center">12/09/2019 Arts 2 hrs 40thb</div>
+    </div>
+  </div>
 
 
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/js/bootstrap.min.js" integrity="sha384-7aThvCh9TypR7fIc2HV4O/nFMVCBwyIUKL8XCtKE+8xgCgl/PQGuFsvShjr74PBp" crossorigin="anonymous"></script>
-  <script src="html5QR.js"></script>
+
+  <script src="userInfoScript.js"></script>
+
 
 </body>
 

@@ -1,6 +1,13 @@
-// document.getElementById("checkOutBut").addEventListener("click", function() {
-//   window.location = 'receipt.html';
-// });
+document.getElementById("homeBut").addEventListener("click", function() {
+  window.location = 'home.html';
+});
+document.getElementById("myQRBut").addEventListener("click", function() {
+  window.location = 'showQR.html';
+});
+document.getElementById("checkOutBut").addEventListener("click", function() {
+  window.location = 'receipt.html';
+});
+
 
 //Create Timer
 function Stopwatch(elem) {
