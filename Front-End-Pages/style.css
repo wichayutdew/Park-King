@@ -20,3 +20,58 @@ svg {
   stroke-dashoffset: 440;
   transition: all 1s linear;
 }
+
+
+
+.buildingSelect {
+	/* padding: 50px; */
+}
+
+.buildingSelect .buildingBtnGroup {
+	max-width: 1000px;
+	/* margin: auto; */
+}
+
+.buildingSelect .buildingBtnGroup .buildingChoice {
+	padding: 65px;
+	box-shadow: none;
+	position: relative;
+}
+
+.buildingSelect .buildingBtnGroup .buildingChoice.active {
+	outline: none !important;
+}
+
+.buildingSelect .buildingBtnGroup .buildingChoice.active .building {
+	border-color: #3a56e0;
+	outline: none !important;
+	box-shadow: 0px 3px 22px 0px #7b7b7b;
+}
+
+.buildingSelect .buildingBtnGroup .buildingChoice .building {
+	position:absolute ;
+	right: 5px;
+	top: 5px;
+	bottom: 5px;
+	left: 5px;
+	background-size:cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	border: 2px solid transparent;
+	transition: all 0.5s;
+}
+
+
+.buildingSelect .buildingBtnGroup .buildingChoice .building.arts {
+	background-image: url("img/artbuilding.jpg");
+}
+
+.buildingSelect .buildingBtnGroup .buildingChoice .building.poli {
+	background-image: url("img/polibuilding.jpg");
+}
+
+
+.buildingSelect .buildingBtnGroup .buildingChoice .building:hover {
+	border-color: #3a56e0;
+	outline: none !important;
+}
