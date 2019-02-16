@@ -1,144 +1,128 @@
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css" integrity="sha384-PDle/QlgIONtM1aqA2Qemk5gPOE7wFq8+Em+G/hmo5Iq0CCmYZLv3fVRDJ4MMwEA" crossorigin="anonymous">
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/js/bootstrap.min.js" integrity="sha384-7aThvCh9TypR7fIc2HV4O/nFMVCBwyIUKL8XCtKE+8xgCgl/PQGuFsvShjr74PBp" crossorigin="anonymous"></script>
-
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-
-<!-- <link rel="stylesheet" type="text/css" href="style.css">
-<script src="countDownClock.js"></script> -->
-
-<!-- <link rel="stylesheet" href="timer/timer.css">
-<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
-<script src="timer/timer.js"></script> -->
-
+<!DOCTYPE html>
 
 <html>
-
-<!-- Menu Bar Version 1 -->
-<nav class="navbar navbar-dark bg-dark justify-content-between">
-
-  <!-- At logo change to fucking logo pic -->
-  <a class="navbar-brand" style="color: whitesmoke;">
-    <img src="img/carking.png" alt="" style="width: 50px; height: 50px;">
-  </a>
-
-  <a class="navbar-brand" style="color: whitesmoke;">Current Status</a>
-
-  <section class="float-right">
-    <a class="navbar-brand" href="#">
-      John Doe
-      <img src="img/profilePic.png" width="30" height="30" class="d-inline-block align-top ml-2" alt="">
-    </a>
-  </section>
-</nav>
-
-
-<body style="background-color:gray">
-  <div container>
-    <!-- <div class="row">
-      <div class="col-sm-12 text-center">
-        <text>Current Status</text>
-      </div>
-    </div> -->
-    <div class="row">
-      <div class="col-sm-3"></div>
-      <div class="text-center col-sm-6">
-        <img src="img/car1.png" class="img" width=60%></img>
-      </div>
-      <div class="col-sm-3"></div>
-
-    </div>
-    <div class="row">
-      <div class="col-sm-3"></div>
-      <div class="col-sm-3">
-        <text>Time</text>
-      </div>
-      <div class="col-sm-6"></div>
-    </div>
-    <div class="row">
-      <div class="col-sm-12 text-center">
-        <text class="display-3" id="timer">00 : 00 : 00</text>
-      </div>
-    </div>
-    <div class="row">
-      <div id="demo" class="col-sm-12 justify-content-center">
-
-
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-        <script src="timer/jquery.countdown360.min.js"></script>
-        <div id="countdown"></div>
-
-        <script type="text/javascript">
-          $('#countdown').countdown360(
-          // {
-          //   radius: 80,
-          //   seconds: 60,
-          //   strokeWidth: 15,
-          //   fillStyle: '#000000',
-          //   strokeStyle: '#66f215',
-          //   fontSize: 50,
-          //   fontColor: '#FFFFFF',
-          //   autostart: false,
-          //   onComplete: function() {
-          //     console.log('completed')
-          //   }
-          // }
-          )
-          // .start()
-        </script>
+    <head>
+        <title>Status Page</title>
 
 
 
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css" integrity="sha384-PDle/QlgIONtM1aqA2Qemk5gPOE7wFq8+Em+G/hmo5Iq0CCmYZLv3fVRDJ4MMwEA" crossorigin="anonymous">
 
-        <!-- <script type="text/javascript">
-          $('#demo').timer({
-            duration: 60,
-            unit: 'm' // 's', 'm', or 'h'
-          });
-        </script> -->
+        <link rel="stylesheet" href="style.css">
 
 
 
-        <!-- new countdown -->
-        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        <div class="item html">
-          <h2>0</h2>
-          <svg width="160" height="160" xmlns="http://www.w3.org/2000/svg">
-            <g>
-              <title>Layer 1</title>
-              <circle id="circle" class="circle_animation" r="69.85699" cy="81" cx="81" stroke-width="8" stroke="#1edb1e" fill="none" />
-            </g>
-          </svg>
-        </div> -->
+    </head>
+    <body>
+
+
+        <!-- Menu Bar version 2 -->
+        <nav class="navbar navbar-expand-lg navbar-light">
+                <a class="navbar-brand" href="#">LOGO</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+                      <!-- Section appears when user has log in -->
+                      <section id="userInfoMenu" class="border rounded mt-3 p-2 text-center">
+                              <a class="" href="#">
+                                      <img src="img/profilePic.png" width="30" height="30" class="" alt="">
+                              </a>
+                              <p>John Doe</p>
+                              <a href="#" class="">Log out</a>
+                      </section>
+                      <!-- Section appears when no user is log on -->
+                      <section id="logInMenu" class="mt-3">
+                              <a href="#" id="logInBtn" class="btn btn-primary btn-large">Log in</a>
+                              <a href="#" id="registerBtn" class="btn btn-primary btn-large">Register</a>
+                      </section>
+                      <!-- Menu Items -->
+                      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                              <li class="nav-item active border rounded">
+                                      <a class="nav-link pl-2" href="#">Menu 1 <span class="sr-only">(current)</span></a>
+                              </li>
+                              <li class="nav-item active border rounded">
+                                      <a class="nav-link pl-2" href="#">Menu 2 <span class="sr-only">(current)</span></a>
+                              </li>
+                              <li class="nav-item active border rounded">
+                                      <a class="nav-link pl-2" href="#">Menu 3 <span class="sr-only">(current)</span></a>
+                              </li>
+                      </ul>
+                    </div>
+              </nav>
 
 
 
+        <div id="info1Div" class="infoDiv d-flex mt-2 mx-1">
+            <div class="d-flex">
+                <div class="col text-center"><img src="img/car1.png" width=100% height=100% alt=""></div>
+                <div class="col">
+                    <p class="py-4" style="float: left;">
+                        Plate Number: 1248
+                        <br>
+                        Info: info
+                        <br>
+                        Info: Info
 
-        <!-- <div class="col-sm-12">
-        <div id="countdown">
-          <div id="countdown-number"></div>
-          <svg>
-            <circle r="18" cx="20" cy="20"></circle>
-          </svg>
+                    </p>
+                </div>
+            </div>
         </div>
-      </div> -->
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-12 text-center">
-        <button type="button" class="btn-dark btn-lg" id="timerBut">TIMER</button>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-12 text-center">
-        <button type="button" class="btn-dark btn-lg" id="checkOutBut">CHECK OUT</button>
-      </div>
-    </div>
-  </div>
 
-  <script src="statusScript.js"></script>
+        <div class="infoDiv d-flex mt-2 mx-1" style="height: 60px;">
+            <div class="d-flex justify-content-around">
+                <div class="col">
+                    Time you have parked
+                </div>
+                <div class="col">
+                    <p id="timer" class="py-2 lead">
+                        00 : 00 : 00
+                    </p>
+                </div>
+            </div>
+        </div>
+
+       <!-- <div id="demo" class="jumbotron-fluid jumbotron">
+                <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+                <script src="jquery.countdown360.min.js"></script>
+                <div id="countdown"></div>
+
+                <script type="text/javascript">
+                $('#countdown').countdown360(
+
+                )
+                </script>
+        </div>  -->
+        <div class="infoDiv d-flex mt-2 mx-1" style="height: 200px;">
+            <div class="d-flex justify-content-around">
+                <div class="col text-center">
+                    Balance
+                </div>
+                <div id="demo" class="col">
+                        <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+                        <script src="timer/jquery.countdown360.min.js"></script>
+                        <div id="countdown"></div>
+
+                        <script type="text/javascript">
+                        $('#countdown').countdown360(
+
+                        )
+                        </script>
+                </div>
+            </div>
+        </div>
 
 
-</body>
 
+
+
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/js/bootstrap.min.js" integrity="sha384-7aThvCh9TypR7fIc2HV4O/nFMVCBwyIUKL8XCtKE+8xgCgl/PQGuFsvShjr74PBp" crossorigin="anonymous"></script>
+
+        <script src="statusScript.js"></script>
+
+
+    </body>
 </html>

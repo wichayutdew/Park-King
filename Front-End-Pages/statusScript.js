@@ -1,6 +1,6 @@
-document.getElementById("checkOutBut").addEventListener("click", function() {
-  window.location = 'receipt.html';
-});
+// document.getElementById("checkOutBut").addEventListener("click", function() {
+//   window.location = 'receipt.html';
+// });
 
 //Create Timer
 function Stopwatch(elem) {
@@ -62,9 +62,14 @@ function Stopwatch(elem) {
 
 }
 
+//Initiate parking timer
 var timer = document.getElementById("timer");
 var watch = new Stopwatch(timer);
+
+watch.start();
+
 var watchRunning= false;
+
 
 
 document.getElementById("timerBut").addEventListener("click",function timerStart() {

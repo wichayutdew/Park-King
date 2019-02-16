@@ -1,3 +1,3 @@
-document.getElementById("confirmBut").addEventListener("click", function() {
+document.getElementById("submitBtn").addEventListener("click", function() {
   window.location = 'showQR.html';
 });
