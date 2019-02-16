@@ -1246,22 +1246,4 @@ function showQRCode(text) {
   }
 
 
-	document.getElementById("QRProfileBtn").addEventListener("click", function() {
-		window.location = 'userInfo.html';
-	});
-
-	document.getElementById("QRReserveBtn").addEventListener("click", function() {
-	  window.location = 'reserve.html';
-	});
-
-	document.getElementById("QRQRBtn").addEventListener("click", function() {
-	  window.location = 'showQR.html';
-	});
-
-	document.getElementById("QRStatusBtn").addEventListener("click", function() {
-	  window.location = 'status.html';
-	});
-
-	document.getElementById("QRHomeBtn").addEventListener("click", function() {
-	  window.location = 'home.html';
-	});
+	

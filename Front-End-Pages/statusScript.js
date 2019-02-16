@@ -2,27 +2,6 @@ document.getElementById("checkOutBut").addEventListener("click", function() {
   window.location = 'receipt.html';
 });
 
-document.getElementById("statusProfileBtn").addEventListener("click", function() {
-  window.location = 'userInfo.html';
-});
-
-document.getElementById("statusReserveBtn").addEventListener("click", function() {
-  window.location = 'reserve.html';
-});
-
-document.getElementById("statusQRBtn").addEventListener("click", function() {
-  window.location = 'showQR.html';
-});
-
-document.getElementById("statusStatusBtn").addEventListener("click", function() {
-  window.location = 'status.html';
-});
-
-document.getElementById("statusHomeBtn").addEventListener("click", function() {
-  window.location = 'home.html';
-});
-
-
 //Create Timer
 function Stopwatch(elem) {
     var time = 0;

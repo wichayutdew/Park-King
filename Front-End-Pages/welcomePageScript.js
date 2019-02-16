@@ -5,3 +5,4 @@ document.getElementById("signUpBut").addEventListener("click", function() {
 document.getElementById("signInBut").addEventListener("click", function() {
   window.location = 'home.html';
 });
+  
