@@ -1,6 +1,6 @@
-// document.getElementById("checkOutBut").addEventListener("click", function() {
-//   window.location = 'receipt.html';
-// });
+document.getElementById("checkOutBut").addEventListener("click", function() {
+  window.location = 'receipt.html';
+});
 
 //Create Timer
 function Stopwatch(elem) {

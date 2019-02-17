@@ -1244,3 +1244,6 @@ function showQRCode(text) {
        return imgElement;
 
   }
+
+
+	
