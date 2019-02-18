@@ -33,19 +33,19 @@
       <!-- Menu Items -->
       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
         <li class="nav-item active border rounded">
-                <a class="nav-link pl-2" href="#" id="homeBtn">Home<span class="sr-only">(current)</span></a>
+          <a class="nav-link pl-2" href="#" id="homeBtn">Home<span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item active border rounded">
-                <a class="nav-link pl-2" href="#" id="reserveBtn">Reserve<span class="sr-only">(current)</span></a>
+          <a class="nav-link pl-2" href="#" id="reserveBtn">Reserve<span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item active border rounded">
-                <a class="nav-link pl-2" href="#" id="statusBtn">Status<span class="sr-only">(current)</span></a>
+          <a class="nav-link pl-2" href="#" id="statusBtn">Status<span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item active border rounded">
-                <a class="nav-link pl-2" href="#" id="QRBtn">My QR<span class="sr-only">(current)</span></a>
+          <a class="nav-link pl-2" href="#" id="QRBtn">My QR<span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item active border rounded">
-                <a class="nav-link pl-2" href="#" id="historyBtn">History<span class="sr-only">(current)</span></a>
+          <a class="nav-link pl-2" href="#" id="historyBtn">History<span class="sr-only">(current)</span></a>
         </li>
       </ul>
     </div>
@@ -55,13 +55,9 @@
 
   <form>
     <div class="container pt-2">
+
+
       <!-- <div class="form-group">
-        <label for="carPlateInput">Car Plate</label>
-        <input type="text" class="form-control" id="carPlateInput" placeholder="3333">
-      </div> -->
-
-
-      <div class="form-group">
         <label for="carSelect">Select Your Car</label>
         <select class="form-control" id="occupationInput">
           <option></option>
@@ -70,28 +66,48 @@
           <option value="others">9900</option>
         </select>
       </div>
+ -->
 
-      <div class="buildingSelect">
-        <label>Select the building</label>
-        <div class="btn-group buildingBtnGroup d-flex justify-content-around mt-2 " data-toggle="buttons">
-          <label class="btn buildingChoice">
-            <div class="building arts"></div>
-            <input type="radio" name="options">
-          </label>
-          <label class="btn buildingChoice">
-            <div class="building poli"></div>
-            <input type="radio" name="options">
-          </label>
+      <div class="card mt-2 mx-1">
+        <h7 class="card-header">Select your Car</h7>
+        <div class="card-body">
+          <div class="carSelect">
+            <div class="btn-group carBtnGroup d-flex justify-content-around" data-toggle="buttons">
+              <label class="btn carChoice">
+                <div class="method" style="background-image: url(img/car1.png)">9999</div>
+                <input type="radio" name="options">
+              </label>
+              <label class="btn carChoice">
+                <div class="method" style="background-image: url(img/car1.png)">8888</div>
+                <input type="radio" name="options">
+              </label>
+            </div>
+          </div>
         </div>
       </div>
 
 
-      <!-- <div class="form-group">
-                  <label for="exampleFormControlTextarea1">Example textarea</label>
-                  <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                </div> -->
+      <div class="card mt-2 mx-1">
+        <h7 class="card-header">Select the Building</h7>
+        <div class="card-body">
+          <div class="buildingSelect">
+            <div class="btn-group buildingBtnGroup d-flex justify-content-around " data-toggle="buttons">
+              <label class="btn buildingChoice">
+                <div class="building arts"></div>
+                <input type="radio" name="options">
+              </label>
+              <label class="btn buildingChoice">
+                <div class="building poli"></div>
+                <input type="radio" name="options">
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <button type="button" class="btn btn-primary" id="submitBtn">Submit</button>
+
+
+      <button type="button" class="btn-sm btn-primary mt-2 mx-1" id="submitBtn">Submit</button>
     </div>
   </form>
 

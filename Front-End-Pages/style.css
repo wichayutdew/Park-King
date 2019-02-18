@@ -90,7 +90,8 @@ svg {
 }
 
 .buildingSelect .buildingBtnGroup .buildingChoice.active .building {
-  border-color: #3a56e0;
+  border-color: #04f735;
+  border-radius: 3px;
   outline: none !important;
   box-shadow: 0px 3px 22px 0px #7b7b7b;
 }
@@ -104,7 +105,7 @@ svg {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  border: 2px solid transparent;
+  border: 3px solid transparent;
   transition: all 0.5s;
 }
 
@@ -117,9 +118,58 @@ svg {
 }
 
 .buildingSelect .buildingBtnGroup .buildingChoice .building:hover {
-  border-color: #3a56e0;
+  border-color: #04f735;
+  border-radius: 3px;
   outline: none !important;
 }
+
+.carSelect {
+	/* padding: 50px; */
+}
+
+.carSelect .carBtnGroup {
+	max-width: 1000px;
+	/* margin: auto; */
+}
+
+.carSelect .carBtnGroup .carChoice {
+	padding: 65px;
+	box-shadow: none;
+	position: relative;
+}
+
+.carSelect .carBtnGroup .carChoice.active {
+	outline: none !important;
+}
+
+.carSelect .carBtnGroup .carChoice.active .method {
+	border-color: #04f735;
+  border-radius: 3px;
+	outline: none !important;
+	box-shadow: 0px 3px 22px 0px #7b7b7b;
+}
+
+.carSelect .carBtnGroup .carChoice .method {
+	position: absolute;
+	right: 5px;
+	top: 5px;
+	bottom: 5px;
+	left: 5px;
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+	border: 3px solid transparent;
+	transition: all 0.5s;
+}
+
+
+.carSelect .carBtnGroup .carChoice .method:hover {
+	border-color: #04f735;
+  border-radius: 3px;
+	outline: none !important;
+}
+
+
 
 body {
   background-color: #eaeaea !important;
@@ -127,6 +177,7 @@ body {
 
 .nav-item :hover {
   background: grey;
+  border-radius: 2px
 }
 
 #logInBtn {
