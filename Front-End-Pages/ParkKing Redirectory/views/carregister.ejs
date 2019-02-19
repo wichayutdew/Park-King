@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+  <title>Menu bar Template</title>
+  <link rel="stylesheet" href="/stylesheet/style.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous">
+</head>
+
+<body>
+
+          <!-- Menu Bar version 3 -->
+          <nav class="navbar navbar-expand-lg navbar-light">
+            <img src="img/LogoFinal.png" width="40" height="40" class="" alt="PARK KING" id="logoPic">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
+                    aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+                    <!-- Section appears when user has log in -->
+                    <section id="userInfoMenu" class="border rounded mt-3 p-2 text-center">
+                            <a class="" href="#">
+                                    <img src="img/profilePic.png" width="30" height="30" class="" alt="" id="profileBtn">
+                            </a>
+                            <p>John Doe</p>
+                            <a href="#" class="">Log out</a>
+                    </section>
+                    <!-- Section appears when no user is log on -->
+                    <section id="logInMenu" class="mt-3">
+                            <a href="/login" id="logInBtn" class="btn btn-primary btn-large">Log in</a>
+                            <a href="/register" id="registerBtn" class="btn btn-primary btn-large">Register</a>
+                    </section>
+                    <!-- Menu Items -->
+                    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                            <li class="nav-item active border rounded">
+                                    <a class="nav-link pl-2" href="/" id="homeBtn">Home<span class="sr-only">(current)</span></a>
+                            </li>
+                            <li class="nav-item active border rounded">
+                                    <a class="nav-link pl-2" href="/reserve" id="reserveBtn">Reserve<span class="sr-only">(current)</span></a>
+                            </li>
+                            <li class="nav-item active border rounded">
+                                    <a class="nav-link pl-2" href="/status" id="statusBtn">Status<span class="sr-only">(current)</span></a>
+                            </li>
+                            <li class="nav-item active border rounded">
+                                    <a class="nav-link pl-2" href="/showqr" id="QRBtn">My QR<span class="sr-only">(current)</span></a>
+                            </li>
+                            <li class="nav-item active border rounded">
+                                    <a class="nav-link pl-2" href="#" id="historyBtn">History<span class="sr-only">(current)</span></a>
+                            </li>
+                    </ul>
+            </div>
+    </nav>
+
+
+
+  <form>
+    <div class="container pt-2">
+      <div class="form-group">
+        <label for="platenumberInput">Plate Number</label>
+        <input type="text" class="form-control" id="platenumberInput" placeholder="Plate Number">
+      </div>
+      <div class="form-group">
+        <label for="brandInput">Brand</label>
+        <input type="text" class="form-control" id="brandInput" placeholder="Brand">
+      </div>
+      <div class="form-group">
+        <label for="carModelInput">Car Model</label>
+        <input type="text" class="form-control" id="carModelInput" placeholder="Car Model">
+      </div>
+      <div class="form-group">
+        <label for="colorInput">Color</label>
+        <input type="text" class="form-control" id="colorInput" placeholder="Color">
+      </div>
+
+      <input type='file' onchange="readURL(this);" />
+      <!-- <img id="blah" src="http://placehold.it/180" alt="your image" /> -->
+
+
+      <!-- JS for occupation checking
+                  <script type="text/javascript">
+                    function occupationCheck(that){
+                      if(that.value == "student"){
+                        document.getElementById("ifStudent").style.display = "block";
+                        document.getElementById("ifProfessor").style.display = "none";
+                        document.getElementById("ifOthers").style.display = "none";
+                      } else if(that.value == "professor"){
+                        document.getElementById("ifStudent").style.display = "none";
+                        document.getElementById("ifProfessor").style.display = "block";
+                        document.getElementById("ifOthers").style.display = "none";
+                      } else if(that.value == "others"){
+                        document.getElementById("ifStudent").style.display = "none";
+                        document.getElementById("ifProfessor").style.display = "none";
+                        document.getElementById("ifOthers").style.display = "block";
+                      } else{
+                        document.getElementById("ifStudent").style.display = "none";
+                        document.getElementById("ifProfessor").style.display = "none";
+                        document.getElementById("ifOthers").style.display = "none";
+                      }
+                    }
+                  </script> -->
+
+
+      <!-- <div class="form-group">
+                  <label for="exampleFormControlTextarea1">Example textarea</label>
+                  <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                </div> -->
+
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </form>
+
+
+
+  <script type="text/javascript">
+    function readURL(input) {
+       if (input.files && input.files[0]) {
+           var reader = new FileReader();
+
+           reader.onload = function (e) {
+               $('#blah')
+                   .attr('src', e.target.result);
+           };
+
+           reader.readAsDataURL(input.files[0]);
+       }
+   }
+  </script>
+
+
+
+
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+
+</body>
+
+
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <title>Status Page</title>
+
+
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css" integrity="sha384-PDle/QlgIONtM1aqA2Qemk5gPOE7wFq8+Em+G/hmo5Iq0CCmYZLv3fVRDJ4MMwEA" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/stylesheet/style.css">
+
+
+
+</head>
+
+<body>
+
+
+
+          <!-- Menu Bar version 3 -->
+          <nav class="navbar navbar-expand-lg navbar-light">
+            <img src="img/LogoFinal.png" width="40" height="40" class="" alt="PARK KING" id="logoPic">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
+                    aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+                    <!-- Section appears when user has log in -->
+                    <section id="userInfoMenu" class="border rounded mt-3 p-2 text-center">
+                            <a class="" href="#">
+                                    <img src="img/profilePic.png" width="30" height="30" class="" alt="" id="profileBtn">
+                            </a>
+                            <p>John Doe</p>
+                            <a href="#" class="">Log out</a>
+                    </section>
+                    <!-- Section appears when no user is log on -->
+                    <section id="logInMenu" class="mt-3">
+                            <a href="/login" id="logInBtn" class="btn btn-primary btn-large">Log in</a>
+                            <a href="/register" id="registerBtn" class="btn btn-primary btn-large">Register</a>
+                    </section>
+                    <!-- Menu Items -->
+                    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                            <li class="nav-item active border rounded">
+                                    <a class="nav-link pl-2" href="/" id="homeBtn">Home<span class="sr-only">(current)</span></a>
+                            </li>
+                            <li class="nav-item active border rounded">
+                                    <a class="nav-link pl-2" href="/reserve" id="reserveBtn">Reserve<span class="sr-only">(current)</span></a>
+                            </li>
+                            <li class="nav-item active border rounded">
+                                    <a class="nav-link pl-2" href="/status" id="statusBtn">Status<span class="sr-only">(current)</span></a>
+                            </li>
+                            <li class="nav-item active border rounded">
+                                    <a class="nav-link pl-2" href="/showqr" id="QRBtn">My QR<span class="sr-only">(current)</span></a>
+                            </li>
+                            <li class="nav-item active border rounded">
+                                    <a class="nav-link pl-2" href="#" id="historyBtn">History<span class="sr-only">(current)</span></a>
+                            </li>
+                    </ul>
+            </div>
+    </nav>
+
+
+
+  <!-- <div id="infoProfileDiv" class="infoDiv mt-2 mx-1">
+    <div class="d-flex flex-row mx-1">
+      Profile
+    </div>
+    <div class="d-flex flex-row">
+      <div class="col text-center"><img src="img/profilePic.png" width=25% ></div>
+    </div>
+    <div class="d-flex justify-content-center mt-2">
+      John Doe
+    </div>
+    <div class="d-flex justify-content-center mt-2">
+      5931355521
+    </div>
+  </div>
+
+  <section class="mt-2 d-flex justify-content-around">
+    <a class="btn btn-primary btn-large mx-1 text-white">
+      Edit Profile
+    </a>
+  </section> -->
+
+  <div class="card mt-2 mx-1">
+    <h7 class="card-header">Profile</h7>
+    <div class="card-body">
+      <div class="d-flex flex-row">
+        <div class="col text-center"><img src="img/profilePic.png" width=25%></div>
+      </div>
+      <h5 class="card-title text-center mt-1">John Doe</h5>
+      <p class="card-text text-center">Student 5931355521</p>
+      <a href="#" class="btn-sm btn-primary">Edit Profile</a>
+    </div>
+  </div>
+
+  <div class="card mt-2 mx-1">
+    <h7 class="card-header">My Cars</h7>
+    <div class="card-body">
+      <div class="card-deck">
+
+        <div class="card">
+          <div class="card-body">
+            <img class="card-img w-50" src="img/car1.png" alt="Card image cap">
+            <h5 class="card-title">ภก 9900</h5>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <img class="card-img w-50" src="img/car1.png" alt="Card image cap">
+            <h5 class="card-title">ภก 9900</h5>
+          </div>
+        </div>
+
+      </div>
+      <a href="#" class="btn-sm btn-primary">Edit Cars</a>
+      <a href="#" class="btn-sm btn-primary">Add Cars</a>
+    </div>
+  </div>
+
+  <div class="card mx-1 mt-2" >
+    <div class="card-header">
+      History
+    </div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">12/09/2019 Arts 2 hrs 40thb</li>
+      <li class="list-group-item">11/09/2019 Arts 3 hrs 50thb</li>
+      <li class="list-group-item">10/09/2019 Arts 4 hrs 60thb</li>
+    </ul>
+  </div>
+
+
+
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/js/bootstrap.min.js" integrity="sha384-7aThvCh9TypR7fIc2HV4O/nFMVCBwyIUKL8XCtKE+8xgCgl/PQGuFsvShjr74PBp" crossorigin="anonymous"></script>
+
+  <script src="userInfoScript.js"></script>
+  <script src="menuScript.js"></script>
+
+
+</body>
+
+</html>

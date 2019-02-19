@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Status Page</title>
+
+
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css" integrity="sha384-PDle/QlgIONtM1aqA2Qemk5gPOE7wFq8+Em+G/hmo5Iq0CCmYZLv3fVRDJ4MMwEA"
+        crossorigin="anonymous">
+
+    <link rel="stylesheet" href="/stylesheet/style.css">
+
+
+
+</head>
+
+<body>
+
+
+
+            <!-- Menu Bar version 3 -->
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <img src="img/LogoFinal.png" width="40" height="40" class="" alt="PARK KING" id="logoPic">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
+                        aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+                        <!-- Section appears when user has log in -->
+                        <section id="userInfoMenu" class="border rounded mt-3 p-2 text-center">
+                                <a class="" href="#">
+                                        <img src="img/profilePic.png" width="30" height="30" class="" alt="" id="profileBtn">
+                                </a>
+                                <p>John Doe</p>
+                                <a href="#" class="">Log out</a>
+                        </section>
+                        <!-- Section appears when no user is log on -->
+                        <section id="logInMenu" class="mt-3">
+                                <a href="/login" id="logInBtn" class="btn btn-primary btn-large">Log in</a>
+                                <a href="/register" id="registerBtn" class="btn btn-primary btn-large">Register</a>
+                        </section>
+                        <!-- Menu Items -->
+                        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                                <li class="nav-item active border rounded">
+                                        <a class="nav-link pl-2" href="/" id="homeBtn">Home<span class="sr-only">(current)</span></a>
+                                </li>
+                                <li class="nav-item active border rounded">
+                                        <a class="nav-link pl-2" href="/reserve" id="reserveBtn">Reserve<span class="sr-only">(current)</span></a>
+                                </li>
+                                <li class="nav-item active border rounded">
+                                        <a class="nav-link pl-2" href="/status" id="statusBtn">Status<span class="sr-only">(current)</span></a>
+                                </li>
+                                <li class="nav-item active border rounded">
+                                        <a class="nav-link pl-2" href="/showqr" id="QRBtn">My QR<span class="sr-only">(current)</span></a>
+                                </li>
+                                <li class="nav-item active border rounded">
+                                        <a class="nav-link pl-2" href="#" id="historyBtn">History<span class="sr-only">(current)</span></a>
+                                </li>
+                        </ul>
+                </div>
+        </nav>
+
+
+
+    <div id="info1Div" class="infoDiv d-flex mt-2 mx-1">
+        <div class="d-flex">
+            <div class="col text-center"><img src="img/car1.png" width=100% alt=""></div>
+            <div class="col">
+                <p class="py-4" style="float: left;">
+                    Plate Number: 1248
+                    <br>
+                    Info: info
+                    <br>
+                    Info: Info
+
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="infoDiv d-flex mt-2 mx-1" style="height: 60px;">
+        <div class="d-flex justify-content-around">
+            <div class="col">
+                Time you have parked
+            </div>
+            <div class="col">
+                <p id="timer" class="py-2 lead">
+                    00 : 00 : 00
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div id="demo" class="jumbotron-fluid jumbotron">
+                <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+                <script src="jquery.countdown360.min.js"></script>
+                <div id="countdown"></div>
+
+                <script type="text/javascript">
+                $('#countdown').countdown360(
+
+                )
+                </script>
+        </div>  -->
+    <div class="infoDiv d-flex mt-2 mx-1" style="height: 200px;">
+        <div class="d-flex justify-content-around">
+            <div class="col text-center">
+                Balance
+            </div>
+            <div id="demo" class="col">
+                <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+                <script src="/js/jquery.countdown360.min.js"></script>
+                <div id="countdown"></div>
+
+                <script type="text/javascript">
+                    $('#countdown').countdown360(
+
+                    )
+                </script>
+            </div>
+        </div>
+    </div>
+
+    <a class="homeBtn text-white mx-1 mt-2" id="checkOutBut">
+        <p class="mt-2">CHECK OUT</p>
+    </a>
+
+
+
+
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/js/bootstrap.min.js" integrity="sha384-7aThvCh9TypR7fIc2HV4O/nFMVCBwyIUKL8XCtKE+8xgCgl/PQGuFsvShjr74PBp"
+        crossorigin="anonymous"></script>
+
+    <script src="/js/statusscript.js"></script>
+    <script src="menuScript.js"></script>
+
+
+</body>
+
+</html>
