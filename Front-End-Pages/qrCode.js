@@ -1245,5 +1245,5 @@ function showQRCode(text) {
 
   }
 
-
-	
+document.getElementById("qrBack").addEventListener("click", function() {
+	  window.location = 'home.html';	});
