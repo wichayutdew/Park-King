@@ -25,7 +25,9 @@
 
           <!-- Menu Bar version 3 -->
           <nav class="navbar navbar-expand-lg navbar-light">
-            <img src="img/LogoFinal.png" width="40" height="40" class="" alt="PARK KING" id="logoPic">
+            <a class="" href="/home">
+                    <img src="img/LogoFinal.png" width="40" height="40" class="" alt="PARK KING" id="logoPic">
+            </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
                     aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -88,19 +90,8 @@
     updateQRCode('google.com');
   </script>
 
-  <button class="btn btn-lg btn-primary btn" type="button" id="qrBack">Back</button>
+  <a href="/home" class="btn btn-lg btn-primary btn" id="qrBack">Back</a>
 
-  <script>
-  document.getElementById("qrBack").addEventListener("click", function(){
-      window.location = 'home';
-  });
-  </script>
-
-  <script>
-  document.getElementById("logoPic").addEventListener("click", function(){
-      window.location = 'home';
-  });
-  </script>
 
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
     crossorigin="anonymous"></script>
