@@ -48,7 +48,7 @@ app.get('/status', function(req, res){
 
 //ROUTE TO USER INFO
 app.get('/userinfo', function(req, res){
-   res.render('userinfo'); 
+   res.render('userinfo');
 });
 
 //ROUTE TO LOGIN PAGE
