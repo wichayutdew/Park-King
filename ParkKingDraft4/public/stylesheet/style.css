@@ -1,0 +1,282 @@
+body{
+  background-color: black !important;
+  color: white !important;
+  font-family: 'Lato', sans-serif !important;
+}
+
+
+
+.infoDiv {
+  width: 92%;
+  height: auto;
+  padding: 60px 60px 60px 60px;
+  border-radius: 10px;
+  z-index: -2 !important;
+  margin-bottom: 20px;
+  margin-left: 4%;
+  margin-right: 4%;
+}
+
+.statusDiv {
+  width: 92%;
+  height: auto;
+  padding: 20px 20px 20px 20px;
+  border-radius: 30px;
+  z-index: -2;
+  margin-bottom: 20px;
+  margin-left: 4%;
+  margin-right: 4%;
+}
+
+
+
+.infoDiv h3 {
+  margin-bottom: 40px;
+}
+
+.infoDiv p{
+  z-index: -10 !important;
+}
+
+#info1Div{
+  /* background-image: linear-gradient( white, rgb(62, 62, 214));
+  background-repeat: no-repeat;
+  background-size: cover; */
+  background: #fe9567;
+}
+#info2Div{
+  background: #9567fe;
+}
+#info3Div{
+  background: #67d0fe;
+}
+#info4Div{
+  background: #e167fe;
+}
+
+
+#main {
+  margin-top: 80px;
+  /* position: absolute; */
+  z-index: -1;
+}
+
+
+
+
+/* The side navigation menu */
+.sidenav {
+    height: 100%; /* 100% Full-height */
+    width: 0; /* 0 width - change this with JavaScript */
+    position: fixed; /* Stay in place */
+    z-index: 10 !important; /* Stay on top */
+    top: 0; /* Stay at the top */
+    right: 0;
+    background-color: black; /* Black*/
+    /* border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px; */
+    border-radius: 20px;
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 60px; /* Place content 60px from the top */
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+}
+
+/* The navigation menu links */
+#profileMenu {
+  padding: 3px 8px 30px 32px;
+  margin-bottom: 30px;
+  margin-left: 0%;
+  width: 90%;
+  border-bottom: 2px solid #818181; 
+}
+#profileMenu img {
+  border: 4px solid white;
+  border-radius: 100px;
+}
+#profileMenu a{
+  display: inline;
+  float: right;
+}
+.sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color:white;
+    display: block;
+    transition: 0.3s;
+    z-index: 9000;
+  }
+  
+  /* When you mouse over the navigation links, change their color */
+  .sidenav a:hover {
+    color: #f1f1f1;
+  }
+  
+  /* Position and style the close button (top right corner) */
+  .sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+  }
+  
+  /* Style page content - use this if you want to push the page content to the right when you open the side navigation */
+  #mainNavBar {
+    transition: margin-left .5s;
+    transition: top 0.3s;
+    padding: 20px;
+    /* height: 80px; */
+    position: fixed;
+    top: 0;
+    width: 100%;
+    /* background: white; */
+  }
+
+ 
+  
+  /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+  @media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+  }
+
+  #menuButton {
+    /* background: white; */
+    /* border: 5px solid white; */
+    border-radius: 10px;
+    z-index: 10 !important;
+  }
+
+  #firstPage {
+    height: 500px;
+    margin-bottom: 50px;
+    /* position: relative;
+    overflow: auto; */
+    min-height: 100% !important;
+  }
+
+  #buttonsHomePageDiv {
+    margin-top: 300px;
+  }
+
+  .homePageBut {
+    border-radius: 10px;
+  }
+  .homePageBut:hover {
+    opacity: 0.5;
+  }
+
+/* =======================================================================
+Register Page
+======================================================================= */
+.buildingSelect {
+  /* padding: 50px; */
+}
+
+.buildingSelect .buildingBtnGroup {
+  max-width: 1000px;
+  /* margin: auto; */
+}
+
+.buildingSelect .buildingBtnGroup .buildingChoice {
+  padding: 65px;
+  box-shadow: none;
+  position: relative;
+}
+
+.buildingSelect .buildingBtnGroup .buildingChoice.active {
+  outline: none !important;
+}
+
+.buildingSelect .buildingBtnGroup .buildingChoice.active .building {
+  border-color: #04f735;
+  border-radius: 10px;
+  outline: none !important;
+  box-shadow: 0px 3px 22px 0px #7b7b7b;
+}
+
+.buildingSelect .buildingBtnGroup .buildingChoice .building {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  bottom: 5px;
+  left: 5px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: 3px solid transparent;
+  transition: all 0.5s;
+}
+
+.buildingSelect .buildingBtnGroup .buildingChoice .building.arts {
+  background-image: url("../img/artbuilding.jpg");
+}
+
+.buildingSelect .buildingBtnGroup .buildingChoice .building.poli {
+  background-image: url("../img/polibuilding.jpg");
+}
+
+.buildingSelect .buildingBtnGroup .buildingChoice .building:hover {
+  border-color: #04f735;
+  border-radius: 10px;
+  outline: none !important;
+}
+
+.carSelect {
+    /* padding: 50px; */
+}
+
+.carSelect .carBtnGroup {
+    max-width: 1000px;
+    /* margin: auto; */
+}
+
+.carSelect .carBtnGroup .carChoice {
+    padding: 65px;
+    box-shadow: none;
+    position: relative;
+}
+
+.carSelect .carBtnGroup .carChoice.active {
+    outline: none !important;
+}
+
+.carSelect .carBtnGroup .carChoice.active .method {
+    border-color: #04f735;
+  border-radius: 10px;
+    outline: none !important;
+    box-shadow: 0px 3px 22px 0px #7b7b7b;
+}
+
+.carSelect .carBtnGroup .carChoice .method {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    bottom: 5px;
+    left: 5px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 3px solid transparent;
+    transition: all 0.5s;
+}
+
+
+.carSelect .carBtnGroup .carChoice .method:hover {
+    border-color: #04f735;
+  border-radius: 10px;
+    outline: none
+}
+
+form .card {
+  color: black;
+}
+
+/* ===================================================================================== */
+
+input[type=file] {
+  padding: 10px;
+  background: #ffffff;
+}
+
