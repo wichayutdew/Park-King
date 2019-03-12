@@ -85,11 +85,11 @@ app.use(bodyParser.urlencoded({extended: true}));
     //passport model use for registeration
     passport.use('local-signup', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
-        usernameField : 'email',
+        usernameField : 'username',
         passwordField : 'password',
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
-    function(req, email, password, done) {
+    function(req, username, password, done) {
 
         // find a user whose email is the same as the forms email
         // we are checking to see if the user trying to login already exists
@@ -101,20 +101,36 @@ app.use(bodyParser.urlencoded({extended: true}));
 
             }
         });
-        _signup(req,email,password,done);
+        _signup(req,username,password,done);
 
         //res.redirect('/login');
     }));
-    function _signup(req,email,password,done){
+    function _signup(req,username,password,done){
         console.log('Sign-up requested')
-        var customer_info = {email :email,password : password,name : req.body.username, fname : req.body.firstName, lname : req.body.lastName}
+        var customer_info = {
+          username :username,
+          password : password,
+          passwordCheck : req.body.passwordConfirmation,
+          email : req.body.email,
+          fname : req.body.firstName,
+          lname : req.body.lastName,
+          occupation: req.body.occupation,
+          studentID: req.body.studentID,
+          professorID: req.body.professorID,
+          guestID: req.body.NationalID,
+          profilePic: req.body.profilePic,
+        }
         var request = new Request(
-            "SELECT * FROM dbo.customer WHERE email = @email",
+            "SELECT * FROM dbo.Customer WHERE Username = @username",
             function (err, rowCount, rows){
                 console.log(rows);
                 console.log("above row object");
                 if (err)
                     return done(err);
+                if (customer_info.password!=customer_info.passportCheck){
+                    return done(null,false);
+                    console.log('password does not match')
+                }
                 if (rows.length != 0) {
                     return done(null, false);
                     console.log('this email is already taken');
@@ -136,7 +152,7 @@ app.use(bodyParser.urlencoded({extended: true}));
             }
         );
         //set parameterized query
-        request.addParameter('email',TYPES.VarChar,req.body.email);
+        request.addParameter('username',TYPES.VarChar,req.body.username);
         request.addParameter('password',TYPES.VarChar,req.body.password);
 
         request.on('requestCompleted', function () {
@@ -147,7 +163,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
     }
     function insert_newCustomer(customer_info,done){
-        var request = new Request("INSERT INTO dbo.customer (email, password, username, first_Name, last_Name) values (@email,@password,@username,@firstName,@lastName)",
+        var request = new Request("INSERT INTO dbo.Customer (FirstName,LastName,Email,Username,Password,customerType,studentID,professorID,CitizenID,profilePic) values (@firstName,@lastName,@email,@username,@password,@occupation,@studentID,@professorID,@CitizenID,@profilePic)",
             function (err, rowCount, rows){
                 if(err){
                     done(err);
@@ -155,11 +171,27 @@ app.use(bodyParser.urlencoded({extended: true}));
 
                 }
             });
-        request.addParameter('email',TYPES.VarChar,customer_info.email);
-        request.addParameter('password',TYPES.VarChar,customer_info.password);
-        request.addParameter('username',TYPES.VarChar,customer_info.name);
+            // username :username,
+            // password : password,
+            // passwordCheck : req.body.passwordConfirmation,
+            // email : req.body.email,
+            // fname : req.body.firstName,
+            // lname : req.body.lastName,
+            // occupation: req.body.occupation,
+            // studentID: req.body.studentID,
+            // professorID: req.body.professorID,
+            // guestID: req.body.NationalID,
+            // profilPic: req.body.profilPic,
         request.addParameter('firstName',TYPES.VarChar,customer_info.fname);
         request.addParameter('lastName',TYPES.VarChar,customer_info.lname);
+        request.addParameter('email',TYPES.VarChar,customer_info.email);
+        request.addParameter('username',TYPES.VarChar,customer_info.username);
+        request.addParameter('password',TYPES.VarChar,customer_info.password);
+        request.addParameter('occupation',TYPES.VarChar,customer_info.occupation);
+        request.addParameter('studentID',TYPES.VarChar,customer_info.studentID);
+        request.addParameter('professorID',TYPES.VarChar,customer_info.professorID);
+        request.addParameter('CitizenID',TYPES.VarChar,customer_info.guestID);
+        request.addParameter('profilePic',TYPES.VarChar,customer_info.profilePic);
 
         request.on('requestCompleted', function (){
         //connection.close();
@@ -229,7 +261,7 @@ app.use(bodyParser.urlencoded({extended: true}));
         connection.execSql(request);
     }
 app.use(require('express-session')({
-    secret: "Fuck You",
+    secret: "Duck You",
     resave: false,
     saveUninitialized: false
 }));
