@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+  <link rel="stylesheet" href="/stylesheet/style.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css" integrity="sha384-PDle/QlgIONtM1aqA2Qemk5gPOE7wFq8+Em+G/hmo5Iq0CCmYZLv3fVRDJ4MMwEA" crossorigin="anonymous">
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+  <script type="text/javascript" src="/js/qrcode.js"></script>
+
+  <style type="text/css" media="screen">
+    body {
+      text-align: center;
+    }
+  </style>
+
+</head>
+
+<body>
+
+
+        <div id="mainNavBar" class="">
+
+                <div id="navArea" class="d-flex w-100 p-0 justify-content-between">
+                  <div id="logoDiv">
+                      <img src="img/pkLogo2.png" class="rounded" width="60" height="60" alt="PARK KING">
+                  </div>
+                  <div id="menuButton">
+                      <span onclick="openNav()">
+                        <img src="img/menu.png" width="40" height="40">
+                      </span>
+                  </div>
+                </div>
+          
+                <div id="mySidenav" class="sidenav">
+                    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+                    <section id="profileMenu">
+                      <img src="img/profilePic.png" width="50" height="50" class="" alt="" id="profileBtn">
+                      <a id="profileName" href="/userinfo">John Doe</a>
+                    </section>
+                    <a href="/home">Home</a>
+                    <a href="/userinfo">My Profile</a>
+                    <a href="/reserve">Reserve</a>
+                    <a href="/status">Status</a>
+                    <a href="showqr">My QR</a>
+                </div> 
+                </div> 
+                
+                <div id="main">
+
+
+
+  <div class="container mt-2">
+    <div class="col" id="qrcode">
+    </div>
+    <div class="col">
+        <a href="/home" class="btn btn-lg btn-dark btn-block btn mt-1" id="qrBack">Back</a>
+    <button class="btn btn-lg btn-dark btn-block mt-1" type="button" id="cancel">Cancel</button>  
+    </div>
+
+  </div>
+
+  <script type="text/javascript">
+    function updateQRCode(text) {
+
+      var element = document.getElementById("qrcode");
+
+      var bodyElement = document.body;
+      if (element.lastChild)
+        element.replaceChild(showQRCode(text), element.lastChild);
+      else
+        element.appendChild(showQRCode(text));
+
+    }
+
+    updateQRCode('google.com');
+  </script>
+
+
+
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/js/bootstrap.min.js" integrity="sha384-7aThvCh9TypR7fIc2HV4O/nFMVCBwyIUKL8XCtKE+8xgCgl/PQGuFsvShjr74PBp" crossorigin="anonymous"></script>
+
+
+</body>
+
+</html>
