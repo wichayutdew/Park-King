@@ -60,7 +60,7 @@ app.use(bodyParser.urlencoded({extended: true}));
     });
     function deserializer(email,done){
         var request = new Request(
-            "SELECT * FROM dbo.customer WHERE id = @email",
+            "SELECT * FROM dbo.Customer WHERE Username = @email",
             function(err,rows){
                 //done(err,rows[0]);
             }
@@ -85,11 +85,11 @@ app.use(bodyParser.urlencoded({extended: true}));
     //passport model use for registeration
     passport.use('local-signup', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
-        usernameField : 'username',
+        usernameField : 'email',
         passwordField : 'password',
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
-    function(req, username, password, done) {
+    function(req, email, password, done) {
 
         // find a user whose email is the same as the forms email
         // we are checking to see if the user trying to login already exists
@@ -101,13 +101,13 @@ app.use(bodyParser.urlencoded({extended: true}));
 
             }
         });
-        _signup(req,username,password,done);
+        _signup(req,email,password,done);
 
         //res.redirect('/login');
     }));
-    function _signup(req,username,password,done){
+    function _signup(req,email,password,done){
         console.log('Sign-up requested')
-        var customer_info = {username : req.body.usernameInput,password : passwordInput,passwordConfirm : passwordConfirmation,email :email, fname : req.body.firstName, lname : req.body.lastName}
+        var customer_info = {email :email,password : password,name : req.body.username, fname : req.body.firstName, lname : req.body.lastName}
         var request = new Request(
             "SELECT * FROM dbo.customer WHERE email = @email",
             function (err, rowCount, rows){
@@ -268,34 +268,6 @@ app.post('/register',passport.authenticate('local-signup' , {
     failureRedirect: '/register',
     session: false
   }));
-
-function pushData(customer){
-
-    var request = new Request(
-        "INSERT dbo.customer (userName,passWord,first_Name,last_Name) VALUES (@username,@password,@firstName,@lastName) ;",
-        function(err)
-        {
-            if(err){console.log(err)}
-            else{
-                console.log('executed !');
-                //process.exit();
-
-            }
-        }
-    );
-    //set parameterized query
-    request.addParameter('username',TYPES.VarChar,customer.c1);
-    request.addParameter('password',TYPES.VarChar,customer.c2);
-    request.addParameter('firstname',TYPES.VarChar,'0');
-    request.addParameter('lastName',TYPES.VarChar,'0');
-
-    request.on('requestCompleted', function () {
-        // Next SQL statement.
-    });
-
-    connection.execSql(request);
-
-}
 
 app.listen(3000, process.env.IP, function(){
     console.log('port 3000.....');
