@@ -58,15 +58,15 @@ app.use(bodyParser.urlencoded({extended: true}));
         deserializer(id,done);
 
     });
-    function deserializer(email,done){
+    function deserializer(username,done){
         var request = new Request(
-            "SELECT * FROM dbo.Customer WHERE Username = @email",
+            "SELECT * FROM dbo.Customer WHERE Username = @username",
             function(err,rows){
                 //done(err,rows[0]);
             }
         );
         //set parameterized query
-        request.addParameter('email',TYPES.VarChar,email);
+        request.addParameter('email',TYPES.VarChar,username);
         var deserializing = [];
         request.on('row', function (columns) {
             columns.forEach(function(column) {
@@ -85,12 +85,13 @@ app.use(bodyParser.urlencoded({extended: true}));
     //passport model use for registeration
     passport.use('local-signup', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
+        //console.log('check 00');
         usernameField : 'username',
         passwordField : 'password',
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
     function(req, username, password, done) {
-
+        console.log('check 01');
         // find a user whose email is the same as the forms email
         // we are checking to see if the user trying to login already exists
         connection.on('connect',function(err){
@@ -98,7 +99,7 @@ app.use(bodyParser.urlencoded({extended: true}));
                 console.log(err);
                 //connection.close();
             }else{
-
+                console.log('check 02');
             }
         });
         _signup(req,username,password,done);
@@ -119,7 +120,7 @@ app.use(bodyParser.urlencoded({extended: true}));
           professorID: req.body.professorID,
           guestID: req.body.NationalID,
           profilePic: req.body.profilePic,
-        }
+        };
         var request = new Request(
             "SELECT * FROM dbo.Customer WHERE Username = @username",
             function (err, rowCount, rows){
@@ -141,13 +142,13 @@ app.use(bodyParser.urlencoded({extended: true}));
                     // create the use
                     var newUserMysql = new Object();
 
-                    newUserMysql.email    = email;
+                    newUserMysql.username = username;
                     newUserMysql.password = password; // use the generateHash function in our user model
 
                     newUserMysql.id = rows.insertId;
 
                     insert_newCustomer(customer_info,done)
-				    return done(null, newUserMysql);
+				            return done(null, newUserMysql);
                 }
             }
         );
@@ -171,17 +172,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
                 }
             });
-            // username :username,
-            // password : password,
-            // passwordCheck : req.body.passwordConfirmation,
-            // email : req.body.email,
-            // fname : req.body.firstName,
-            // lname : req.body.lastName,
-            // occupation: req.body.occupation,
-            // studentID: req.body.studentID,
-            // professorID: req.body.professorID,
-            // guestID: req.body.NationalID,
-            // profilPic: req.body.profilPic,
+
         request.addParameter('firstName',TYPES.VarChar,customer_info.fname);
         request.addParameter('lastName',TYPES.VarChar,customer_info.lname);
         request.addParameter('email',TYPES.VarChar,customer_info.email);
@@ -191,7 +182,7 @@ app.use(bodyParser.urlencoded({extended: true}));
         request.addParameter('studentID',TYPES.VarChar,customer_info.studentID);
         request.addParameter('professorID',TYPES.VarChar,customer_info.professorID);
         request.addParameter('CitizenID',TYPES.VarChar,customer_info.guestID);
-        request.addParameter('profilePic',TYPES.VarChar,customer_info.profilePic);
+        request.addParameter('profilePic',TYPES.image,customer_info.profilePic);
 
         request.on('requestCompleted', function (){
         //connection.close();
@@ -261,7 +252,7 @@ app.use(bodyParser.urlencoded({extended: true}));
         connection.execSql(request);
     }
 app.use(require('express-session')({
-    secret: "Duck You",
+    secret: "Fuck You",
     resave: false,
     saveUninitialized: false
 }));
