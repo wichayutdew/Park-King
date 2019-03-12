@@ -109,8 +109,8 @@ app.use(bodyParser.urlencoded({extended: true}));
     function _signup(req,username,password,done){
         console.log('Sign-up requested')
         var customer_info = {
-          username :username,
-          password : password,
+          username :req.body.username,
+          password : req.body.password,
           passwordCheck : req.body.passwordConfirmation,
           email : req.body.email,
           fname : req.body.firstName,
