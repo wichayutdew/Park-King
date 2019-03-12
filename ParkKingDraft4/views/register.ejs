@@ -54,14 +54,57 @@
                                     <input class="input100" type="password" name="password2" placeholder="Password Again">
                                     <span class="focus-input100"></span>
                             </div>    
-                            <div class="wrap-input100 validate-input m-b-25" data-validate = "Enter password">
+                            <!-- <div class="wrap-input100 validate-input m-b-25" data-validate = "Enter password">
                                     <input class="input100" type="text" name="profession" placeholder="Profession">
                                     <span class="focus-input100"></span>
-                            </div>  
-                            <div class="wrap-input100 validate-input m-b-25" data-validate = "Enter password">
-                                    <input class="input100" type="text" name="id" placeholder="ID">
+                            </div>   -->
+                            <div class="wrap-input100 validate-input m-b-25">
+                                    <!-- <label for="occupationInput">Select your occupation</label> -->
+                                    <select class="input100 select100" id="occupationInput" onchange="occupationCheck(this)">
+                                      <option>Select your occupation</option>
+                                      <option value="student">Student</option>
+                                      <option value="professor">Professor or Faculty member</option>
+                                      <option value="others">Others</option>
+                                    </select>
+                                  </div>
+                                  <!-- -----------------Student ID----------------- -->
+                            <div id="inputStudentID" class="wrap-input100 validate-input m-b-25" data-validate = "Enter password" >
+                                    <input class="input100" type="text" name="studentID" placeholder="Student ID">
                                     <span class="focus-input100"></span>
-                            </div>  
+                            </div> 
+                             <!-- -----------------Professor ID----------------- -->
+                            <div id="inputProfessorID" class="wrap-input100 validate-input m-b-25" data-validate = "Enter password">
+                                    <input class="input100" type="text" name="professorID" placeholder="Professor ID">
+                                    <span class="focus-input100"></span>
+                            </div>
+                            <!-- -----------------National ID----------------- -->
+                            <div id="inputNationalID" class="wrap-input100 validate-input m-b-25" data-validate = "Enter password">
+                                    <input class="input100" type="text" name="nationalID" placeholder="National ID">
+                                    <span class="focus-input100"></span>
+                            </div>
+                                                        <!-- JS for occupation checking -->
+                                                        <script type="text/javascript">
+                                                            function occupationCheck(that){
+                                                            if(that.value == "student"){
+                                                                document.getElementById("ifStudent").style.display = "block";
+                                                                document.getElementById("ifProfessor").style.display = "none";
+                                                                document.getElementById("ifOthers").style.display = "none";
+                                                            } else if(that.value == "professor"){
+                                                                document.getElementById("ifStudent").style.display = "none";
+                                                                document.getElementById("ifProfessor").style.display = "block";
+                                                                document.getElementById("ifOthers").style.display = "none";
+                                                            } else if(that.value == "others"){
+                                                                document.getElementById("ifStudent").style.display = "none";
+                                                                document.getElementById("ifProfessor").style.display = "none";
+                                                                document.getElementById("ifOthers").style.display = "block";
+                                                            } else{
+                                                                document.getElementById("ifStudent").style.display = "none";
+                                                                document.getElementById("ifProfessor").style.display = "none";
+                                                                document.getElementById("ifOthers").style.display = "none";
+                                                            }
+                                                            }
+                                                        </script>
+
                             <div class="wrap-input100 validate-input m-b-25 p-2" data-validate = "Enter password">
                                     <input id="uploadPicBut" type='file' onchange="readURL(this);" />
                                     <span class="focus-input100"></span>
