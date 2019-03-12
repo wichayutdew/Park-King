@@ -243,19 +243,47 @@ app.use(passport.session());
 //===================================================================================================================================================
 
 
-//insert data from login page to database
+//FIRST PAGE - HOME
 app.get('/', function(req, res){
-    res.render('login');
+    res.redirect('home');
 });
-app.get('/register', function(req, res){
-    res.render('register');
-});
-app.get('/login',function(req,res){
-    res.render('login');
-});
+//ROUTE TO HOME PAGE
 app.get('/home',function(req,res){
     res.render('home');
 });
+//ROUTE TO REGISTER PAGE
+app.get('/register', function(req, res){
+    res.render('register');
+});
+//ROUTE TO LOGIN PAGE
+app.get('/login',function(req,res){
+    res.render('login');
+});
+//ROUTE TO CAR REGISTER PAGE
+app.get('/carregister', function(req, res){
+    res.render('carregister');
+});
+//ROUTE TO RESERVE PAGE
+app.get('/reserve', function(req, res){
+    res.render('reserve');
+});
+//ROUTE TO QR CODE PAGE
+app.get('/showqr', function(req, res){
+    res.render('showqr');
+});
+//ROUTE TO STATUS
+app.get('/status', function(req, res){
+    res.render('status');
+});
+//ROUTE TO USER INFO
+app.get('/userinfo', function(req, res){
+   res.render('userinfo');
+});
+//ROUTE TO TEMPORARY PAGE
+app.get('/temp', function(req, res){
+    res.render('temp');
+});
+
 
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
