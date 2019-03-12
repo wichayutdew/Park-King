@@ -7,40 +7,25 @@
         <link rel="stylesheet" href="/stylesheet/style.css">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/3.0.0-beta.6/aos.css" rel="stylesheet">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="icon" type="image/png" href="img/icons/favicon.ico"/>
+        <link rel="stylesheet" type="text/css" href="/stylesheet/loginUtil.css">
+        <link rel="stylesheet" type="text/css" href="/stylesheet/login1.css"> 
+
+        <style>
+            body {
+              background-image: url("../colors/ColorBackGroundGreen.jpg");
+              background-size: cover;
+            }
+          </style>
     </head>
     <body>
         
-      <div id="mainNavBar" class="">
-
-      <div id="navArea" class="d-flex w-100 p-0 justify-content-between">
-        <div id="logoDiv">
-            <img src="img/pkLogo2.png" width="60" height="60" alt="PARK KING">
-        </div>
-        <div id="menuButton">
-            <span onclick="openNav()">
-              <img src="img/menu.png" width="40" height="40">
-            </span>
-        </div>
-      </div>
-
-      <div id="mySidenav" class="sidenav">
-          <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-          <section id="profileMenu">
-            <img src="img/profilePic.png" width="50" height="50" class="" alt="" id="profileBtn">
-            <a id="profileName" href="#">John Doe</a>
-          </section>
-          <a href="/">Home</a>
-          <a href="#">My Profile</a>
-          <a href="#">Reserve</a>
-          <a href="/status">Status</a>
-          <a href="#">My QR</a>
-      </div> 
-      </div> 
+      <% include partials/menuBar %>
       
       <div id="main">
     
             <form>
-                    <div class="container pt-2 ">
+                    <div class="container pt-2">
                 
                 
                 
@@ -83,7 +68,12 @@
                 
                 
                 
-                      <a href="/showqr" class="btn btn-dark btn-lg btn-block mt-2 mx-1" id="submitBtn">Submit</a>
+                      <!-- <a href="/showqr" class="btn btn-dark btn-lg btn-block mt-2 mx-1" id="submitBtn">Submit</a> -->
+                      <div class="container-login100-form-btn pt-2">
+                        <button href="/showqr" class="login100-form-btn" style="background: grey;">
+                          Submit
+                        </button>
+                      </div>
                       <div class="row">
                       <small class="text-muted mx-1 mt-2">Once submitted, you will have 30 to arrive at the building before your reservation expires</small>
                     </div>
@@ -93,42 +83,15 @@
     </div>
       
 
-      <script>
-        /* Set the width of the side navigation to 250px and the left margin of the page content to 250px */
-        function openNav() {
-          document.getElementById("mySidenav").style.width = "100%";
-          document.getElementById("main").style.display="none";
-        }
-
-        /* Set the width of the side navigation to 0 and the left margin of the page content to 0 */
-        function closeNav() {
-          document.getElementById("mySidenav").style.width = "0";
-          document.getElementById("main").style.display="block";
-        }
-
-        /* When the user scrolls down, hide the navbar. When the user scrolls up, show the navbar */
-        var prevScrollpos = window.pageYOffset;
-        window.onscroll = function() {
-          var currentScrollPos = window.pageYOffset;
-          if (prevScrollpos > currentScrollPos) {
-            document.getElementById("mainNavBar").style.top = "0";
-          } else {
-            document.getElementById("mainNavBar").style.top = "-70px";
-          }
-          prevScrollpos = currentScrollPos;
-        }
-      </script>
 
     
           
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/3.0.0-beta.6/aos.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/3.0.0-beta.6/aos.js.map"></script>
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-        <script>
-          AOS.init();
-        </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/3.0.0-beta.6/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/3.0.0-beta.6/aos.js.map"></script>
     </body>
 </html>

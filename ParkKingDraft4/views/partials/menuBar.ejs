@@ -1,0 +1,54 @@
+<div id="mainNavBar">
+    <div id="navArea" class="d-flex w-100 p-0 justify-content-between">
+        <div id="logoDiv">
+            <a href="/">
+            <img src="img/pkLogo2.png" class="rounded" width="60" height="60" alt="PARK KING">
+            </a>
+        </div>
+        <div id="menuButton">
+            <span onclick="openNav()">
+                <img src="img/menu.png" width="40" height="40">
+            </span>
+        </div>
+    </div>
+
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <section id="profileMenu">
+            <img src="img/profilePic.png" width="50" height="50" id="profileBtn" alt="">
+            <a href="/userinfo" id="profileName">John Doe</a>
+        </section>
+        <a href="/home">Home</a>
+        <a href="/userinfo">My Profile</a>
+        <a href="/reserve">Reserve</a>
+        <a href="/status">Status</a>
+        <a href="showqr">My QR</a>
+    </div>
+</div>
+
+
+<script>
+    /* Set the width of the side navigation to 250px and the left margin of the page content to 250px */
+    function openNav() {
+      document.getElementById("mySidenav").style.width = "100%";
+      document.getElementById("main").style.display="none";
+    }
+
+    /* Set the width of the side navigation to 0 and the left margin of the page content to 0 */
+    function closeNav() {
+      document.getElementById("mySidenav").style.width = "0";
+      document.getElementById("main").style.display="block";
+    }
+
+    /* When the user scrolls down, hide the navbar. When the user scrolls up, show the navbar */
+    // var prevScrollpos = window.pageYOffset;
+    // window.onscroll = function() {
+    //   var currentScrollPos = window.pageYOffset;
+    //   if (prevScrollpos > currentScrollPos) {
+    //     document.getElementById("mainNavBar").style.top = "0";
+    //   } else {
+    //     document.getElementById("mainNavBar").style.top = "-70px";
+    //   }
+    //   prevScrollpos = currentScrollPos;
+    // }
+  </script>

@@ -85,11 +85,11 @@ app.use(bodyParser.urlencoded({extended: true}));
     //passport model use for registeration
     passport.use('local-signup', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
-        usernameField : 'email',
+        usernameField : 'username',
         passwordField : 'password',
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
-    function(req, email, password, done) {
+    function(req, username, password, done) {
 
         // find a user whose email is the same as the forms email
         // we are checking to see if the user trying to login already exists
@@ -101,13 +101,13 @@ app.use(bodyParser.urlencoded({extended: true}));
 
             }
         });
-        _signup(req,email,password,done);
+        _signup(req,username,password,done);
 
         //res.redirect('/login');
     }));
-    function _signup(req,email,password,done){
+    function _signup(req,username,password,done){
         console.log('Sign-up requested')
-        var customer_info = {email :email,password : password,name : req.body.username, fname : req.body.firstName, lname : req.body.lastName}
+        var customer_info = {username : req.body.usernameInput,password : passwordInput,passwordConfirm : passwordConfirmation,email :email, fname : req.body.firstName, lname : req.body.lastName}
         var request = new Request(
             "SELECT * FROM dbo.customer WHERE email = @email",
             function (err, rowCount, rows){

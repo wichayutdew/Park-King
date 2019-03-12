@@ -8,40 +8,21 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/3.0.0-beta.6/aos.css" rel="stylesheet">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     </head>
+    <style>
+      body {
+        background-image: url("../colors/ColorBackGroundGreen.jpg");
+        background-size: cover;
+      }
+    </style>
     <body>
         
-      <div id="mainNavBar" class="">
-
-      <div id="navArea" class="d-flex w-100 p-0 justify-content-between">
-        <div id="logoDiv">
-            <img src="img/pkLogo2.png" width="60" height="60" alt="PARK KING">
-        </div>
-        <div id="menuButton">
-            <span onclick="openNav()">
-              <img src="img/menu.png" width="40" height="40">
-            </span>
-        </div>
-      </div>
-
-      <div id="mySidenav" class="sidenav">
-          <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-          <section id="profileMenu">
-            <img src="img/profilePic.png" width="50" height="50" class="" alt="" id="profileBtn">
-            <a id="profileName" href="#">John Doe</a>
-          </section>
-          <a href="/">Home</a>
-          <a href="#">My Profile</a>
-          <a href="#">Reserve</a>
-          <a href="/status">Status</a>
-          <a href="#">My QR</a>
-      </div> 
-      </div> 
+      <% include partials/menuBar %>
       
       <div id="main">
         <div style="margin-bottom: 20px; margin-top: 40px; z-index: -10;" class="container-fluid">
           <img src="/img/car1.png" class="img-fluid" alt="">
         </div>
-        <div class="statusDiv" style="background: white; color: black;">
+        <div class="statusDiv white" style="color: black;">
           <h3><strong>Info</strong></h3>
           <a href="#"><img src="/img/edit.png" width="10px" height="10px"></a>
           <p>
@@ -52,11 +33,11 @@
             Info: Info
           </p>
         </div>
-        <div class="statusDiv" style="background: white; color: black;">
+        <div class="statusDiv white" style="color: black;">
             <h3><strong>Parking Time</strong></h3>
             <p>00:00</p>
         </div>
-        <div class="statusDiv" style="background: white; color: black;">
+        <div class="statusDiv white" style="color: black;">
               <h3><strong>Current Parking Fee</strong></h3>
               <p>100 Baht</p>
         </div>
@@ -65,31 +46,6 @@
     </div>
       
 
-      <script>
-        /* Set the width of the side navigation to 250px and the left margin of the page content to 250px */
-        function openNav() {
-          document.getElementById("mySidenav").style.width = "100%";
-          document.getElementById("main").style.display="none";
-        }
-
-        /* Set the width of the side navigation to 0 and the left margin of the page content to 0 */
-        function closeNav() {
-          document.getElementById("mySidenav").style.width = "0";
-          document.getElementById("main").style.display="block";
-        }
-
-        /* When the user scrolls down, hide the navbar. When the user scrolls up, show the navbar */
-        var prevScrollpos = window.pageYOffset;
-        window.onscroll = function() {
-          var currentScrollPos = window.pageYOffset;
-          if (prevScrollpos > currentScrollPos) {
-            document.getElementById("mainNavBar").style.top = "0";
-          } else {
-            document.getElementById("mainNavBar").style.top = "-70px";
-          }
-          prevScrollpos = currentScrollPos;
-        }
-      </script>
 
     
           
