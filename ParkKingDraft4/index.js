@@ -1,45 +1,14 @@
-//setup express(web app listener), body-parser, tedious(for database connection!!)
+//NPM REQUIRE
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
-//tedious section
-var Connection = require('tedious').Connection;
-var Request = require('tedious').Request;
-var TYPES =require('tedious').TYPES;
-//authentication section
-passport = require('passport');
-LocalStrategy = require('passport-local');
 
-//===================================================================================================================================================
 
-//azure database connection config
-var config = {
-    server: 'parking.database.windows.net',
-    options:{
-      encrypt: true,
-      database: 'Park_King',
-      rowCollectionOnRequestCompletion: true,
-      rowCollectionOnDone: true,},
-      //useColumnNames: true,
-	authentication: {
-    type: 'default',
-    options: {
-      database: 'Park_King',
-      userName: 'thee',
-      password: 'OtoroLover420',
-
-    }
-  }
-  };
-
-var connection = new Connection(config);
-
-//===================================================================================================================================================
-
-//defualt config
+//APP CONFIG
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
+<<<<<<< HEAD
 //app.use(CookieParser());
 //===================================================================================================================================================
 //          Passport Config
@@ -220,96 +189,64 @@ app.use(bodyParser.urlencoded({extended: true}));
                 console.log(rowCount);
                 //console.log(rows);
                 console.log(rows);
-
-                console.log('returned rows are above')
-                if(err){
-                    return done(err);
-                }
-                if(rows == null){
-                    console.log('loginMessage', 'No user found.');
-                    return done(null, false);
-                      // req.flash is the way to set flashdata using connect-flash
-                }else if (!(login_request[1] == password)){
-                    console.log('loginMessage', 'Oops! Wrong password.');
-                    return done(null, false);
-                     // create the loginMessage and save it to session as flashdata
-                }else{
-                    console.log('logged in!!!');
-                    return done(null, login_request);
-                }
-        });
-        request.addParameter('username',TYPES.VarChar,username);
-        var login_request = [];
-        request.on('row', function (columns) {
-            columns.forEach(function(column) {
-                login_request.push(column.value);
-            });
-            console.log(login_request);
-        });
-
-        request.on('Done',function(err, rowCount, rows){
-
-        });
-
-        connection.execSql(request);
-    }
-app.use(require('express-session')({
-    secret: "Fuck You",
-    resave: false,
-    saveUninitialized: false
-}));
-app.use(passport.initialize());
-app.use(passport.session());
-//passportConfig(passport);
+=======
+>>>>>>> 137e633c60fca234baf74ccd468c3dd7fbdfe332
 
 
-//===================================================================================================================================================
-//          Application section
-//===================================================================================================================================================
+//=======================================================
+//ROUTES
+//=======================================================
 
-
-//FIRST PAGE - HOME
-app.get('/', function(req, res){
-    res.redirect('home');
-});
 //ROUTE TO HOME PAGE
-app.get('/home',function(req,res){
+app.get('/', function(req, res){
+    res.redirect('/home');
+});
+app.get('/home', function(req, res){
     res.render('home');
 });
-//ROUTE TO REGISTER PAGE
+
+//ROUTE TO USER REGISTER PAGE
 app.get('/register', function(req, res){
     res.render('register');
 });
-//ROUTE TO LOGIN PAGE
-app.get('/login',function(req,res){
-    res.render('login');
-});
+
 //ROUTE TO CAR REGISTER PAGE
 app.get('/carregister', function(req, res){
     res.render('carregister');
 });
+
 //ROUTE TO RESERVE PAGE
 app.get('/reserve', function(req, res){
     res.render('reserve');
 });
+
 //ROUTE TO QR CODE PAGE
 app.get('/showqr', function(req, res){
     res.render('showqr');
 });
+
 //ROUTE TO STATUS
 app.get('/status', function(req, res){
     res.render('status');
 });
+
 //ROUTE TO USER INFO
 app.get('/userinfo', function(req, res){
    res.render('userinfo');
 });
+
+//ROUTE TO LOGIN PAGE
+app.get('/login', function(req, res){
+    res.render('login');
+});
+
 //ROUTE TO TEMPORARY PAGE
 app.get('/temp', function(req, res){
     res.render('temp');
 });
 
 
+<<<<<<< HEAD
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',
@@ -321,7 +258,9 @@ app.post('/register',passport.authenticate('local-signup',{
     failureRedirect: '/register',
     session: false
   }));
+=======
+>>>>>>> 137e633c60fca234baf74ccd468c3dd7fbdfe332
 
 app.listen(3000, process.env.IP, function(){
-    console.log('port 3000.....');
+    console.log('Park King Server is running on port 3000.....');
 });
