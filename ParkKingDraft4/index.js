@@ -46,9 +46,11 @@ app.use(bodyParser.urlencoded({extended: true}));
 //===================================================================================================================================================
 
     passport.serializeUser(function(user, done) {
+        console.log('serializer');
         done(null, user[4]);
     });
     passport.deserializeUser(function(id, done) {
+      console.log('deserializer')
         connection.on('connect',function(err){
             if(err){
                 console.log(err);
@@ -90,7 +92,7 @@ app.use(bodyParser.urlencoded({extended: true}));
         passwordField : 'password',
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
-    function(req, username, password, done) {
+    function(req,username,password,done) {
         console.log('check 01');
         // find a user whose email is the same as the forms email
         // we are checking to see if the user trying to login already exists
@@ -314,7 +316,7 @@ app.post('/login',passport.authenticate('local-login', {
     failureRedirect: '/login',
     session: false
   }));
-app.post('/register',passport.authenticate('local-signup' , {
+app.post('/register',passport.authenticate('local-signup',{
     successRedirect: '/login',
     failureRedirect: '/register',
     session: false
