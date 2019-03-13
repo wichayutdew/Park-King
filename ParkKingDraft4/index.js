@@ -8,7 +8,6 @@ var bodyParser = require('body-parser');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
-<<<<<<< HEAD
 //app.use(CookieParser());
 //===================================================================================================================================================
 //          Passport Config
@@ -189,8 +188,6 @@ app.use(bodyParser.urlencoded({extended: true}));
                 console.log(rowCount);
                 //console.log(rows);
                 console.log(rows);
-=======
->>>>>>> 137e633c60fca234baf74ccd468c3dd7fbdfe332
 
 
 //=======================================================
@@ -246,7 +243,7 @@ app.get('/temp', function(req, res){
 });
 
 
-<<<<<<< HEAD
+
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',
@@ -259,7 +256,7 @@ app.post('/register',passport.authenticate('local-signup',{
     session: false
   }));
 =======
->>>>>>> 137e633c60fca234baf74ccd468c3dd7fbdfe332
+
 
 app.listen(3000, process.env.IP, function(){
     console.log('Park King Server is running on port 3000.....');
