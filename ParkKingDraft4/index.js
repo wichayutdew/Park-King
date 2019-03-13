@@ -275,20 +275,6 @@ app.get('/temp', function(req, res){
 
 
 
-//when login button click
-app.post('/login',passport.authenticate('local-login', {
-    successRedirect: '/home',
-    failureRedirect: '/login',
-    session: false
-  }));
-app.post('/register',passport.authenticate('local-signup',{
-    successRedirect: '/login',
-    failureRedirect: '/register',
-    session: false
-  }));
-=======
-
-
 app.listen(3000, process.env.IP, function(){
     console.log('Park King Server is running on port 3000.....');
 });
