@@ -12,10 +12,14 @@
     "aos": "^2.3.4",
     "body-parser": "^1.18.3",
     "ejs": "^2.6.1",
+<<<<<<< HEAD
     "express": "^4.16.4",
     "express-session": "^1.15.6",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "tedious": "^5.0.3"
+=======
+    "express": "^4.16.4"
+>>>>>>> 137e633c60fca234baf74ccd468c3dd7fbdfe332
   }
 }

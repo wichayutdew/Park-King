@@ -5,7 +5,7 @@ For All Pages
 body {
     background-color: black !important;
     color: white !important;
-    font-family: 'Lato', sans-serif !important;
+    font-family: Georgia, 'Times New Roman', Times, sans-serif !important;
 }
 
 #main {
@@ -61,6 +61,7 @@ Set background color using class
 .green {
     background-image: url("../colors/ColorBackGroundGreen.jpg");
     background-size: cover;
+    background-repeat: no-repeat;
 }
 
 .green2 {
@@ -232,6 +233,14 @@ Home Page
     opacity: 0.5;
 }
 
+.carousel-item img{
+    border-radius: 10px !important;
+}
+
+/* .homePageSlide {
+    height: 100px !important;
+} */
+
 
 /* =======================================================================
 Reserve
@@ -253,10 +262,13 @@ Reserve
     padding: 65px;
     box-shadow: none;
     position: relative;
+    border-radius: 10px;
+
 }
   
 .buildingSelect .buildingBtnGroup .buildingChoice.active {
     outline: none !important;
+
 }
   
 .buildingSelect .buildingBtnGroup .buildingChoice.active .building {
@@ -277,6 +289,8 @@ Reserve
     background-repeat: no-repeat;
     border: 3px solid transparent;
     transition: all 0.5s;
+    border-radius: 10px;
+
 }
   
 .buildingSelect .buildingBtnGroup .buildingChoice .building.arts {
@@ -306,10 +320,14 @@ Reserve
       padding: 65px;
       box-shadow: none;
       position: relative;
+      border-radius: 10px;
+
 }
   
 .carSelect .carBtnGroup .carChoice.active {
       outline: none !important;
+      border-radius: 10px;
+
 }
   
 .carSelect .carBtnGroup .carChoice.active .method {
@@ -330,6 +348,8 @@ Reserve
       background-repeat: no-repeat;
       border: 3px solid transparent;
       transition: all 0.5s;
+      border-radius: 10px;
+
 }
   
   
