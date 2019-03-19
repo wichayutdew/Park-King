@@ -23,7 +23,7 @@
 
 
 
-
+      <form action="/register" method="POST">
             <div class="container-login100" style="background-color: black;">
                     <div class="wrap-login100 p-l-55 p-r-55 p-t-80 p-b-30">
                         <form class="login100-form validate-form">
@@ -107,13 +107,14 @@
                                                         </script>
 
                             <div class="wrap-input100 validate-input m-b-25 p-2" data-validate = "Enter password">
-                                    <input id="uploadPicBut" type='file' onchange="readURL(this);" />
+                                    <!--id="uploadPicBut"-->
+                                    <input name="profilePic" type='file' onchange="readURL(this);" />
                                     <span class="focus-input100"></span>
                                     <p class="d-inline">Upload your picture</p>
                             </div>
 
                             <div class="container-login100-form-btn">
-                                <a href="/login" class="login100-form-btn">
+                                <button type="submit" class="login100-form-btn">
                                     Submit
                                 </a>
                             </div>
@@ -137,7 +138,7 @@
                             </div>
                         </form>
 
-
+                      </form>
 
 
                         <script type="text/javascript">

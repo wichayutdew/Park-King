@@ -46,7 +46,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
     passport.serializeUser(function(user, done) {
         console.log('serializer');
-        done(null, user[4]);
+        done(null, user[0]);
     });
     passport.deserializeUser(function(id, done) {
       console.log('deserializer')
@@ -120,22 +120,24 @@ app.use(bodyParser.urlencoded({extended: true}));
           studentID: req.body.studentID,
           professorID: req.body.professorID,
           guestID: req.body.NationalID,
-          profilePic: req.body.profilePic,
+          CustomerPicture: req.body.profilePic,
         };
         var request = new Request(
             "SELECT * FROM dbo.Customer WHERE Username = @username",
             function (err, rowCount, rows){
                 console.log(rows);
                 console.log("above row object");
-                if (err)
+                if (err){
+                    console.log("signup error");
                     return done(err);
-                if (customer_info.password!=customer_info.passportCheck){
+                }
+                if (customer_info.password!=customer_info.passwordCheck){
+                    console.log('password does not match');
                     return done(null,false);
-                    console.log('password does not match')
                 }
                 if (rows.length != 0) {
-                    return done(null, false);
                     console.log('this email is already taken');
+                    return done(null, false);
                 }else {
 
                     console.log('this email doesnot taken')
@@ -154,8 +156,8 @@ app.use(bodyParser.urlencoded({extended: true}));
             }
         );
         //set parameterized query
-        request.addParameter('username',TYPES.VarChar,req.body.username);
-        request.addParameter('password',TYPES.VarChar,req.body.password);
+        request.addParameter('username',TYPES.VarChar,customer_info.username);
+        request.addParameter('password',TYPES.VarChar,customer_info.password);
 
         request.on('requestCompleted', function () {
 
@@ -165,7 +167,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 
     }
     function insert_newCustomer(customer_info,done){
-        var request = new Request("INSERT INTO dbo.Customer (FirstName,LastName,Email,Username,Password,customerType,studentID,professorID,CitizenID,profilePic) values (@firstName,@lastName,@email,@username,@password,@occupation,@studentID,@professorID,@CitizenID,@profilePic)",
+        var request = new Request("INSERT INTO dbo.Customer (FirstName,LastName,Email,Username,Password,customerType,studentID,professorID,NationalID) values (@firstName,@lastName,@email,@username,@password,@occupation,@studentID,@professorID,@CitizenID)",
+        //CystomerPicture,profilePic
             function (err, rowCount, rows){
                 if(err){
                     done(err);
@@ -183,7 +186,7 @@ app.use(bodyParser.urlencoded({extended: true}));
         request.addParameter('studentID',TYPES.VarChar,customer_info.studentID);
         request.addParameter('professorID',TYPES.VarChar,customer_info.professorID);
         request.addParameter('CitizenID',TYPES.VarChar,customer_info.guestID);
-        request.addParameter('profilePic',TYPES.image,customer_info.profilePic);
+        //request.addParameter('profilePic',TYPES.image,customer_info.CustomerPicture);
 
         request.on('requestCompleted', function (){
         //connection.close();
@@ -211,16 +214,54 @@ app.use(bodyParser.urlencoded({extended: true}));
 
     }));
     function _login(req, username, password, done){
-        console.log('log-in session...');
-        var request = new Request(
-            "SELECT * FROM dbo.customer WHERE userName = @username Or email = @username",
-            function(err, rowCount, rows){
-                console.log(username);
-                console.log(rowCount);
-                //console.log(rows);
-                console.log(rows);
+            console.log('log-in session...');
+            var request = new Request(
+                "SELECT * FROM dbo.customer WHERE userName = @username Or email = @username",
+                function(err, rowCount, rows){
+                    console.log(username);
+                    console.log(rowCount);
+                    //console.log(rows);
+                    console.log(rows);
 
+                    console.log('returned rows are above')
+                    if(err){
+                        return done(err);
+                    }
+                    if(rows == null){
+                        console.log('loginMessage', 'No user found.');
+                        return done(null, false);
+                          // req.flash is the way to set flashdata using connect-flash
+                    }else if (!(login_request[1] == password)){
+                        console.log('loginMessage', 'Oops! Wrong password.');
+                        return done(null, false);
+                         // create the loginMessage and save it to session as flashdata
+                    }else{
+                        console.log('logged in!!!');
+                        return done(null, login_request);
+                    }
+            });
+            request.addParameter('username',TYPES.VarChar,username);
+            var login_request = [];
+            request.on('row', function (columns) {
+                columns.forEach(function(column) {
+                    login_request.push(column.value);
+                });
+                console.log(login_request);
+            });
 
+            request.on('Done',function(err, rowCount, rows){
+
+            });
+
+            connection.execSql(request);
+        }
+    app.use(require('express-session')({
+        secret: "Fuck You",
+        resave: false,
+        saveUninitialized: false
+    }));
+    app.use(passport.initialize());
+    app.use(passport.session());
 //=======================================================
 //ROUTES
 //=======================================================
@@ -272,6 +313,18 @@ app.get('/login', function(req, res){
 app.get('/temp', function(req, res){
     res.render('temp');
 });
+
+//when login button click
+app.post('/login',passport.authenticate('local-login', {
+    successRedirect: '/home',
+    failureRedirect: '/login',
+    session: false
+}));
+app.post('/register',passport.authenticate('local-signup' , {
+    successRedirect: '/login',
+    failureRedirect: '/register',
+    session: false
+}));
 
 
 
