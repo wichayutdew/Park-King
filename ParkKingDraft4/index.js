@@ -1,45 +1,14 @@
-//setup express(web app listener), body-parser, tedious(for database connection!!)
+//NPM REQUIRE
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
-//tedious section
-var Connection = require('tedious').Connection;
-var Request = require('tedious').Request;
-var TYPES =require('tedious').TYPES;
-//authentication section
-passport = require('passport');
-LocalStrategy = require('passport-local');
 
-//===================================================================================================================================================
 
-//azure database connection config
-var config = {
-    server: 'parking.database.windows.net',
-    options:{
-      encrypt: true,
-      database: 'Park_King',
-      rowCollectionOnRequestCompletion: true,
-      rowCollectionOnDone: true,},
-      //useColumnNames: true,
-	authentication: {
-    type: 'default',
-    options: {
-      database: 'Park_King',
-      userName: 'thee',
-      password: 'OtoroLover420',
-
-    }
-  }
-  };
-
-var connection = new Connection(config);
-
-//===================================================================================================================================================
-
-//defualt config
+//APP CONFIG
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
+<<<<<<< HEAD
 //===================================================================================================================================================
 //          Passport Config
 //===================================================================================================================================================
@@ -250,6 +219,8 @@ app.use(bodyParser.urlencoded({extended: true}));
             });
 
             request.on('Done',function(err, rowCount, rows){
+=======
+>>>>>>> 1ca2aee1e921553176dedafde0f93c405685227c
 
             });
 
