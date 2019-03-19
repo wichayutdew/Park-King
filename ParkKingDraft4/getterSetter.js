@@ -21,7 +21,19 @@ function getUserFirstName(Username){
 }
 
 function setUserFirstName(Username,FirstName){
-  var request = new request ("UPDATE dbo.Customer c SET c.FirstName = 'FirstName' WHERE Username = c.Username")
+  var request = new request ("UPDATE dbo.Customer c SET c.FirstName = 'FirstName' WHERE Username = c.Username",
+  function (err, rowCount, rows){
+      if(err){
+          done(err);
+      }else{
+
+      }
+  });
+  request.on('requestCompleted', function (){
+  //connection.close();
+  //error here
+  })
+  connection.execSql(request);
 }
 
 getUserLastName(Username)
