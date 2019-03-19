@@ -201,7 +201,7 @@ app.use(bodyParser.urlencoded({extended: true}));
         passwordField : 'password',
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
-    function(req, username, password, done) {
+    function(req,username,password,done) {
         // callback with email and password from our form
 
         console.log('trying to login');
@@ -215,9 +215,9 @@ app.use(bodyParser.urlencoded({extended: true}));
 
     }));
     function _login(req, username, password, done){
-            console.log('log-in session...');
+            console.log('log-in requested');
             var request = new Request(
-                "SELECT * FROM dbo.customer WHERE userName = @username Or email = @username",
+                "SELECT * FROM dbo.customer WHERE Username = @username Or Email = @username",
                 function(err, rowCount, rows){
                     console.log(username);
                     console.log(rowCount);
@@ -280,6 +280,11 @@ app.get('/register', function(req, res){
     res.render('register');
 });
 
+//ROUTE TO LOGIN PAGE
+app.get('/login', function(req, res){
+    res.render('login');
+});
+
 //ROUTE TO CAR REGISTER PAGE
 app.get('/carregister', function(req, res){
     res.render('carregister');
@@ -303,11 +308,6 @@ app.get('/status', function(req, res){
 //ROUTE TO USER INFO
 app.get('/userinfo', function(req, res){
    res.render('userinfo');
-});
-
-//ROUTE TO LOGIN PAGE
-app.get('/login', function(req, res){
-    res.render('login');
 });
 
 //ROUTE TO TEMPORARY PAGE
