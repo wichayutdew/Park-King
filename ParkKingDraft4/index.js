@@ -41,14 +41,15 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
 //===================================================================================================================================================
-//          Passport Config
+//          Passport Module
 //===================================================================================================================================================
 
     passport.serializeUser(function(user, done) {
         console.log('serializer');
+        console.log(user);
         done(null, user[0]);
     });
-    passport.deserializeUser(function(id, done) {
+    passport.deserializeUser(function(user, done) {
       console.log('deserializer')
         connection.on('connect',function(err){
             if(err){
@@ -56,7 +57,7 @@ app.use(bodyParser.urlencoded({extended: true}));
             }else{
             }
         });
-        deserializer(id,done);
+        deserializer(user,done);
 
     });
     function deserializer(username,done){
@@ -67,7 +68,7 @@ app.use(bodyParser.urlencoded({extended: true}));
             }
         );
         //set parameterized query
-        request.addParameter('email',TYPES.VarChar,username);
+        request.addParameter('email',TYPES.VarChar,username[0]);
         var deserializing = [];
         request.on('row', function (columns) {
             columns.forEach(function(column) {
@@ -78,7 +79,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
         request.on('requestCompleted', function (err,rows) {
             // Next SQL statement.
-            done(err, deserializing[0]);
+            done(err, deserializing);
         });
 
         connection.execSql(request);
@@ -247,11 +248,11 @@ app.use(bodyParser.urlencoded({extended: true}));
                 columns.forEach(function(column) {
                     login_request.push(column.value);
                 });
-                console.log(login_request);
+                console.log(login_request + 'info');
             });
 
             request.on('Done',function(err, rowCount, rows){
-
+                console.log(loggedInBoolean());
             });
 
             connection.execSql(request);
@@ -263,6 +264,33 @@ app.use(bodyParser.urlencoded({extended: true}));
     }));
     app.use(passport.initialize());
     app.use(passport.session());
+//===================================================================================================================================================
+// Operation
+//===================================================================================================================================================
+
+//check log-in state
+function loggedInBoolean(req) {
+    if (req.user.authenticated) {
+        return true;
+    } else {
+        return false;
+    }
+}
+function loggedIn(req, res, next) {
+    if (req.user) {
+        console.log('user in login state');
+        return next();
+    } else {
+        console.log('user not login');
+        res.redirect('/home');
+    }
+}
+// app.get('/orders', loggedIn, function(req, res, next) {
+//     // req.user - will exist
+//     // load user orders and render them
+// });
+
+
 //=======================================================
 //ROUTES
 //=======================================================
@@ -306,7 +334,7 @@ app.get('/status', function(req, res){
 });
 
 //ROUTE TO USER INFO
-app.get('/userinfo', function(req, res){
+app.get('/userinfo',loggedIn, function(req, res){
    res.render('userinfo');
 });
 
@@ -319,7 +347,7 @@ app.get('/temp', function(req, res){
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',
     failureRedirect: '/login',
-    session: false
+    session: true,
 }));
 app.post('/register',passport.authenticate('local-signup' , {
     successRedirect: '/login',
