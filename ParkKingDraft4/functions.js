@@ -28,7 +28,7 @@ function cancelFrequency(username){
 }
 
 function timer(time){
-
+  
 }
 function getTime(){
   var today = new Date();
@@ -78,7 +78,7 @@ function isParked(reserveID){
 
 function pay(fee){
   //link ebank somehow
-  this.hasPaid=true
+  this.hasPaid=true;
 }
 
 function checkOut(reserveID){
