@@ -30,6 +30,7 @@ function cancelFrequency(username){
 function timer(time){
   
 }
+
 function getTime(){
   var today = new Date();
   var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
@@ -37,6 +38,7 @@ function getTime(){
 }
 
 function generateTokenID(){
+  //npm install uuid
   const uuidv4 = require('uuid/v4');
   var tokenID = uuidv4();
   return tokenID;
