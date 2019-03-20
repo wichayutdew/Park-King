@@ -1,4 +1,26 @@
 Stopwatch timer = new Stopwatch();
+var Stopwatch = require('statman-stopwatch');
+var stopwatch = new Stopwatch();
+
+function elaspedTime() {
+  var elaspedInterval = setInterval(function() {
+    var time = parseInt(stopwatch.read()/1000);
+    var hours = ~~(time / 3600);
+    var min = ~~((time % 3600) / 60);
+    var sec = time % 60;
+    console.log(hours+":"+min+":"+sec);
+  },1000);
+}
+
+function countdownTimer(seconds) {
+  var countdownInterval =  setInterval(function () {
+        duration --;
+        //console.log(duration);
+        if(duration <= 0){
+          clearInterval(countdownInterval);
+        }
+    }, 1000);
+}
 
 function checkAvailabiliy(buildingname){
   var request = new request("SELECT P.Floor, P.Spot FROM dbo.ParkingSpot P WHERE P.BuildingName = ' " + buildingname + " ' AND P.isfull = 0 ORDER BY Floor ASC, Spot ASC",
