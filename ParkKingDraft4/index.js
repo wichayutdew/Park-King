@@ -169,7 +169,7 @@ app.use(bodyParser.urlencoded({extended: true}));
     }
     function insert_newCustomer(customer_info,done){
         var request = new Request("INSERT INTO dbo.Customer (FirstName,LastName,Email,Username,Password,customerType,studentID,professorID,NationalID) values (@firstName,@lastName,@email,@username,@password,@occupation,@studentID,@professorID,@CitizenID)",
-        //CystomerPicture,profilePic
+        //CustomerPicture,profilePic
             function (err, rowCount, rows){
                 if(err){
                     done(err);
