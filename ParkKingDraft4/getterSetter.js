@@ -982,8 +982,32 @@ function getParkingSpotSlot(buildingname, floor, slot) {
   return returnedValue;
 }
 
-function getParkingSpotAvailability(buildingname, floor, slot) {
+function getParkingSpotOccupied(buildingname, floor, slot) {
   var request = new request("SELECT P.isFull FROM dbo.ParkingSpot P WHERE P.BuildingName = ' " + buildingname + " ' AND P.Floor = ' " + floor + " ' AND P.Slot = ' " + slot + " ' ",
+    function(err, rowCount, rows) {
+      if (err) {
+        done(err);
+      } else {
+
+      }
+    });
+  var returnedValue = {};
+  request.on('row', function(columns) {
+    columns.forEach(function(column) {
+      returnedValue.push(column.value);
+    });
+    //console.log(returnedValue);
+  });
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+  return returnedValue;
+}
+
+function getParkingSpotSensor(buildingname, floor, slot) {
+  var request = new request("SELECT P.Sensor FROM dbo.ParkingSpot P WHERE P.BuildingName = ' " + buildingname + " ' AND P.Floor = ' " + floor + " ' AND P.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1039,8 +1063,24 @@ function setParkingSpotSlot(buidlingname, floor, slot, newSlot) {
   connection.execSql(request);
 }
 
-function setParkingSpotAvalability(buidlingname, floor, slot, isfull) {
+function setParkingSpotOccupied(buidlingname, floor, slot, isfull) {
   var request = new request("UPDATE dbo.ParkingSpot P SET P.isFull = ' " + isfull + " ' WHERE P.BuildingName = ' " + buildingname + " ' AND P.Floor = ' " + floor + " ' AND P.Slot = ' " + slot + " ' ",
+    function(err, rowCount, rows) {
+      if (err) {
+        done(err);
+      } else {
+
+      }
+    });
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+}
+
+function setParkingSpotSensor(buidlingname, floor, slot, sensor) {
+  var request = new request("UPDATE dbo.ParkingSpot P SET P.Sensor = ' " + sensor + " ' WHERE P.BuildingName = ' " + buildingname + " ' AND P.Floor = ' " + floor + " ' AND P.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1424,7 +1464,7 @@ function setReserveID(username, buidlingname, floor, slot, reserveid) {
   connection.execSql(request);
 }
 
-function setReserveID(username, buidlingname, floor, slot, haspaid) {
+function setReservePaidStatus(username, buidlingname, floor, slot, haspaid) {
   var request = new request("UPDATE dbo.Reserve R SET R.hasPaid = ' " + haspaid + " ' WHERE R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
