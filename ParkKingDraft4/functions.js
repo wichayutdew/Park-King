@@ -1,3 +1,5 @@
+Stopwatch timer = new Stopwatch();
+
 function checkAvailabiliy(buildingname){
   var request = new request("SELECT P.Floor, P.Spot FROM dbo.ParkingSpot P WHERE P.BuildingName = ' " + buildingname + " ' AND P.isfull = 0 ORDER BY Floor ASC, Spot ASC",
     function(err, rowCount, rows) {
@@ -28,10 +30,10 @@ function cancelFrequency(username){
 }
 
 function timer(time){
-  
+  //tum pen class dee kwa
 }
 
-function getTime(){
+function getCurrentTime(){
   var today = new Date();
   var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
   return time;
@@ -56,21 +58,24 @@ function closeFlap(spot){
 //motor
 }
 
-function isQREqual(QRcode,tokenID){
-  if(QRcode == tokenID){
+function isQREqual(tokenID, qrcode){
+  if(qrcode = tokenID){
     return true;
   }else{
     return false;
   }
 }
 
-function checkIn(reserveID){
-  isQREqual(QRcode,getterSetter.getReserveID);
-  //openFlap(reserve.getReserveID);
-  timer(30).start;
-  if(isParked){
-    closeFlap(spot);
+function checkIn(username,builging,floor,slot){
+  var check = isQREqual(getterSetter.getReserveID(username,builging,floor,slot) == getterSetter.getReserveQRCodeIn(username,builging,floor,slot););
+  if(check == true){// && timeout == false
+    t.start();
   }
+  //openFlap(reserve.getReserveID);
+  //timer(30).start;
+  //if(isParked){
+  //  closeFlap(spot);
+  //}
 }
 
 function isParked(reserveID){
@@ -78,24 +83,28 @@ function isParked(reserveID){
   return true;
 }
 
-function pay(fee){
-  //link ebank somehow
-  this.hasPaid=true;
-}
+// not use in real system prototype
+// function pay(fee){
+//   //link ebank somehow
+//   this.hasPaid=true;
+// }
 
-function checkOut(reserveID){
+function checkOut(username,builging,floor,slot,transactionid){
+  var check = isQREqual(getterSetter.getTransactionID(transactionid,username) == getterSetter.getReserveQRCodeOut(username,builging,floor,slot);
+  if(check == true){// && timeout == false && isParked == false
+    t.stop();
+  }
   pay(calculateFee(reserveID));
-  timer.stop;
   openFlap(spot);
 }
 
 function calculateFee(reserveID){
-  var totaltime=getTotalParkedTime(reserveID);
+  var totaltime = getTotalParkedTime(reserveID);
   return totaltime*10;
 }
 
 function getTotalParkedTime(reserveID){
-  //aow timer ma har duration
+  //aow timer ma har duration in timer class dee kwa
 }
 
 function hasLeft(reserveID){
