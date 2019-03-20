@@ -11,6 +11,13 @@ function elaspedTime() {
   },1000);
 }
 
+function elaspedTimeStop(){
+  var totalTime = parseInt(stopwatch.read()/1000);
+  clearInterval(elaspedInterval);
+  stopwatch.stop();
+  return totalTime;
+}
+
 function countdownTimer(seconds) {
   var countdownInterval =  setInterval(function () {
         duration --;
@@ -90,7 +97,7 @@ function isQREqual(tokenID, qrcode){
 function checkIn(username,building,floor,slot){
   var check = isQREqual(getterSetter.getReserveID(username,building,floor,slot), getterSetter.getReserveQRCodeIn(username,building,floor,slot));
   if(check == true){// && timeout == false
-    t.start();
+    stopwatch.start();
   }
   //openFlap(reserve.getReserveID);
   //timer(30).start;
@@ -113,9 +120,9 @@ function isParked(reserveID){
 function checkOut(username,builging,floor,slot,transactionid){
   var check = isQREqual(getterSetter.getTransactionID(transactionid,username) == getterSetter.getReserveQRCodeOut(username,builging,floor,slot));
   if(check == true){// && timeout == false && isParked == false
-    t.stop();
+    var totaltime = elaspedTimeStop();
   }
-  //pay(calculateFee(reserveID));
+  var parkingFee = Math.ceil(totaltime/3600) * 15;
   openFlap(spot);
 }
 
@@ -124,16 +131,11 @@ function calculateFee(reserveID){
   return totaltime*10;
 }
 
-function getTotalParkedTime(reserveID){
-  //aow timer ma har duration in timer class dee kwa
-}
-
 function hasLeft(reserveID){
   if(checkIfCarLeft(spot)){
     closeFlap(spot);
   }
   reserve.ParkingSpot.isFull=false;
-
 }
 
 function checkIfCarLeft(spot){
