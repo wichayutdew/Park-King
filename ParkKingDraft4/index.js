@@ -270,7 +270,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 //check log-in state
 function loggedInBoolean(req) {
-    if (req.user.authenticated) {
+    if (req.user) {
         return true;
     } else {
         return false;
