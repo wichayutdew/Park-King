@@ -66,8 +66,8 @@ function isQREqual(tokenID, qrcode){
   }
 }
 
-function checkIn(username,builging,floor,slot){
-  var check = isQREqual(getterSetter.getReserveID(username,builging,floor,slot) == getterSetter.getReserveQRCodeIn(username,builging,floor,slot););
+function checkIn(username,building,floor,slot){
+  var check = isQREqual(getterSetter.getReserveID(username,building,floor,slot), getterSetter.getReserveQRCodeIn(username,building,floor,slot););
   if(check == true){// && timeout == false
     t.start();
   }
