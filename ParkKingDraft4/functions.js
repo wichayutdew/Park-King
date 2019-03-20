@@ -1,4 +1,3 @@
-Stopwatch timer = new Stopwatch();
 var Stopwatch = require('statman-stopwatch');
 var stopwatch = new Stopwatch();
 
@@ -89,7 +88,7 @@ function isQREqual(tokenID, qrcode){
 }
 
 function checkIn(username,building,floor,slot){
-  var check = isQREqual(getterSetter.getReserveID(username,building,floor,slot), getterSetter.getReserveQRCodeIn(username,building,floor,slot););
+  var check = isQREqual(getterSetter.getReserveID(username,building,floor,slot), getterSetter.getReserveQRCodeIn(username,building,floor,slot));
   if(check == true){// && timeout == false
     t.start();
   }
@@ -112,7 +111,7 @@ function isParked(reserveID){
 // }
 
 function checkOut(username,builging,floor,slot,transactionid){
-  var check = isQREqual(getterSetter.getTransactionID(transactionid,username) == getterSetter.getReserveQRCodeOut(username,builging,floor,slot);
+  var check = isQREqual(getterSetter.getTransactionID(transactionid,username) == getterSetter.getReserveQRCodeOut(username,builging,floor,slot));
   if(check == true){// && timeout == false && isParked == false
     t.stop();
   }
@@ -137,7 +136,7 @@ function hasLeft(reserveID){
 
 }
 
-function checkIfCarLeft(spot);{
+function checkIfCarLeft(spot){
   //du sensor
   return true
 }
