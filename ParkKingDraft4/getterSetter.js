@@ -1511,7 +1511,7 @@ function Reserve(qrcodeIn, qrcodeOut, timeIn, timeOut, reserveid,haspaid, userna
 }
 
 //*******************************************************Reserve's Remover***********************************************
-function removeParkingSpot(username, buidlingname, floor, slot) {
+function removeReserve(username, buidlingname, floor, slot) {
   var request = new request("DELETE FROM dbo.Reserve R WHERE R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
