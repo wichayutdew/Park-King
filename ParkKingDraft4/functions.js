@@ -99,11 +99,11 @@ function isQREqual(tokenID, qrcode){
   }
 }
 
-function checkIn(username,buildingname,floor,slot){
-  var check = isQREqual(getReserveID(username,buildingname,floor,slot),getReserveQRCodeIn(username,buildingname,floor,slot));
+function checkIn(platenumber,username, buildingname, floor, slot){
+  var check = isQREqual(getReserveID(platenumber,username, buildingname, floor, slot),getReserveQRCodeIn(platenumber,username, buildingname, floor, slot));
   if(check == true){// && arriveTimeout == false && isParked(buildingname, floor, slot) == 0 && cancelFrequency(username) < 5
     stopwatch.start();
-    setParkingSpotOccupied(buidlingname, floor, slot, true);
+    setParkingSpotOccupied(buidlingname, floor, slot, 1);
   }
   //openFlap(reserve.getReserveID);
   //timer(30).start;
@@ -117,7 +117,7 @@ function cancel(username,buildingname,floor,slot){
   elaspedTimeStop();
   var cancel = getUserCancel(username);
   setUserCancel(username, cancel+1);
-  setParkingSpotOccupied(buidlingname, floor, slot, false);
+  setParkingSpotOccupied(buidlingname, floor, slot, 0);
 }
 
 //1 == sensor read car, 0 == sensor did not read car
@@ -134,28 +134,28 @@ function pay(transactionid){
 
 }
 
-function checkOut(username,builgingname,floor,slot,transactionid){
-  var check = isQREqual(getTransactionID(transactionid,username) == getReserveQRCodeOut(username,builgingname,floor,slot));
+function checkOut(platenumber,username, buidlingname, floor, slot){
+  var check = isQREqual(getTransactionID(platenumber,username, buidlingname, floor, slot) == getReserveQRCodeOut(platenumber,username, buildingname, floor, slot));
   if(check == true){// && leftTimeout == false && isParked(buildingname, floor, slot) == 0
     var totaltime = elaspedTimeStop();
-    setParkingSpotOccupied(buidlingname, floor, slot, false);
+    setParkingSpotOccupied(buidlingname, floor, slot, 0);
     var parkingFee = Math.ceil(totaltime/3600) * 15;
     var transactionid = generateTokenID();
     var paymentmethod = 'Kbank';
-    Transaction(transactionid, username, parkingFee, paymentmethod);
+    Transaction(platenumber,username, buidlingname, floor, slot,transactionid,parkingFee,paymentmethod,totaltime)
   }
 }
 
 //check from sensor and qrcodetimeout if the user has left the building
 function hasLeft(buildingname,floor,slot){
-  if(isParked(buildingname,floor,slot) == true){// && leftTimeout == true
-    setParkingSpotOccupied(buidlingname, floor, slot, true);
+  if(isParked(buildingname,floor,slot) == 1){// && leftTimeout == true
+    setParkingSpotOccupied(buidlingname, floor, slot, 1);
     closeFlap(spot);
     stopwatch.start();
   }
 }
 
-//generate the receipt
+//call in front end dee kwa
 function makeReceipt(transactionID){
   var usernam = getTransactionUsername(transactionid, username);
   var transactionid = getTransactionID(transactionid, username);
