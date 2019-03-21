@@ -506,8 +506,8 @@ function removeUser(username) {
 
 
 //*******************************************************Car's Getter***********************************************
-function getCarPlateNumber(platenumber, username) {
-  var request = new request("SELECT C.PlateNumber FROM dbo.Car C WHERE C.PlateNumber = ' " + platenumber + " ' AND C.Username = ' " + username + " ' ",
+function getCarOwner(platenumber, username) {
+  var request = new request("SELECT C.Username FROM dbo.Car C WHERE C.PlateNumber = ' " + platenumber + " ' AND C.Username = ' " + username + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -530,8 +530,8 @@ function getCarPlateNumber(platenumber, username) {
   return returnedValue;
 }
 
-function getCarOwner(platenumber, username) {
-  var request = new request("SELECT C.Username FROM dbo.Car C WHERE C.PlateNumber = ' " + platenumber + " ' AND C.Username = ' " + username + " ' ",
+function getCarPlateNumber(platenumber, username) {
+  var request = new request("SELECT C.PlateNumber FROM dbo.Car C WHERE C.PlateNumber = ' " + platenumber + " ' AND C.Username = ' " + username + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1096,8 +1096,8 @@ function setParkingSpotSensor(buidlingname, floor, slot, sensor) {
 }
 
 //*******************************************************Parking Spot's Adder***********************************************
-function ParkingSpot(floor, slot, buildingname, isfull) {
-  var request = new Request("INSERT INTO dbo.Reserve (Floor,Slot,BuildingName,isFull) values (@Floor,@Slot,@BuildingName,@isFull)",
+function ParkingSpot(buildingname,floor,slot,isfull,sensor) {
+  var request = new Request("INSERT INTO dbo.Reserve (BuildingName,Floor,Slot,isFull,Sensor) values (@BuildingName,@Floor,@Slot,@isFull,@Sensor)",
     //CustomerPicture,profilePic
     function(err, rowCount, rows) {
       if (err) {
@@ -1107,10 +1107,11 @@ function ParkingSpot(floor, slot, buildingname, isfull) {
       }
     });
 
+  request.addParameter('BuildingName', TYPES.VarChar, buildingname);
   request.addParameter('Flooor', TYPES.VarChar, floor);
   request.addParameter('Slot', TYPES.VarChar, slot);
-  request.addParameter('BuildingName', TYPES.VarChar, buildingname);
   request.addParameter('isFull', TYPES.VarChar, isfull);
+  request.addParameter('Sensor', TYPES.VarChar, sensor);
 
   request.on('requestCompleted', function() {
     //connection.close();
@@ -1505,8 +1506,8 @@ function setReservePaidStatus(platenumber,username, buidlingname, floor, slot, h
 }
 
 //*******************************************************Reserve's Adder***********************************************
-function Reserve(qrcodeIn, qrcodeOut, timeIn, timeOut, reserveid,haspaid,platenumber, username, floor, slot, buildingname) {
-  var request = new Request("INSERT INTO dbo.Reserve (QRCodeIn,QRCodeOut,Time_In,Time_Out,ReserveID,hasPaid,PlateNumber,Username,Floor,Slot,BuildingName) values (@QRCodeIn,@QRCodeOut,@Time_In,@Time_Out,@ReserveID,@hasPaid,@PlateNumber,@Username,@Floor,@Slot,@BuildingName)",
+function Reserve(qrcodeIn,qrcodeOut,timeIn,timeOut,reserveid,haspaid,platenumber,username,buildingname,floor, slot) {
+  var request = new Request("INSERT INTO dbo.Reserve (QRCodeIn,QRCodeOut,Time_In,Time_Out,ReserveID,hasPaid,PlateNumber,Username,BuildingName,Floor,Slot) values (@QRCodeIn,@QRCodeOut,@Time_In,@Time_Out,@ReserveID,@hasPaid,@PlateNumber,@Username,@BuildingName,@Floor,@Slot)",
     //CustomerPicture,profilePic
     function(err, rowCount, rows) {
       if (err) {
@@ -1524,9 +1525,9 @@ function Reserve(qrcodeIn, qrcodeOut, timeIn, timeOut, reserveid,haspaid,platenu
   request.addParameter('hasPaid', TYPES.VarChar, haspaid);
   request.addParameter('PlateNumber', TYPES.VarChar, platenumber);
   request.addParameter('Username', TYPES.VarChar, username);
+  request.addParameter('BuildingName', TYPES.VarChar, buildingname);
   request.addParameter('Flooor', TYPES.VarChar, floor);
   request.addParameter('Slot', TYPES.VarChar, slot);
-  request.addParameter('BuildingName', TYPES.VarChar, buildingname);
 
   request.on('requestCompleted', function() {
     //connection.close();
@@ -1871,8 +1872,8 @@ function Transaction(platenumber,username, buidlingname, floor, slot,transaction
 }
 
 //*******************************************************Transaction's Remover***********************************************
-function removeTransaction(transactionid, username) {
-  var request = new request("DELETE FROM dbo.Transaction T WHERE T.Username = ' " + username + " ' AND T.TransactionID = ' " + transactionid + " ' ",
+function removeTransaction(platenumber,username, buidlingname, floor, slot) {
+  var request = new request("DELETE FROM dbo.Transaction T WHERE T.PlateNumber = ' " + platenumber + "' T.Username = ' " + username + " ' AND T.BuildingName = ' " + buildingname + " ' AND T.Floor = ' " + floor + " ' AND T.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);

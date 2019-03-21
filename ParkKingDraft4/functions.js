@@ -1,12 +1,23 @@
+//****************************************************Time related field*****************************************
+//npm install statman-stopwatch
 var Stopwatch = require('statman-stopwatch');
 var stopwatch = new Stopwatch();
 var elaspedInterval = 0;
-//stopwatch.start();
-//elaspedTime();
-//setTimeout(elaspedTimeStop,5000);
+var arriveTimeout = 0;
+var leftTimeout = 0;
+// startUserTimer();
+// userCurrentTime();
+// setTimeout(stopUserTimer,5000);
+
+//How to start stopwatch for each reserveid or username?????????
+
+//start user's timer
+function startUserTimer(){
+  stopwatch.start();
+}
 
 //show elasped time
-function elaspedTime() {
+function userCurrentTime() {
   elaspedInterval = setInterval(function() {
     var time = parseInt(stopwatch.read()/1000);
     var hours = ~~(time / 3600);
@@ -17,7 +28,7 @@ function elaspedTime() {
 }
 
 //stop the stopwatch
-function elaspedTimeStop(){
+function stopUserTimer(){
   var totalTime = parseInt(stopwatch.read()/1000);
   clearInterval(elaspedInterval);
   stopwatch.stop();
@@ -26,14 +37,16 @@ function elaspedTimeStop(){
 
 //make countdown timer in seconds if finish return false
 function countdownTimer(seconds){
+  var timeout = false;
   var countdownInterval =  setInterval(function () {
         duration --;
         //console.log(duration);
         if(duration <= 0){
           clearInterval(countdownInterval);
+          timeout = true;
         }
     }, 1000);
-    return false;
+    return timeout;
 }
 
 //get current time in hr:min:sec format
@@ -43,6 +56,50 @@ function getCurrentTime(){
   return time;
 }
 
+
+
+
+
+
+//****************************************************ID Check field*****************************************
+//generate random unique id (npm install uuid)
+function generateTokenID(){
+  const uuidv4 = require('uuid/v4');
+  var tokenID = uuidv4();
+  return tokenID;
+}
+
+//check if qrcode value is equal to the id
+function isQREqual(tokenID, qrcode){
+  if(qrcode = tokenID){
+    return true;
+  }else{
+    return false;
+  }
+}
+
+
+
+
+
+
+
+//****************************************************Parking flap field*****************************************
+function openFlap(spot){
+//motor
+}
+
+function closeFlap(spot){
+//motor
+}
+
+
+
+
+
+
+
+//****************************************************Reserve, cancel, and  checkout field*****************************************
 //return {floor,slot} of nearest free parking spot.
 function checkAvailabiliy(buildingname){
   var request = new request("SELECT P.Floor, P.Spot FROM dbo.ParkingSpot P WHERE P.BuildingName = ' " + buildingname + " ' AND P.isfull = 0 ORDER BY Floor ASC, Spot ASC",
@@ -68,42 +125,26 @@ function checkAvailabiliy(buildingname){
   return returnedValue[0];
 }
 
-//return the user's cancel frequency
-function cancelFrequency(username){
-  var cancel = getUserCancel(username);
-  return cancel;
-}
-
-//generate random unique id
-function generateTokenID(){
-  //npm install uuid
-  const uuidv4 = require('uuid/v4');
-  var tokenID = uuidv4();
-  return tokenID;
-}
-
-function openFlap(spot){
-//motor
-}
-
-function closeFlap(spot){
-//motor
-}
-
-//check if qrcode value is equal to the id
-function isQREqual(tokenID, qrcode){
-  if(qrcode = tokenID){
-    return true;
-  }else{
-    return false;
+//click reserve, generate reserve
+function reserveSpot(platenumber,username,buildingname,floor,slot){
+  if(getUserReservable(username) == 1 && (getParkingSpotOccupied(buildingname, floor, slot) == 0 || getParkingSpotSensor(buildingname, floor, slot) == 0)){
+    var reserveid = generateTokenID();
+    Reserve(null,null,null,null,reserveid,0,platenumber, username,buildingname,floor,slot);
+    setUserReservable(username,0);
+    setParkingSpotOccupied(buidlingname, floor, slot, 1);
+    arriveTimeout = countdownTimer(60*30);
   }
 }
 
+//scan qrcode and start timer
 function checkIn(platenumber,username, buildingname, floor, slot){
   var check = isQREqual(getReserveID(platenumber,username, buildingname, floor, slot),getReserveQRCodeIn(platenumber,username, buildingname, floor, slot));
-  if(check == true){// && arriveTimeout == false && isParked(buildingname, floor, slot) == 0 && cancelFrequency(username) < 5
-    stopwatch.start();
-    setParkingSpotOccupied(buidlingname, floor, slot, 1);
+  if(check == true && arriveTimeout == false){
+    startUserTimer(reserveID);
+  }else{
+    removeReserve(username, buidlingname, floor, slot);
+    setParkingSpotOccupied(buidlingname, floor, slot, 0);
+    setUserReservable(username,1);
   }
   //openFlap(reserve.getReserveID);
   //timer(30).start;
@@ -112,53 +153,48 @@ function checkIn(platenumber,username, buildingname, floor, slot){
   //}
 }
 
+//click cancel button, delete reserve
 function cancel(username,buildingname,floor,slot){
-  removeReserve(username, buidlingname, floor, slot);
-  elaspedTimeStop();
-  var cancel = getUserCancel(username);
-  setUserCancel(username, cancel+1);
-  setParkingSpotOccupied(buidlingname, floor, slot, 0);
+  if(arriveTimeout == false){
+    removeReserve(username, buidlingname, floor, slot);
+    var cancel = getUserCancel(username);
+    setUserCancel(username, cancel+1);
+    setParkingSpotOccupied(buidlingname, floor, slot, 0);
+    setUserReservable(username,1);
+    if(cancel >= 5){
+      setUserReservable(username,0);
+    }
+  }
 }
 
-//1 == sensor read car, 0 == sensor did not read car
-function isParked(buildingname, floor, slot){
-  //check sensor in that spot
-  var value = getParkingSpotSensor(buildingname, floor, slot);
-  return value;
+//click pay button ,stop time ,generate transaction
+function pay(platenumber,username, buidlingname, floor, slot){
+  var totaltime = stopuserTimer(reserveID);
+  var parkingFee = Math.ceil(totaltime/3600) * 15;
+  var transactionid = generateTokenID();
+  var paymentmethod = 'Kbank';
+  Transaction(platenumber,username, buidlingname, floor, slot,transactionid,parkingFee,paymentmethod,totaltime);
+  leftTimeout = countdownTimer(60*15);
 }
 
-// not used in real system prototype
-function pay(transactionid){
-//   link ebank somehow
-   //setReservePaidStatus(username, buidlingname, floor, slot, haspaid);
-
-}
-
+//scan qrcode and check car
 function checkOut(platenumber,username, buidlingname, floor, slot){
   var check = isQREqual(getTransactionID(platenumber,username, buidlingname, floor, slot) == getReserveQRCodeOut(platenumber,username, buildingname, floor, slot));
-  if(check == true){// && leftTimeout == false && isParked(buildingname, floor, slot) == 0
-    var totaltime = elaspedTimeStop();
+  if(check == true && (getParkingSpotOccupied(buildingname, floor, slot) == 0 || getParkingSpotSensor(buildingname, floor, slot) == 0) && leftTimeout == false){
     setParkingSpotOccupied(buidlingname, floor, slot, 0);
-    var parkingFee = Math.ceil(totaltime/3600) * 15;
-    var transactionid = generateTokenID();
-    var paymentmethod = 'Kbank';
-    Transaction(platenumber,username, buidlingname, floor, slot,transactionid,parkingFee,paymentmethod,totaltime)
+    setUserReservable(username,1);
+  }else{
+    setParkingSpotOccupied(buidlingname, floor, slot, 1);
+    setUserReservable(username,0);
+    StartUserTimer(reserveID);
   }
 }
 
-//check from sensor and qrcodetimeout if the user has left the building
-function hasLeft(buildingname,floor,slot){
-  if(isParked(buildingname,floor,slot) == 1){// && leftTimeout == true
-    setParkingSpotOccupied(buidlingname, floor, slot, 1);
-    closeFlap(spot);
-    stopwatch.start();
-  }
-}
 
 //call in front end dee kwa
-function makeReceipt(transactionID){
-  var usernam = getTransactionUsername(transactionid, username);
-  var transactionid = getTransactionID(transactionid, username);
-  var parkingfee = getTransactionFee(transactionid, username);
-  var paymentmethod = getTransactionPaymentMethod(transactionid, username);
-}
+// function makeReceipt(transactionID){
+//   var usernam = getTransactionUsername(transactionid, username);
+//   var transactionid = getTransactionID(transactionid, username);
+//   var parkingfee = getTransactionFee(transactionid, username);
+//   var paymentmethod = getTransactionPaymentMethod(transactionid, username);
+// }
