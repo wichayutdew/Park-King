@@ -29,6 +29,12 @@ function countdownTimer(seconds) {
     return false;
 }
 
+function getCurrentTime(){
+  var today = new Date();
+  var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+  return time;
+}
+
 function checkAvailabiliy(buildingname){
   var request = new request("SELECT P.Floor, P.Spot FROM dbo.ParkingSpot P WHERE P.BuildingName = ' " + buildingname + " ' AND P.isfull = 0 ORDER BY Floor ASC, Spot ASC",
     function(err, rowCount, rows) {
@@ -54,14 +60,8 @@ function checkAvailabiliy(buildingname){
 }
 
 function cancelFrequency(username){
-  var cancel = getterSetter.getUserCancel(username);
+  var cancel = getUserCancel(username);
   return cancel;
-}
-
-function getCurrentTime(){
-  var today = new Date();
-  var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-  return time;
 }
 
 function generateTokenID(){
@@ -91,9 +91,9 @@ function isQREqual(tokenID, qrcode){
   }
 }
 
-function checkIn(username,building,floor,slot){
-  var check = isQREqual(getReserveID(username,building,floor,slot),getReserveQRCodeIn(username,building,floor,slot));
-  if(check == true){// && arriveTimeout == false
+function checkIn(username,buildingname,floor,slot){
+  var check = isQREqual(getReserveID(username,buildingname,floor,slot),getReserveQRCodeIn(username,buildingname,floor,slot));
+  if(check == true){// && arriveTimeout == false && isParked(buildingname, floor, slot) == false
     stopwatch.start();
     setParkingSpotOccupied(buidlingname, floor, slot, true);
   }
@@ -104,22 +104,23 @@ function checkIn(username,building,floor,slot){
   //}
 }
 
+//true == pared, false == not parked
 function isParked(buildingname, floor, slot){
   //check sensor that slot
   var value = getParkingSpotSensor(buildingname, floor, slot);
   return value;
 }
 
-// not use in real system prototype
+// not used in real system prototype
 function pay(transactionid){
 //   link ebank somehow
    //setReservePaidStatus(username, buidlingname, floor, slot, haspaid);
 
 }
 
-function checkOut(username,builging,floor,slot,transactionid){
-  var check = isQREqual(getTransactionID(transactionid,username) == getReserveQRCodeOut(username,builging,floor,slot));
-  if(check == true){// && timeout == false && isParked == false
+function checkOut(username,builgingname,floor,slot,transactionid){
+  var check = isQREqual(getTransactionID(transactionid,username) == getReserveQRCodeOut(username,builgingname,floor,slot));
+  if(check == true){// && leftTimeout == false && isParked(buildingname, floor, slot) == false
     var totaltime = elaspedTimeStop();
     setParkingSpotOccupied(buidlingname, floor, slot, false);
     var parkingFee = Math.ceil(totaltime/3600) * 15;
@@ -129,8 +130,8 @@ function checkOut(username,builging,floor,slot,transactionid){
   }
 }
 
-function hasLeft(reserveID){
-  if(isParked(spot) == false){// && leftTimeout == false
+function hasLeft(buildingname,floor,slot){
+  if(isParked(buildingname,floor,slot) == true){// && leftTimeout == true
     setParkingSpotOccupied(buidlingname, floor, slot, true);
     closeFlap(spot);
     stopwatch.start();
