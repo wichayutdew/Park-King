@@ -1,7 +1,9 @@
 //NPM REQUIRE
 var express = require('express');
-var app = express();
+const app = express();
 var bodyParser = require('body-parser');
+const multer = require('multer');
+const autoReap  = require('multer-autoreap');
 var fs = require('fs');
 
 //tedious section
@@ -39,6 +41,7 @@ var connection = new Connection(config);
 
 //APP CONFIG
 app.set('view engine', 'ejs');
+app.use(autoReap);
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
 //===================================================================================================================================================
@@ -47,7 +50,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
     passport.serializeUser(function(user, done) {
         console.log('serializer');
-        console.log(user);
+        //console.log(user);
         done(null, user[0]);
     });
     passport.deserializeUser(function(user, done) {
@@ -65,7 +68,7 @@ app.use(bodyParser.urlencoded({extended: true}));
         var request = new Request(
             "SELECT * FROM dbo.Customer WHERE Username = @username",
             function(err,rows){
-                //done(err,rows[0]);
+                done(err,rows[0]);
             }
         );
         //set parameterized query
@@ -112,6 +115,14 @@ app.use(bodyParser.urlencoded({extended: true}));
     function _signup(req,username,password,done){
         console.log('Sign-up requested')
         //var IMG = base64_encode(req.body.profilePic);
+        var img = fs.readFileSync(req.file.path);
+        var encode_image = img.toString('base64');
+        //console.log(encode_image);
+
+        // var finalImg = {
+        //      contentType: req.file.mimetype,
+        //      image:  new Buffer(encode_image, 'base64')
+        // };
         var customer_info = {
           username :req.body.username,
           password : req.body.password,
@@ -123,13 +134,14 @@ app.use(bodyParser.urlencoded({extended: true}));
           studentID: req.body.studentID,
           professorID: req.body.professorID,
           guestID: req.body.NationalID,
-          //CustomerPicture: IMG,
+          CustomerPicture: encode_image,
+          Reserveable: 1,
         };
         var request = new Request(
             "SELECT * FROM dbo.Customer WHERE Username = @username",
             function (err, rowCount, rows){
-                console.log(rows);
-                console.log("above row object");
+                //console.log(rows);
+                //console.log("above row object");
                 if (err){
                     console.log("signup error");
                     return done(err);
@@ -170,7 +182,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
     }
     function insert_newCustomer(customer_info,done){
-        var request = new Request("INSERT INTO dbo.Customer (FirstName,LastName,Email,Username,Password,customerType,studentID,professorID,NationalID) values (@firstName,@lastName,@email,@username,@password,@occupation,@studentID,@professorID,@CitizenID)",
+        var request = new Request("INSERT INTO dbo.Customer (FirstName,LastName,Email,Username,Password,customerType,studentID,professorID,NationalID,CustomerPicture,Reserveable) values (@firstName,@lastName,@email,@username,@password,@occupation,@studentID,@professorID,@CitizenID,@profilePic,@reserveAble)",
         //CustomerPicture,profilePic
             function (err, rowCount, rows){
                 if(err){
@@ -189,7 +201,9 @@ app.use(bodyParser.urlencoded({extended: true}));
         request.addParameter('studentID',TYPES.VarChar,customer_info.studentID);
         request.addParameter('professorID',TYPES.VarChar,customer_info.professorID);
         request.addParameter('CitizenID',TYPES.VarChar,customer_info.guestID);
-        //request.addParameter('profilePic',TYPES.image,customer_info.CustomerPicture);
+        request.addParameter('profilePic',TYPES.VarChar,customer_info.CustomerPicture);
+        request.addParameter('reserveAble',TYPES.Bit,customer_info.Reserveable);
+
 
         request.on('requestCompleted', function (){
         //connection.close();
@@ -284,20 +298,39 @@ function loggedIn(req, res, next) {
         return next();
     } else {
         console.log('user not login');
-        res.redirect('/home');
+        res.redirect('/login');
     }
 }
 // app.get('/orders', loggedIn, function(req, res, next) {
 //     // req.user - will exist
 //     // load user orders and render them
 // });
-function base64_encode(file) {
-    // read binary data
-    var bitmap = fs.readFileSync(file);
-    // convert binary data to base64 encoded string
-    return new Buffer(bitmap).toString('base64');
-}
+// function base64_encode(file) {
+//     // read binary data
+//     var bitmap = fs.readFileSync(file);
+//     // convert binary data to base64 encoded string
+//     return new Buffer(bitmap).toString('base64');
+// }
 
+// SET STORAGE
+const storage = multer.diskStorage({
+destination: function (req, file, cb) {
+    cb(null, './upload-express');
+},
+filename: function (req, file, cb) {
+    cb(null, new Date().getTime() + '-' + file.originalname);
+}
+});
+
+const upload = multer({
+storage: storage,
+//limits: {fileSize: 1024 * 1024 * 5}
+});
+
+//retrive image from database
+//imgPhase is a string retrive from database
+// var UserImage = new Image();
+// UserImage.src = 'data:image/png;base64,'+imgPhase;
 //=======================================================
 //ROUTES
 //=======================================================
@@ -313,6 +346,7 @@ app.get('/home', function(req, res){
 //ROUTE TO USER REGISTER PAGE
 app.get('/register', function(req, res){
     res.render('register');
+    //res.sendFile(__dirname + '/register.ejs');
 });
 
 //ROUTE TO LOGIN PAGE
@@ -356,12 +390,31 @@ app.post('/login',passport.authenticate('local-login', {
     failureRedirect: '/login',
     session: true,
 }));
-app.post('/register',passport.authenticate('local-signup' , {
+app.post('/register', upload.single('profilePic'),autoReap ,passport.authenticate('local-signup' ,{
     successRedirect: '/login',
     failureRedirect: '/register',
     session: false
 }));
-
+// app.post('/uploadphoto', upload.single('picture'), (req, res) => {
+//     var img = fs.readFileSync(req.file.path);
+//  var encode_image = img.toString('base64');
+//  // Define a JSONobject for the image attributes for saving to database
+//
+//  var finalImg = {
+//       contentType: req.file.mimetype,
+//       image:  new Buffer(encode_image, 'base64')
+//    };
+// db.collection('quotes').insertOne(finalImg, (err, result) => {
+//     console.log(result)
+//
+//     if (err) return console.log(err)
+//
+//     console.log('saved to database')
+//     res.redirect('/')
+//
+//
+//   })
+// })
 
 
 app.listen(3000, process.env.IP, function(){
