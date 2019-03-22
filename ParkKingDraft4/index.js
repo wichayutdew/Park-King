@@ -2,6 +2,7 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
+var fs = require('fs');
 
 //tedious section
 var Connection = require('tedious').Connection;
@@ -110,6 +111,7 @@ app.use(bodyParser.urlencoded({extended: true}));
     }));
     function _signup(req,username,password,done){
         console.log('Sign-up requested')
+        //var IMG = base64_encode(req.body.profilePic);
         var customer_info = {
           username :req.body.username,
           password : req.body.password,
@@ -121,7 +123,7 @@ app.use(bodyParser.urlencoded({extended: true}));
           studentID: req.body.studentID,
           professorID: req.body.professorID,
           guestID: req.body.NationalID,
-          CustomerPicture: req.body.profilePic,
+          //CustomerPicture: IMG,
         };
         var request = new Request(
             "SELECT * FROM dbo.Customer WHERE Username = @username",
@@ -289,7 +291,12 @@ function loggedIn(req, res, next) {
 //     // req.user - will exist
 //     // load user orders and render them
 // });
-
+function base64_encode(file) {
+    // read binary data
+    var bitmap = fs.readFileSync(file);
+    // convert binary data to base64 encoded string
+    return new Buffer(bitmap).toString('base64');
+}
 
 //=======================================================
 //ROUTES
