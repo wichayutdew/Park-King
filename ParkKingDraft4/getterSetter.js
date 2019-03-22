@@ -506,8 +506,8 @@ function removeUser(username) {
 
 
 //*******************************************************Car's Getter***********************************************
-function getCarPlateNumber(platenumber, username) {
-  var request = new request("SELECT C.PlateNumber FROM dbo.Car C WHERE C.PlateNumber = ' " + platenumber + " ' AND C.Username = ' " + username + " ' ",
+function getCarOwner(platenumber, username) {
+  var request = new request("SELECT C.Username FROM dbo.Car C WHERE C.PlateNumber = ' " + platenumber + " ' AND C.Username = ' " + username + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -530,8 +530,8 @@ function getCarPlateNumber(platenumber, username) {
   return returnedValue;
 }
 
-function getCarOwner(platenumber, username) {
-  var request = new request("SELECT C.Username FROM dbo.Car C WHERE C.PlateNumber = ' " + platenumber + " ' AND C.Username = ' " + username + " ' ",
+function getCarPlateNumber(platenumber, username) {
+  var request = new request("SELECT C.PlateNumber FROM dbo.Car C WHERE C.PlateNumber = ' " + platenumber + " ' AND C.Username = ' " + username + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -982,8 +982,32 @@ function getParkingSpotSlot(buildingname, floor, slot) {
   return returnedValue;
 }
 
-function getParkingSpotAvailability(buildingname, floor, slot) {
+function getParkingSpotOccupied(buildingname, floor, slot) {
   var request = new request("SELECT P.isFull FROM dbo.ParkingSpot P WHERE P.BuildingName = ' " + buildingname + " ' AND P.Floor = ' " + floor + " ' AND P.Slot = ' " + slot + " ' ",
+    function(err, rowCount, rows) {
+      if (err) {
+        done(err);
+      } else {
+
+      }
+    });
+  var returnedValue = {};
+  request.on('row', function(columns) {
+    columns.forEach(function(column) {
+      returnedValue.push(column.value);
+    });
+    //console.log(returnedValue);
+  });
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+  return returnedValue;
+}
+
+function getParkingSpotSensor(buildingname, floor, slot) {
+  var request = new request("SELECT P.Sensor FROM dbo.ParkingSpot P WHERE P.BuildingName = ' " + buildingname + " ' AND P.Floor = ' " + floor + " ' AND P.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1039,7 +1063,7 @@ function setParkingSpotSlot(buidlingname, floor, slot, newSlot) {
   connection.execSql(request);
 }
 
-function setParkingSpotAvalability(buidlingname, floor, slot, isfull) {
+function setParkingSpotOccupied(buidlingname, floor, slot, isfull) {
   var request = new request("UPDATE dbo.ParkingSpot P SET P.isFull = ' " + isfull + " ' WHERE P.BuildingName = ' " + buildingname + " ' AND P.Floor = ' " + floor + " ' AND P.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
@@ -1055,9 +1079,25 @@ function setParkingSpotAvalability(buidlingname, floor, slot, isfull) {
   connection.execSql(request);
 }
 
+function setParkingSpotSensor(buidlingname, floor, slot, sensor) {
+  var request = new request("UPDATE dbo.ParkingSpot P SET P.Sensor = ' " + sensor + " ' WHERE P.BuildingName = ' " + buildingname + " ' AND P.Floor = ' " + floor + " ' AND P.Slot = ' " + slot + " ' ",
+    function(err, rowCount, rows) {
+      if (err) {
+        done(err);
+      } else {
+
+      }
+    });
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+}
+
 //*******************************************************Parking Spot's Adder***********************************************
-function ParkingSpot(floor, slot, buildingname, isfull) {
-  var request = new Request("INSERT INTO dbo.Reserve (Floor,Slot,BuildingName,isFull) values (@Floor,@Slot,@BuildingName,@isFull)",
+function ParkingSpot(buildingname,floor,slot,isfull,sensor) {
+  var request = new Request("INSERT INTO dbo.Reserve (BuildingName,Floor,Slot,isFull,Sensor) values (@BuildingName,@Floor,@Slot,@isFull,@Sensor)",
     //CustomerPicture,profilePic
     function(err, rowCount, rows) {
       if (err) {
@@ -1067,10 +1107,11 @@ function ParkingSpot(floor, slot, buildingname, isfull) {
       }
     });
 
+  request.addParameter('BuildingName', TYPES.VarChar, buildingname);
   request.addParameter('Flooor', TYPES.VarChar, floor);
   request.addParameter('Slot', TYPES.VarChar, slot);
-  request.addParameter('BuildingName', TYPES.VarChar, buildingname);
   request.addParameter('isFull', TYPES.VarChar, isfull);
+  request.addParameter('Sensor', TYPES.VarChar, sensor);
 
   request.on('requestCompleted', function() {
     //connection.close();
@@ -1104,8 +1145,8 @@ function removeParkingSpot(buidlingname, floor, slot) {
 
 
 //*******************************************************Reserve's Getter***********************************************
-function getReserveUsername(username, buildingname, floor, slot) {
-  var request = new request("SELECT R.Username FROM dbo.Reserve R WHERE R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
+function getReservePlateNumber(platenumber,username, buildingname, floor, slot) {
+  var request = new request("SELECT R.PlateNumber FROM dbo.Reserve R WHERE R.PlateNumber = ' " + platenumber + "' R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1128,8 +1169,8 @@ function getReserveUsername(username, buildingname, floor, slot) {
   return returnedValue;
 }
 
-function getReserveBuildingName(username, buildingname, floor, slot) {
-  var request = new request("SELECT R.BuildingName FROM dbo.Reserve R WHERE R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
+function getReserveUsername(platenumber,username, buildingname, floor, slot) {
+  var request = new request("SELECT R.Username FROM dbo.Reserve R WHERE R.PlateNumber = ' " + platenumber + "' R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1152,8 +1193,8 @@ function getReserveBuildingName(username, buildingname, floor, slot) {
   return returnedValue;
 }
 
-function getReserveBuildingFloor(username, buildingname, floor, slot) {
-  var request = new request("SELECT R.Floor FROM dbo.Reserve R WHERE R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
+function getReserveBuildingName(platenumber,username, buildingname, floor, slot) {
+  var request = new request("SELECT R.BuildingName FROM dbo.Reserve R WHERE R.PlateNumber = ' " + platenumber + "' R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1176,8 +1217,8 @@ function getReserveBuildingFloor(username, buildingname, floor, slot) {
   return returnedValue;
 }
 
-function getReserveBuildingSlot(username, buildingname, floor, slot) {
-  var request = new request("SELECT R.Slot FROM dbo.Reserve R WHERE R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
+function getReserveBuildingFloor(platenumber,username, buildingname, floor, slot) {
+  var request = new request("SELECT R.Floor FROM dbo.Reserve R WHERE R.PlateNumber = ' " + platenumber + "' R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1200,8 +1241,8 @@ function getReserveBuildingSlot(username, buildingname, floor, slot) {
   return returnedValue;
 }
 
-function getReserveQRCodeIn(username, buildingname, floor, slot) {
-  var request = new request("SELECT R.QRCodeIn FROM dbo.Reserve R WHERE R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
+function getReserveBuildingSlot(platenumber,username, buildingname, floor, slot) {
+  var request = new request("SELECT R.Slot FROM dbo.Reserve R WHERE R.PlateNumber = ' " + platenumber + "' R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1224,8 +1265,8 @@ function getReserveQRCodeIn(username, buildingname, floor, slot) {
   return returnedValue;
 }
 
-function getReserveQRCodeOut(username, buildingname, floor, slot) {
-  var request = new request("SELECT R.QRCodeOut FROM dbo.Reserve R WHERE R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
+function getReserveQRCodeIn(platenumber,username, buildingname, floor, slot) {
+  var request = new request("SELECT R.QRCodeIn FROM dbo.Reserve R WHERE R.PlateNumber = ' " + platenumber + "' R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1248,8 +1289,8 @@ function getReserveQRCodeOut(username, buildingname, floor, slot) {
   return returnedValue;
 }
 
-function getReserveTimeIn(username, buildingname, floor, slot) {
-  var request = new request("SELECT R.Time_In FROM dbo.Reserve R WHERE R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
+function getReserveQRCodeOut(platenumber,username, buildingname, floor, slot) {
+  var request = new request("SELECT R.QRCodeOut FROM dbo.Reserve R WHERE R.PlateNumber = ' " + platenumber + "' R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1272,8 +1313,8 @@ function getReserveTimeIn(username, buildingname, floor, slot) {
   return returnedValue;
 }
 
-function getReserveTimeOut(username, buildingname, floor, slot) {
-  var request = new request("SELECT R.Time_Out FROM dbo.Reserve R WHERE R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
+function getReserveTimeIn(platenumber,username, buildingname, floor, slot) {
+  var request = new request("SELECT R.Time_In FROM dbo.Reserve R WHERE R.PlateNumber = ' " + platenumber + "' R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1296,8 +1337,8 @@ function getReserveTimeOut(username, buildingname, floor, slot) {
   return returnedValue;
 }
 
-function getReserveID(username, buildingname, floor, slot) {
-  var request = new request("SELECT R.ReserveID FROM dbo.Reserve R WHERE R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
+function getReserveTimeOut(platenumber,username, buildingname, floor, slot) {
+  var request = new request("SELECT R.Time_Out FROM dbo.Reserve R WHERE R.PlateNumber = ' " + platenumber + "' R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1320,8 +1361,32 @@ function getReserveID(username, buildingname, floor, slot) {
   return returnedValue;
 }
 
-function getHasPaid(username, buildingname, floor, slot) {
-  var request = new request("SELECT R.hasPaid FROM dbo.Reserve R WHERE R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
+function getReserveID(platenumber,username, buildingname, floor, slot) {
+  var request = new request("SELECT R.ReserveID FROM dbo.Reserve R WHERE R.PlateNumber = ' " + platenumber + "' R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
+    function(err, rowCount, rows) {
+      if (err) {
+        done(err);
+      } else {
+
+      }
+    });
+  var returnedValue = {};
+  request.on('row', function(columns) {
+    columns.forEach(function(column) {
+      returnedValue.push(column.value);
+    });
+    //console.log(returnedValue);
+  });
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+  return returnedValue;
+}
+
+function getHasPaid(platenumber,username, buildingname, floor, slot) {
+  var request = new request("SELECT R.hasPaid FROM dbo.Reserve R WHERE R.PlateNumber = ' " + platenumber + "' R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1344,8 +1409,8 @@ function getHasPaid(username, buildingname, floor, slot) {
   return returnedValue;
 }
 //*******************************************************Reserve's Setter***********************************************
-function setReserveQRCodeIn(username, buidlingname, floor, slot, qrcode) {
-  var request = new request("UPDATE dbo.Reserve R SET R.QRCodeIn = ' " + qrcode + " ' WHERE R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
+function setReserveQRCodeIn(platenumber,username, buidlingname, floor, slot, qrcode) {
+  var request = new request("UPDATE dbo.Reserve R SET R.QRCodeIn = ' " + qrcode + " ' WHERE R.PlateNumber = ' " + platenumber + "' R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1360,8 +1425,8 @@ function setReserveQRCodeIn(username, buidlingname, floor, slot, qrcode) {
   connection.execSql(request);
 }
 
-function setReserveQRCodeOut(username, buidlingname, floor, slot, QRcode) {
-  var request = new request("UPDATE dbo.Reserve R SET R.QRCodeOut = ' " + qrcode + " ' WHERE R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
+function setReserveQRCodeOut(platenumber,username, buidlingname, floor, slot, qrcode) {
+  var request = new request("UPDATE dbo.Reserve R SET R.QRCodeOut = ' " + qrcode + " ' WHERE R.PlateNumber = ' " + platenumber + "' R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1376,8 +1441,8 @@ function setReserveQRCodeOut(username, buidlingname, floor, slot, QRcode) {
   connection.execSql(request);
 }
 
-function setReserveTimeIn(username, buidlingname, floor, slot, time) {
-  var request = new request("UPDATE dbo.Reserve R SET R.Time_In = ' " + time + " ' WHERE R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
+function setReserveTimeIn(platenumber,username, buidlingname, floor, slot, time) {
+  var request = new request("UPDATE dbo.Reserve R SET R.Time_In = ' " + time + " ' WHERE R.PlateNumber = ' " + platenumber + "' R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1392,8 +1457,8 @@ function setReserveTimeIn(username, buidlingname, floor, slot, time) {
   connection.execSql(request);
 }
 
-function setReserveTimeOut(username, buidlingname, floor, slot, time) {
-  var request = new request("UPDATE dbo.Reserve R SET R.Time_Out = ' " + time + " ' WHERE R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
+function setReserveTimeOut(platenumber,username, buidlingname, floor, slot, time) {
+  var request = new request("UPDATE dbo.Reserve R SET R.Time_Out = ' " + time + " ' WHERE R.PlateNumber = ' " + platenumber + "' R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1408,8 +1473,8 @@ function setReserveTimeOut(username, buidlingname, floor, slot, time) {
   connection.execSql(request);
 }
 
-function setReserveID(username, buidlingname, floor, slot, reserveid) {
-  var request = new request("UPDATE dbo.Reserve R SET R.ReserveID = ' " + reserveid + " ' WHERE R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
+function setReserveID(platenumber,username, buidlingname, floor, slot, reserveid) {
+  var request = new request("UPDATE dbo.Reserve R SET R.ReserveID = ' " + reserveid + " ' WHERE R.PlateNumber = ' " + platenumber + "' R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1424,8 +1489,8 @@ function setReserveID(username, buidlingname, floor, slot, reserveid) {
   connection.execSql(request);
 }
 
-function setReserveID(username, buidlingname, floor, slot, haspaid) {
-  var request = new request("UPDATE dbo.Reserve R SET R.hasPaid = ' " + haspaid + " ' WHERE R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
+function setReservePaidStatus(platenumber,username, buidlingname, floor, slot, haspaid) {
+  var request = new request("UPDATE dbo.Reserve R SET R.hasPaid = ' " + haspaid + " ' WHERE R.PlateNumber = ' " + platenumber + "' R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1441,8 +1506,8 @@ function setReserveID(username, buidlingname, floor, slot, haspaid) {
 }
 
 //*******************************************************Reserve's Adder***********************************************
-function Reserve(qrcodeIn, qrcodeOut, timeIn, timeOut, reserveid,haspaid, username, floor, slot, buildingname) {
-  var request = new Request("INSERT INTO dbo.Reserve (QRCodeIn,QRCodeOut,Time_In,Time_Out,ReserveID,hasPaid,Username,Floor,Slot,BuildingName) values (@QRCodeIn,@QRCodeOut,@Time_In,@Time_Out,@ReserveID,@hasPaid,@Username,@Floor,@Slot,@BuildingName)",
+function Reserve(qrcodeIn,qrcodeOut,timeIn,timeOut,reserveid,haspaid,platenumber,username,buildingname,floor, slot) {
+  var request = new Request("INSERT INTO dbo.Reserve (QRCodeIn,QRCodeOut,Time_In,Time_Out,ReserveID,hasPaid,PlateNumber,Username,BuildingName,Floor,Slot) values (@QRCodeIn,@QRCodeOut,@Time_In,@Time_Out,@ReserveID,@hasPaid,@PlateNumber,@Username,@BuildingName,@Floor,@Slot)",
     //CustomerPicture,profilePic
     function(err, rowCount, rows) {
       if (err) {
@@ -1458,10 +1523,11 @@ function Reserve(qrcodeIn, qrcodeOut, timeIn, timeOut, reserveid,haspaid, userna
   request.addParameter('Time_Out', TYPES.VarChar, timeOut);
   request.addParameter('ReserveID', TYPES.VarChar, reserveID);
   request.addParameter('hasPaid', TYPES.VarChar, haspaid);
+  request.addParameter('PlateNumber', TYPES.VarChar, platenumber);
   request.addParameter('Username', TYPES.VarChar, username);
+  request.addParameter('BuildingName', TYPES.VarChar, buildingname);
   request.addParameter('Flooor', TYPES.VarChar, floor);
   request.addParameter('Slot', TYPES.VarChar, slot);
-  request.addParameter('BuildingName', TYPES.VarChar, buildingname);
 
   request.on('requestCompleted', function() {
     //connection.close();
@@ -1471,8 +1537,8 @@ function Reserve(qrcodeIn, qrcodeOut, timeIn, timeOut, reserveid,haspaid, userna
 }
 
 //*******************************************************Reserve's Remover***********************************************
-function removeParkingSpot(username, buidlingname, floor, slot) {
-  var request = new request("DELETE FROM dbo.Reserve R WHERE R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
+function removeReserve(platenumber,username, buidlingname, floor, slot) {
+  var request = new request("DELETE FROM dbo.Reserve R WHERE R.PlateNumber = ' " + platenumber + "' R.Username = ' " + username + " ' AND R.BuildingName = ' " + buildingname + " ' AND R.Floor = ' " + floor + " ' AND R.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1495,8 +1561,8 @@ function removeParkingSpot(username, buidlingname, floor, slot) {
 
 
 //*******************************************************Transaction's Getter***********************************************
-function getTransactionID(transactionid, username) {
-  var request = new request("SELECT T.TransactionID FROM dbo.Transaction T WHERE T.Username = ' " + username + " ' AND T.TransactionID = ' " + transactionid + " ' ",
+function getTransactionID(platenumber,username, buidlingname, floor, slot) {
+  var request = new request("SELECT T.TransactionID FROM dbo.Transaction T WHERE T.PlateNumber = ' " + platenumber + "' T.Username = ' " + username + " ' AND T.BuildingName = ' " + buildingname + " ' AND T.Floor = ' " + floor + " ' AND T.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1519,8 +1585,8 @@ function getTransactionID(transactionid, username) {
   return returnedValue;
 }
 
-function getTransactionUsername(transactionid, username) {
-  var request = new request("SELECT T.Username FROM dbo.Transaction T WHERE T.Username = ' " + username + " ' AND T.TransactionID = ' " + transactionid + " ' ",
+function getTransactionUsername(platenumber,username, buidlingname, floor, slot) {
+  var request = new request("SELECT T.Username FROM dbo.Transaction T WHERE T.PlateNumber = ' " + platenumber + "' T.Username = ' " + username + " ' AND T.BuildingName = ' " + buildingname + " ' AND T.Floor = ' " + floor + " ' AND T.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1543,8 +1609,8 @@ function getTransactionUsername(transactionid, username) {
   return returnedValue;
 }
 
-function getTransactionFee(transactionid, username) {
-  var request = new request("SELECT T.Fee FROM dbo.Transaction T WHERE T.Username = ' " + username + " ' AND T.TransactionID = ' " + transactionid + " ' ",
+function getTransactionPlateNumber(platenumber,username, buidlingname, floor, slot) {
+  var request = new request("SELECT T.PlateNumber FROM dbo.Transaction T WHERE T.PlateNumber = ' " + platenumber + "' T.Username = ' " + username + " ' AND T.BuildingName = ' " + buildingname + " ' AND T.Floor = ' " + floor + " ' AND T.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1567,8 +1633,128 @@ function getTransactionFee(transactionid, username) {
   return returnedValue;
 }
 
-function getTransactionPaymentMethod(transactionid, username) {
-  var request = new request("SELECT T.PaymentMethod FROM dbo.Transaction T WHERE T.Username = ' " + username + " ' AND T.TransactionID = ' " + transactionid + " ' ",
+function getTransactionBuilding(platenumber,username, buidlingname, floor, slot) {
+  var request = new request("SELECT T.BuildingName FROM dbo.Transaction T WHERE T.PlateNumber = ' " + platenumber + "' T.Username = ' " + username + " ' AND T.BuildingName = ' " + buildingname + " ' AND T.Floor = ' " + floor + " ' AND T.Slot = ' " + slot + " ' ",
+    function(err, rowCount, rows) {
+      if (err) {
+        done(err);
+      } else {
+
+      }
+    });
+  var returnedValue = {};
+  request.on('row', function(columns) {
+    columns.forEach(function(column) {
+      returnedValue.push(column.value);
+    });
+    //console.log(returnedValue);
+  });
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+  return returnedValue;
+}
+
+function getTransactionParkingSpotFloor(platenumber,username, buidlingname, floor, slot) {
+  var request = new request("SELECT T.Floor FROM dbo.Transaction T WHERE T.PlateNumber = ' " + platenumber + "' T.Username = ' " + username + " ' AND T.BuildingName = ' " + buildingname + " ' AND T.Floor = ' " + floor + " ' AND T.Slot = ' " + slot + " ' ",
+    function(err, rowCount, rows) {
+      if (err) {
+        done(err);
+      } else {
+
+      }
+    });
+  var returnedValue = {};
+  request.on('row', function(columns) {
+    columns.forEach(function(column) {
+      returnedValue.push(column.value);
+    });
+    //console.log(returnedValue);
+  });
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+  return returnedValue;
+}
+
+function getTransactionParkingSpotSlot(platenumber,username, buidlingname, floor, slot) {
+  var request = new request("SELECT T.Slot FROM dbo.Transaction T WHERE T.PlateNumber = ' " + platenumber + "' T.Username = ' " + username + " ' AND T.BuildingName = ' " + buildingname + " ' AND T.Floor = ' " + floor + " ' AND T.Slot = ' " + slot + " ' ",
+    function(err, rowCount, rows) {
+      if (err) {
+        done(err);
+      } else {
+
+      }
+    });
+  var returnedValue = {};
+  request.on('row', function(columns) {
+    columns.forEach(function(column) {
+      returnedValue.push(column.value);
+    });
+    //console.log(returnedValue);
+  });
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+  return returnedValue;
+}
+
+function getTransactionFee(platenumber,username, buidlingname, floor, slot) {
+  var request = new request("SELECT T.Fee FROM dbo.Transaction T WHERE T.PlateNumber = ' " + platenumber + "' T.Username = ' " + username + " ' AND T.BuildingName = ' " + buildingname + " ' AND T.Floor = ' " + floor + " ' AND T.Slot = ' " + slot + " ' ",
+    function(err, rowCount, rows) {
+      if (err) {
+        done(err);
+      } else {
+
+      }
+    });
+  var returnedValue = {};
+  request.on('row', function(columns) {
+    columns.forEach(function(column) {
+      returnedValue.push(column.value);
+    });
+    //console.log(returnedValue);
+  });
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+  return returnedValue;
+}
+
+function getTransactionPaymentMethod(platenumber,username, buidlingname, floor, slot) {
+  var request = new request("SELECT T.PaymentMethod FROM dbo.Transaction T WHERE T.PlateNumber = ' " + platenumber + "' T.Username = ' " + username + " ' AND T.BuildingName = ' " + buildingname + " ' AND T.Floor = ' " + floor + " ' AND T.Slot = ' " + slot + " ' ",
+    function(err, rowCount, rows) {
+      if (err) {
+        done(err);
+      } else {
+
+      }
+    });
+  var returnedValue = {};
+  request.on('row', function(columns) {
+    columns.forEach(function(column) {
+      returnedValue.push(column.value);
+    });
+    //console.log(returnedValue);
+  });
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+  return returnedValue;
+}
+
+function getTransactionTotalTIme(platenumber,username, buidlingname, floor, slot) {
+  var request = new request("SELECT T.TotalTime FROM dbo.Transaction T WHERE T.PlateNumber = ' " + platenumber + "' T.Username = ' " + username + " ' AND T.BuildingName = ' " + buildingname + " ' AND T.Floor = ' " + floor + " ' AND T.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1592,8 +1778,8 @@ function getTransactionPaymentMethod(transactionid, username) {
 }
 
 //*******************************************************Transaction's Setter***********************************************
-function setTransactionID(transactionid, username, newTransactionid) {
-  var request = new request("UPDATE dbo.Transaction T SET T.TransactionID = ' " + newTransactionid + " '  WHERE T.Username = ' " + username + " ' AND T.TransactionID = ' " + transactionid + " ' ",
+function setTransactionID(platenumber,username, buidlingname, floor, slot, newTransactionid) {
+  var request = new request("UPDATE dbo.Transaction T SET T.TransactionID = ' " + newTransactionid + " ' WHERE T.PlateNumber = ' " + platenumber + "' T.Username = ' " + username + " ' AND T.BuildingName = ' " + buildingname + " ' AND T.Floor = ' " + floor + " ' AND T.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1608,8 +1794,8 @@ function setTransactionID(transactionid, username, newTransactionid) {
   connection.execSql(request);
 }
 
-function setTransactionFee(transactionid, username, fee) {
-  var request = new request("UPDATE dbo.Transaction T SET T.Fee = ' " + fee + " '  WHERE T.Username = ' " + username + " ' AND T.TransactionID = ' " + transactionid + " ' ",
+function setTransactionFee(platenumber,username, buidlingname, floor, slot, fee) {
+  var request = new request("UPDATE dbo.Transaction T SET T.Fee = ' " + fee + " ' WHERE T.PlateNumber = ' " + platenumber + "' T.Username = ' " + username + " ' AND T.BuildingName = ' " + buildingname + " ' AND T.Floor = ' " + floor + " ' AND T.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1624,8 +1810,24 @@ function setTransactionFee(transactionid, username, fee) {
   connection.execSql(request);
 }
 
-function setTransactionPaymentMethod(transactionid, username, paymentmethod) {
-  var request = new request("UPDATE dbo.Transaction T SET T.PaymentMethod = ' " + paymentmethod + " '  WHERE T.Username = ' " + username + " ' AND T.TransactionID = ' " + transactionid + " ' ",
+function setTransactionPaymentMethod(platenumber,username, buidlingname, floor, slot, paymentmethod) {
+  var request = new request("UPDATE dbo.Transaction T SET T.PaymentMethod = ' " + paymentmethod + " ' WHERE T.PlateNumber = ' " + platenumber + "' T.Username = ' " + username + " ' AND T.BuildingName = ' " + buildingname + " ' AND T.Floor = ' " + floor + " ' AND T.Slot = ' " + slot + " ' ",
+    function(err, rowCount, rows) {
+      if (err) {
+        done(err);
+      } else {
+
+      }
+    });
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+}
+
+function setTransactionTotalTime(platenumber,username, buidlingname, floor, slot, totaltime) {
+  var request = new request("UPDATE dbo.Transaction T SET T.TotalTime = ' " + totaltime + " ' WHERE T.PlateNumber = ' " + platenumber + "' T.Username = ' " + username + " ' AND T.BuildingName = ' " + buildingname + " ' AND T.Floor = ' " + floor + " ' AND T.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -1641,8 +1843,8 @@ function setTransactionPaymentMethod(transactionid, username, paymentmethod) {
 }
 
 //*******************************************************Reserve's Adder***********************************************
-function Transaction(transactionid, username, fee, paymentmethod) {
-  var request = new Request("INSERT INTO dbo.Transaction (TransactionID,Username,Fee,PaymentMethod) values (@TransactionID,@Username,@Fee,@PaymentMethod)",
+function Transaction(platenumber,username, buidlingname, floor, slot,transactionid,fee,paymentmethod,totaltime) {
+  var request = new Request("INSERT INTO dbo.Transaction (PlateNumber,Username, BuidlingName, Floor, Slot,TransactionID,Fee,PaymentNethod,TotalTime) values (@PlateNumber,@Username,@BuidlingName, @Floor, @Slot,@TransactionID,@Fee,@PaymentNethod,@TotalTime)",
     //CustomerPicture,profilePic
     function(err, rowCount, rows) {
       if (err) {
@@ -1652,10 +1854,15 @@ function Transaction(transactionid, username, fee, paymentmethod) {
       }
     });
 
-  request.addParameter('TransactionID', TYPES.VarChar, transactionid);
+  request.addParameter('PlateNumber', TYPES.VarChar, platenumber);
   request.addParameter('Username', TYPES.VarChar, username);
+  request.addParameter('BuildingName', TYPES.VarChar, buildingname);
+  request.addParameter('Floor', TYPES.VarChar, floor);
+  request.addParameter('Slot', TYPES.VarChar, slot);
+  request.addParameter('TransactionID', TYPES.VarChar, transactionid);
   request.addParameter('Fee', TYPES.VarChar, fee);
   request.addParameter('PaymentMethod', TYPES.VarChar, paymentmethod);
+  request.addParameter('TotalTime', TYPES.VarChar, totaltime);
 
   request.on('requestCompleted', function() {
     //connection.close();
@@ -1665,8 +1872,8 @@ function Transaction(transactionid, username, fee, paymentmethod) {
 }
 
 //*******************************************************Transaction's Remover***********************************************
-function removeTransaction(transactionid, username) {
-  var request = new request("DELETE FROM dbo.Transaction T WHERE T.Username = ' " + username + " ' AND T.TransactionID = ' " + transactionid + " ' ",
+function removeTransaction(platenumber,username, buidlingname, floor, slot) {
+  var request = new request("DELETE FROM dbo.Transaction T WHERE T.PlateNumber = ' " + platenumber + "' T.Username = ' " + username + " ' AND T.BuildingName = ' " + buildingname + " ' AND T.Floor = ' " + floor + " ' AND T.Slot = ' " + slot + " ' ",
     function(err, rowCount, rows) {
       if (err) {
         done(err);

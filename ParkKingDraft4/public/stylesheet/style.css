@@ -42,7 +42,7 @@ body {
 .infoDiv h3 {
     margin-bottom: 40px;
 }
-  
+
   .infoDiv p{
     z-index: -10 !important;
 }
@@ -123,7 +123,7 @@ Menu Bar
     margin-bottom: 30px;
     margin-left: 0%;
     width: 90%;
-    border-bottom: 2px solid #818181; 
+    border-bottom: 2px solid #818181;
 }
 #profileMenu img {
     border: 4px solid white;
@@ -152,9 +152,9 @@ Menu Bar
 /* When you mouse over the navigation links, change their color */
 .sidenav a:hover {
     color: #f1f1f1;
-} 
-  
-  
+}
+
+
 /* Position and style the close button (top right corner) */
 .sidenav .closebtn {
         position: absolute;
@@ -163,7 +163,7 @@ Menu Bar
         font-size: 36px;
         margin-left: 50px;
 }
-      
+
 /* Style page content - use this if you want to push the page content to the right when you open the side navigation */
 #mainNavBar {
         transition: margin-left .5s;
@@ -252,12 +252,12 @@ Reserve
 .buildingSelect {
     /* padding: 50px; */
 }
-  
+
 .buildingSelect .buildingBtnGroup {
     max-width: 1000px;
     /* margin: auto; */
 }
-  
+
 .buildingSelect .buildingBtnGroup .buildingChoice {
     padding: 65px;
     box-shadow: none;
@@ -265,19 +265,19 @@ Reserve
     border-radius: 10px;
 
 }
-  
+
 .buildingSelect .buildingBtnGroup .buildingChoice.active {
     outline: none !important;
 
 }
-  
+
 .buildingSelect .buildingBtnGroup .buildingChoice.active .building {
     border-color: #04f735;
     border-radius: 10px;
     outline: none !important;
     box-shadow: 0px 3px 22px 0px #7b7b7b;
 }
-  
+
 .buildingSelect .buildingBtnGroup .buildingChoice .building {
     position: absolute;
     right: 5px;
@@ -292,30 +292,30 @@ Reserve
     border-radius: 10px;
 
 }
-  
+
 .buildingSelect .buildingBtnGroup .buildingChoice .building.arts {
     background-image: url("../img/artbuilding.jpg");
 }
-  
+
 .buildingSelect .buildingBtnGroup .buildingChoice .building.poli {
     background-image: url("../img/polibuilding.jpg");
 }
-  
+
 .buildingSelect .buildingBtnGroup .buildingChoice .building:hover {
     border-color: #04f735;
     border-radius: 10px;
     outline: none !important;
 }
-  
+
 .carSelect {
       /* padding: 50px; */
 }
-  
+
 .carSelect .carBtnGroup {
       max-width: 1000px;
       /* margin: auto; */
 }
-  
+
 .carSelect .carBtnGroup .carChoice {
       padding: 65px;
       box-shadow: none;
@@ -323,20 +323,20 @@ Reserve
       border-radius: 10px;
 
 }
-  
+
 .carSelect .carBtnGroup .carChoice.active {
       outline: none !important;
       border-radius: 10px;
 
 }
-  
+
 .carSelect .carBtnGroup .carChoice.active .method {
       border-color: #04f735;
     border-radius: 10px;
       outline: none !important;
       box-shadow: 0px 3px 22px 0px #7b7b7b;
 }
-  
+
 .carSelect .carBtnGroup .carChoice .method {
       position: absolute;
       right: 5px;
@@ -351,14 +351,14 @@ Reserve
       border-radius: 10px;
 
 }
-  
-  
+
+
 .carSelect .carBtnGroup .carChoice .method:hover {
       border-color: #04f735;
     border-radius: 10px;
       outline: none
 }
-  
+
 form .card {
     color: black;
 }
@@ -402,4 +402,24 @@ User Info Page
     margin-bottom: 10px;
 }
 
+/* ============================================================
+Stopwatch
+============================================================ */
 
+.stopwatch {
+  font-size: 20vw;
+  height: 100%;
+  line-height: 100vh;
+  text-align: center;
+}
+
+.results {
+  border-color: lime;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
