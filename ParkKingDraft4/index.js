@@ -2,7 +2,9 @@
 var express = require('express');
 const app = express();
 var bodyParser = require('body-parser');
+//create temp storage
 const multer = require('multer');
+//auto delete image after upload
 const autoReap  = require('multer-autoreap');
 var fs = require('fs');
 
@@ -45,9 +47,174 @@ app.use(autoReap);
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
 //===================================================================================================================================================
-//          Passport Module
+// Passport Module
 //===================================================================================================================================================
+    function deserializer(username,done){
+    var request = new Request(
+        "SELECT * FROM dbo.Customer WHERE Username = @username",
+        function(err,rows){
+            done(err,rows[0]);
+        }
+    );
+    //set parameterized query
+    request.addParameter('email',TYPES.VarChar,username[0]);
+    var deserializing = [];
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            deserializing.push(column.value);
+        });
+        //console.log(deserializing);
+    });
 
+    request.on('requestCompleted', function (err,rows) {
+        // Next SQL statement.
+        done(err, deserializing);
+    });
+
+    connection.execSql(request);
+}
+    function _signup(req,username,password,done){
+    console.log('Sign-up requested')
+    //var IMG = base64_encode(req.body.profilePic);
+    var img = fs.readFileSync(req.file.path);
+    var encode_image = img.toString('base64');
+    //console.log(encode_image);
+
+    // var finalImg = {
+    //      contentType: req.file.mimetype,
+    //      image:  new Buffer(encode_image, 'base64')
+    // };
+    var customer_info = {
+      username :req.body.username,
+      password : req.body.password,
+      passwordCheck : req.body.passwordConfirmation,
+      email : req.body.email,
+      fname : req.body.firstName,
+      lname : req.body.lastName,
+      occupation: req.body.occupation,
+      studentID: req.body.studentID,
+      professorID: req.body.professorID,
+      guestID: req.body.NationalID,
+      CustomerPicture: encode_image,
+      Reserveable: 1,
+    };
+    var request = new Request(
+        "SELECT * FROM dbo.Customer WHERE Username = @username",
+        function (err, rowCount, rows){
+            //console.log(rows);
+            //console.log("above row object");
+            if (err){
+                console.log("signup error");
+                return done(err);
+            }
+            if (customer_info.password!=customer_info.passwordCheck){
+                console.log('password does not match');
+                return done(null,false);
+            }
+            if (rows.length != 0) {
+                console.log('this email is already taken');
+                return done(null, false);
+            }else {
+
+                console.log('this email doesnot taken')
+                // if there is no user with that email
+                // create the use
+                var newUserMysql = new Object();
+
+                newUserMysql.username = username;
+                newUserMysql.password = password; // use the generateHash function in our user model
+
+                newUserMysql.id = rows.insertId;
+
+                insert_newCustomer(customer_info,done)
+                return done(null, newUserMysql);
+            }
+        }
+    );
+    //set parameterized query
+    request.addParameter('username',TYPES.VarChar,customer_info.username);
+    request.addParameter('password',TYPES.VarChar,customer_info.password);
+
+    request.on('requestCompleted', function () {
+
+    });
+
+    connection.execSql(request);
+
+}
+    function insert_newCustomer(customer_info,done){
+    var request = new Request("INSERT INTO dbo.Customer (FirstName,LastName,Email,Username,Password,customerType,studentID,professorID,NationalID,CustomerPicture,Reserveable) values (@firstName,@lastName,@email,@username,@password,@occupation,@studentID,@professorID,@CitizenID,@profilePic,@reserveAble)",
+    //CustomerPicture,profilePic
+        function (err, rowCount, rows){
+            if(err){
+                done(err);
+            }else{
+
+            }
+        });
+
+    request.addParameter('firstName',TYPES.VarChar,customer_info.fname);
+    request.addParameter('lastName',TYPES.VarChar,customer_info.lname);
+    request.addParameter('email',TYPES.VarChar,customer_info.email);
+    request.addParameter('username',TYPES.VarChar,customer_info.username);
+    request.addParameter('password',TYPES.VarChar,customer_info.password);
+    request.addParameter('occupation',TYPES.VarChar,customer_info.occupation);
+    request.addParameter('studentID',TYPES.VarChar,customer_info.studentID);
+    request.addParameter('professorID',TYPES.VarChar,customer_info.professorID);
+    request.addParameter('CitizenID',TYPES.VarChar,customer_info.guestID);
+    request.addParameter('profilePic',TYPES.VarChar,customer_info.CustomerPicture);
+    request.addParameter('reserveAble',TYPES.Bit,customer_info.Reserveable);
+
+
+    request.on('requestCompleted', function (){
+    //connection.close();
+    //error here
+    })
+    connection.execSql(request);
+}
+    function _login(req, username, password, done){
+        console.log('log-in requested');
+        var request = new Request(
+            "SELECT * FROM dbo.customer WHERE Username = @username Or Email = @username",
+            function(err, rowCount, rows){
+                console.log(username);
+                console.log(rowCount);
+                //console.log(rows);
+                console.log(rows);
+
+                console.log('returned rows are above')
+                if(err){
+                    return done(err);
+                }
+                if(rows == null){
+                    console.log('loginMessage', 'No user found.');
+                    return done(null, false);
+                      // req.flash is the way to set flashdata using connect-flash
+                }else if (!(login_request[1] == password)){
+                    console.log('loginMessage', 'Oops! Wrong password.');
+                    return done(null, false);
+                     // create the loginMessage and save it to session as flashdata
+                }else{
+                    console.log('logged in!!!');
+                    return done(null, login_request);
+                }
+        });
+        request.addParameter('username',TYPES.VarChar,username);
+        var login_request = [];
+        request.on('row', function (columns) {
+            columns.forEach(function(column) {
+                login_request.push(column.value);
+            });
+            console.log(login_request + 'info');
+        });
+
+        request.on('Done',function(err, rowCount, rows){
+            console.log(loggedInBoolean());
+        });
+
+        connection.execSql(request);
+    }
+    //for login session
     passport.serializeUser(function(user, done) {
         console.log('serializer');
         //console.log(user);
@@ -64,30 +231,7 @@ app.use(bodyParser.urlencoded({extended: true}));
         deserializer(user,done);
 
     });
-    function deserializer(username,done){
-        var request = new Request(
-            "SELECT * FROM dbo.Customer WHERE Username = @username",
-            function(err,rows){
-                done(err,rows[0]);
-            }
-        );
-        //set parameterized query
-        request.addParameter('email',TYPES.VarChar,username[0]);
-        var deserializing = [];
-        request.on('row', function (columns) {
-            columns.forEach(function(column) {
-                deserializing.push(column.value);
-            });
-            //console.log(deserializing);
-        });
 
-        request.on('requestCompleted', function (err,rows) {
-            // Next SQL statement.
-            done(err, deserializing);
-        });
-
-        connection.execSql(request);
-    }
     //passport model use for registeration
     passport.use('local-signup', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
@@ -112,105 +256,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 
         //res.redirect('/login');
     }));
-    function _signup(req,username,password,done){
-        console.log('Sign-up requested')
-        //var IMG = base64_encode(req.body.profilePic);
-        var img = fs.readFileSync(req.file.path);
-        var encode_image = img.toString('base64');
-        //console.log(encode_image);
-
-        // var finalImg = {
-        //      contentType: req.file.mimetype,
-        //      image:  new Buffer(encode_image, 'base64')
-        // };
-        var customer_info = {
-          username :req.body.username,
-          password : req.body.password,
-          passwordCheck : req.body.passwordConfirmation,
-          email : req.body.email,
-          fname : req.body.firstName,
-          lname : req.body.lastName,
-          occupation: req.body.occupation,
-          studentID: req.body.studentID,
-          professorID: req.body.professorID,
-          guestID: req.body.NationalID,
-          CustomerPicture: encode_image,
-          Reserveable: 1,
-        };
-        var request = new Request(
-            "SELECT * FROM dbo.Customer WHERE Username = @username",
-            function (err, rowCount, rows){
-                //console.log(rows);
-                //console.log("above row object");
-                if (err){
-                    console.log("signup error");
-                    return done(err);
-                }
-                if (customer_info.password!=customer_info.passwordCheck){
-                    console.log('password does not match');
-                    return done(null,false);
-                }
-                if (rows.length != 0) {
-                    console.log('this email is already taken');
-                    return done(null, false);
-                }else {
-
-                    console.log('this email doesnot taken')
-                    // if there is no user with that email
-                    // create the use
-                    var newUserMysql = new Object();
-
-                    newUserMysql.username = username;
-                    newUserMysql.password = password; // use the generateHash function in our user model
-
-                    newUserMysql.id = rows.insertId;
-
-                    insert_newCustomer(customer_info,done)
-				            return done(null, newUserMysql);
-                }
-            }
-        );
-        //set parameterized query
-        request.addParameter('username',TYPES.VarChar,customer_info.username);
-        request.addParameter('password',TYPES.VarChar,customer_info.password);
-
-        request.on('requestCompleted', function () {
-
-        });
-
-        connection.execSql(request);
-
-    }
-    function insert_newCustomer(customer_info,done){
-        var request = new Request("INSERT INTO dbo.Customer (FirstName,LastName,Email,Username,Password,customerType,studentID,professorID,NationalID,CustomerPicture,Reserveable) values (@firstName,@lastName,@email,@username,@password,@occupation,@studentID,@professorID,@CitizenID,@profilePic,@reserveAble)",
-        //CustomerPicture,profilePic
-            function (err, rowCount, rows){
-                if(err){
-                    done(err);
-                }else{
-
-                }
-            });
-
-        request.addParameter('firstName',TYPES.VarChar,customer_info.fname);
-        request.addParameter('lastName',TYPES.VarChar,customer_info.lname);
-        request.addParameter('email',TYPES.VarChar,customer_info.email);
-        request.addParameter('username',TYPES.VarChar,customer_info.username);
-        request.addParameter('password',TYPES.VarChar,customer_info.password);
-        request.addParameter('occupation',TYPES.VarChar,customer_info.occupation);
-        request.addParameter('studentID',TYPES.VarChar,customer_info.studentID);
-        request.addParameter('professorID',TYPES.VarChar,customer_info.professorID);
-        request.addParameter('CitizenID',TYPES.VarChar,customer_info.guestID);
-        request.addParameter('profilePic',TYPES.VarChar,customer_info.CustomerPicture);
-        request.addParameter('reserveAble',TYPES.Bit,customer_info.Reserveable);
-
-
-        request.on('requestCompleted', function (){
-        //connection.close();
-        //error here
-        })
-        connection.execSql(request);
-    }
     //passport model use for login
     passport.use('local-login', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
@@ -231,48 +276,7 @@ app.use(bodyParser.urlencoded({extended: true}));
         _login(req, username, password, done);
 
     }));
-    function _login(req, username, password, done){
-            console.log('log-in requested');
-            var request = new Request(
-                "SELECT * FROM dbo.customer WHERE Username = @username Or Email = @username",
-                function(err, rowCount, rows){
-                    console.log(username);
-                    console.log(rowCount);
-                    //console.log(rows);
-                    console.log(rows);
 
-                    console.log('returned rows are above')
-                    if(err){
-                        return done(err);
-                    }
-                    if(rows == null){
-                        console.log('loginMessage', 'No user found.');
-                        return done(null, false);
-                          // req.flash is the way to set flashdata using connect-flash
-                    }else if (!(login_request[1] == password)){
-                        console.log('loginMessage', 'Oops! Wrong password.');
-                        return done(null, false);
-                         // create the loginMessage and save it to session as flashdata
-                    }else{
-                        console.log('logged in!!!');
-                        return done(null, login_request);
-                    }
-            });
-            request.addParameter('username',TYPES.VarChar,username);
-            var login_request = [];
-            request.on('row', function (columns) {
-                columns.forEach(function(column) {
-                    login_request.push(column.value);
-                });
-                console.log(login_request + 'info');
-            });
-
-            request.on('Done',function(err, rowCount, rows){
-                console.log(loggedInBoolean());
-            });
-
-            connection.execSql(request);
-        }
     app.use(require('express-session')({
         secret: "Fuck You",
         resave: false,
@@ -301,16 +305,11 @@ function loggedIn(req, res, next) {
         res.redirect('/login');
     }
 }
+// loggedIn using example
 // app.get('/orders', loggedIn, function(req, res, next) {
 //     // req.user - will exist
 //     // load user orders and render them
 // });
-// function base64_encode(file) {
-//     // read binary data
-//     var bitmap = fs.readFileSync(file);
-//     // convert binary data to base64 encoded string
-//     return new Buffer(bitmap).toString('base64');
-// }
 
 // SET STORAGE
 const storage = multer.diskStorage({
@@ -327,12 +326,14 @@ storage: storage,
 //limits: {fileSize: 1024 * 1024 * 5}
 });
 
-//retrive image from database
-//imgPhase is a string retrive from database
+//retrive image from database,imgPhase is a string retrive from database
+//
 // var UserImage = new Image();
 // UserImage.src = 'data:image/png;base64,'+imgPhase;
+
+
 //=======================================================
-//ROUTES
+// ROUTES
 //=======================================================
 
 //ROUTE TO HOME PAGE
@@ -395,27 +396,6 @@ app.post('/register', upload.single('profilePic'),autoReap ,passport.authenticat
     failureRedirect: '/register',
     session: false
 }));
-// app.post('/uploadphoto', upload.single('picture'), (req, res) => {
-//     var img = fs.readFileSync(req.file.path);
-//  var encode_image = img.toString('base64');
-//  // Define a JSONobject for the image attributes for saving to database
-//
-//  var finalImg = {
-//       contentType: req.file.mimetype,
-//       image:  new Buffer(encode_image, 'base64')
-//    };
-// db.collection('quotes').insertOne(finalImg, (err, result) => {
-//     console.log(result)
-//
-//     if (err) return console.log(err)
-//
-//     console.log('saved to database')
-//     res.redirect('/')
-//
-//
-//   })
-// })
-
 
 app.listen(3000, process.env.IP, function(){
     console.log('Park King Server is running on port 3000.....');
