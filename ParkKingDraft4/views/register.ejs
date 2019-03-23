@@ -23,7 +23,7 @@
 
 
 
-      <form action="/register" method="POST">
+      <form action="/register" enctype="multipart/form-data" method="POST">
             <div class="container-login100" style="background-color: black;">
                     <div class="wrap-login100 p-l-55 p-r-55 p-t-80 p-b-30">
                         <form class="login100-form validate-form">
@@ -108,8 +108,10 @@
 
                             <div class="wrap-input100 validate-input m-b-25 p-2" data-validate = "Enter password">
                                     <!--id="uploadPicBut"-->
-                                    <input name="profilePic" type='file' onchange="readURL(this);" />
+                                    <input type='file' name="profilePic" accept="image/*"/>
+                                    <!-- onchange="reasURL(this); -->
                                     <span class="focus-input100"></span>
+                                    <!-- <img src="" id="uploadPic" width=100 height=100> -->
                                     <p class="d-inline">Upload your picture</p>
                             </div>
 
