@@ -53,11 +53,11 @@ app.use(bodyParser.urlencoded({extended: true}));
     var request = new Request(
         "SELECT * FROM dbo.Customer WHERE Username = @username",
         function(err,rows){
-            done(err,rows[0]);
+            //done(err,rows[0]);
         }
     );
     //set parameterized query
-    request.addParameter('email',TYPES.VarChar,username[0]);
+    request.addParameter('username',TYPES.VarChar,username[0]);
     var deserializing = [];
     request.on('row', function (columns) {
         columns.forEach(function(column) {
@@ -172,7 +172,7 @@ app.use(bodyParser.urlencoded({extended: true}));
     })
     connection.execSql(request);
 }
-    function _login(req, username, password, done){
+    function _login(req,username,password,done){
         console.log('log-in requested');
         var request = new Request(
             "SELECT * FROM dbo.customer WHERE Username = @username Or Email = @username",
