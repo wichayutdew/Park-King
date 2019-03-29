@@ -126,24 +126,25 @@ function checkAvailabiliy(buildingname){
 }
 
 //click reserve, generate reserve
-function reserveSpot(platenumber,username,buildingname,floor,slot){
-  if(getUserReservable(username) == 1 && (getParkingSpotOccupied(buildingname, floor, slot) == 0 || getParkingSpotSensor(buildingname, floor, slot) == 0)){
+function reserveSpot(platenumber, username, floor, slot, buildingname){
+  if(getUserReservable(username) == 1 && (getParkingSpotOccupied(floor, slot, buildingname) == 0 || getParkingSpotSensor(floor, slot, buildingname) == 0)){
     var reserveid = generateTokenID();
-    Reserve(null,null,null,null,reserveid,0,platenumber, username,buildingname,floor,slot);
+    Reserve(platenumber, username, floor, slot, buildingname, null, null, null, null, reserveid, 0);
     setUserReservable(username,0);
-    setParkingSpotOccupied(buidlingname, floor, slot, 1);
+    setParkingSpotOccupied(floor, slot, buidlingname, 1);
     arriveTimeout = countdownTimer(60*30);
   }
 }
 
 //scan qrcode and start timer
-function checkIn(platenumber,username, buildingname, floor, slot){
-  var check = isQREqual(getReserveID(platenumber,username, buildingname, floor, slot),getReserveQRCodeIn(platenumber,username, buildingname, floor, slot));
+function checkIn(platenumber, username, floor, slot, buildingname){
+  var check = isQREqual(getReserveID(platenumber, username, floor, slot, buildingname),getReserveQRCodeIn(platenumber, username, floor, slot, buildingname));
   if(check == true && arriveTimeout == false){
-    startUserTimer(reserveID);
+    setReserveTimeIn(platenumber,username, floor, slot, buidlingname, getCurrentTime());
+    startUserTimer();
   }else{
-    removeReserve(username, buidlingname, floor, slot);
-    setParkingSpotOccupied(buidlingname, floor, slot, 0);
+    removeReserve(username, floor, slot, buidlingname);
+    setParkingSpotOccupied(floor, slot, buidlingname, 0);
     setUserReservable(username,1);
   }
   //openFlap(reserve.getReserveID);
@@ -154,12 +155,12 @@ function checkIn(platenumber,username, buildingname, floor, slot){
 }
 
 //click cancel button, delete reserve
-function cancel(username,buildingname,floor,slot){
+function cancel(username, floor, slot, buildingname){
   if(arriveTimeout == false){
-    removeReserve(username, buidlingname, floor, slot);
+    removeReserve(username, floor, slot, buidlingname);
     var cancel = getUserCancel(username);
     setUserCancel(username, cancel+1);
-    setParkingSpotOccupied(buidlingname, floor, slot, 0);
+    setParkingSpotOccupied(floor, slot, buidlingname, 0);
     setUserReservable(username,1);
     if(cancel >= 5){
       setUserReservable(username,0);
@@ -168,25 +169,27 @@ function cancel(username,buildingname,floor,slot){
 }
 
 //click pay button ,stop time ,generate transaction
-function pay(platenumber,username, buidlingname, floor, slot){
-  var totaltime = stopuserTimer(reserveID);
+function pay(platenumber,username, floor, slot, buidlingname){
+  var totaltime = stopuserTimer();
+  setReserveTimeOut(platenumber,username, floor, slot, buidlingname, getCurrentTime());
   var parkingFee = Math.ceil(totaltime/3600) * 15;
   var transactionid = generateTokenID();
   var paymentmethod = 'Kbank';
-  Transaction(platenumber,username, buidlingname, floor, slot,transactionid,parkingFee,paymentmethod,totaltime);
+  Transaction(platenumber,username, floor, slot, buidlingname, transactionid, parkingFee, paymentmethod, totaltime);
+  setReservePaidStatus(platenumber,username, floor, slot, buidlingname, 1);
   leftTimeout = countdownTimer(60*15);
 }
 
 //scan qrcode and check car
-function checkOut(platenumber,username, buidlingname, floor, slot){
-  var check = isQREqual(getTransactionID(platenumber,username, buidlingname, floor, slot) == getReserveQRCodeOut(platenumber,username, buildingname, floor, slot));
-  if(check == true && (getParkingSpotOccupied(buildingname, floor, slot) == 0 || getParkingSpotSensor(buildingname, floor, slot) == 0) && leftTimeout == false){
-    setParkingSpotOccupied(buidlingname, floor, slot, 0);
+function checkOut(platenumber,username, floor, slot, buidlingname){
+  var check = isQREqual(getTransactionID(platenumber, username, floor, slot, buidlingname) == getReserveQRCodeOut(platenumber, username, floor, slot, buildingname));
+  if(check == true && (getParkingSpotOccupied(floor, slot, buildingname) == 0 || getParkingSpotSensor(floor, slot, buildingname) == 0) && leftTimeout == false){
+    setParkingSpotOccupied(floor, slot, buidlingname, 0);
     setUserReservable(username,1);
   }else{
-    setParkingSpotOccupied(buidlingname, floor, slot, 1);
+    setParkingSpotOccupied(floor, slot, buidlingname, 1);
     setUserReservable(username,0);
-    StartUserTimer(reserveID);
+    StartUserTimer();
   }
 }
 
