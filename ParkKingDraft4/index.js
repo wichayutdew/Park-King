@@ -383,6 +383,9 @@ app.get('/userinfo',loggedIn, function(req, res){
 app.get('/temp', function(req, res){
     res.render('temp');
 });
+app.get('/statustemp', function(req, res){
+    res.render('statusTemp');
+});
 
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
