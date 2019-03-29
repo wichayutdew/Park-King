@@ -89,6 +89,10 @@ app.set('view engine', 'ejs');
 app.use(autoReap);
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(function(req, res, next){
+    res.locals.currentUser = req.user;
+    next();
+});
 //===================================================================================================================================================
 // Passport Module
 //===================================================================================================================================================
@@ -300,10 +304,8 @@ app.use(bodyParser.urlencoded({extended: true}));
                          // create the loginMessage and save it to session as flashdata
                     }else{
                         console.log('logged in!!!');
-                        var finalImg = {
-                              contentType: req.file.mimetype,
-                              image:  new Buffer(encode_image, 'base64')
-                         };
+                        // var UserImage = new Image();
+                        //  UserImage.src = 'data:image/png;base64,'+imgPhase;
 
                         return done(null, login_request);
                     }
@@ -363,6 +365,21 @@ function loggedIn(req, res, next) {
         res.redirect('/login');
     }
 }
+function isLoggedIn(req, res, next) {
+  // if user is authenticated in the session, carry on
+  if (req.isAuthenticated()) {
+    // obviouisly, don't use static strings...
+    // get these values from your authentication
+    // mmechanism
+    res.locals.currentUser = req.user;
+    //res.locals.userEmail = 'user@domain.com';
+    return next();
+  }
+
+  // if they aren't redirect them to the home page
+  res.redirect('/');
+}
+
 // loggedIn using example
 // app.get('/orders', loggedIn, function(req, res, next) {
 //     // req.user - will exist
@@ -399,7 +416,7 @@ app.get('/', function(req, res){
     res.redirect('/home');
 });
 app.get('/home', function(req, res){
-    res.render('home');
+    res.render('home', {username: req.user});
 });
 
 //ROUTE TO USER REGISTER PAGE
