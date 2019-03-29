@@ -437,6 +437,9 @@ app.get('/status', function(req, res){
 app.get('/userinfo', function(req, res){
    res.render('userinfo');
 });
+app.get('/userinfo2', function(req, res){
+   res.render('userinfo2');
+});
 
 //ROUTE TO TEMPORARY PAGE
 app.get('/temp', function(req, res){
@@ -445,6 +448,12 @@ app.get('/temp', function(req, res){
 app.get('/statustemp', function(req, res){
     res.render('statusTemp');
 });
+
+app.get('/receipt', function(req, res){
+    res.render('receipt');
+});
+
+
 
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
