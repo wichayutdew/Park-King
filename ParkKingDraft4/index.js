@@ -300,7 +300,11 @@ app.use(bodyParser.urlencoded({extended: true}));
                          // create the loginMessage and save it to session as flashdata
                     }else{
                         console.log('logged in!!!');
-                        //connection.release();
+                        var finalImg = {
+                              contentType: req.file.mimetype,
+                              image:  new Buffer(encode_image, 'base64')
+                         };
+
                         return done(null, login_request);
                     }
                     connection.release();
@@ -430,7 +434,7 @@ app.get('/status', function(req, res){
 });
 
 //ROUTE TO USER INFO
-app.get('/userinfo',loggedIn, function(req, res){
+app.get('/userinfo', function(req, res){
    res.render('userinfo');
 });
 
