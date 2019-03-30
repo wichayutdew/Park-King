@@ -7,7 +7,7 @@ const multer = require('multer');
 //auto delete image after upload
 const autoReap  = require('multer-autoreap');
 var fs = require('fs');
-
+var getterSetter = require('./getterSetter');
 
 //tedious section
 var Connection = require('tedious').Connection;
@@ -407,7 +407,17 @@ app.get('/', function(req, res){
     res.redirect('/home');
 });
 app.get('/home',loggedIn, function(req, res){
-    res.render('home', {username: req.user});
+    var username = [];
+    pool.acquire(function (err, connection) {
+        if (err) {
+            console.error(err);
+            connection.release();
+            return;
+        }
+        username = getterSetter.getUserUsername(connection,'u');
+        console.log(username);
+    });
+    res.render('home', {username: username});
 });
 
 //ROUTE TO USER REGISTER PAGE
@@ -459,6 +469,7 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
+          connection.release();
           return;
       }
       var img = fs.readFileSync(req.file.path);
