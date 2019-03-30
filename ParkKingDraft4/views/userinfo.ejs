@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Profile Page</title>
 
@@ -21,11 +22,12 @@
                 <h3><strong>Profile</strong></h3>
                 <a href="/"><img src="/img/edit.png" width="10px" height="10px" alt=""></a>
                 <p>
-                    <%= currentUser.username %>
+                    Name: <%= currentUser.firstname %>
+                    <%= currentUser.lastname %>
                     <br>
-                    Type: Student
+                    TYPE: <%= currentUser.customerType %>
                     <br>
-                    ID: 5931252121
+                    ID: <%= currentUser.id %>
                 </p>
             </div>
             <div id="myCarDiv" class="statusDiv" style="background: white; color:black;">

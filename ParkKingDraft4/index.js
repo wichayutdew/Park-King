@@ -315,13 +315,10 @@ app.use(function(req, res, next){
                         //  UserImage.src = 'data:image/png;base64,'+imgPhase;
                         done(null, login_request);
                         username1 = req.user;
-                        currentUser = Customer(username1[0]);
+                        currentUser = require('./Customer.js').Customer(username1);
                     }
 
-<<<<<<< HEAD
                     connection.release();
-=======
->>>>>>> fe76476cfcf4dd6e7067d6789678d7790b019261
             });
             request.addParameter('username',TYPES.VarChar,username);
             var login_request = [];
@@ -414,7 +411,7 @@ app.get('/', function(req, res){
     res.redirect('/home');
 });
 app.get('/home',loggedIn, function(req, res){
-    res.render('home', {username: req.user});
+    res.render('home');
 });
 
 //ROUTE TO USER REGISTER PAGE
@@ -464,14 +461,6 @@ app.get('/statustemp', function(req, res){
     res.render('statusTemp');
 });
 
-<<<<<<< HEAD
-app.get('/receipt', function(req, res){
-    res.render('receipt');
-});
-
-
-
-=======
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
   pool.acquire(function (err, connection) {
@@ -509,7 +498,6 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
       //_login(req, username, password, done, );
   });
 },autoReap);
->>>>>>> 20e4706addb7bfca1d418ebfad91b1e6f3035e2f
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',

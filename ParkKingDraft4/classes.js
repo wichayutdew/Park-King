@@ -1,5 +1,4 @@
-require('getterSetter')
-export function Customer(username) {
+function Customer(username) {
   var username = username;
   var password = getUserPassword(username);
   var email = getUserEmail(username);
