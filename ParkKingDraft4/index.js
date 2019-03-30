@@ -225,14 +225,17 @@ app.use(function(req, res, next){
                     //console.log("above row object");
                     if (err){
                         console.log("signup error");
+                        connection.release();
                         return done(err);
                     }
                     if (customer_info.password!=customer_info.passwordCheck){
                         console.log('password does not match');
+                        connection.release();
                         return done(null,false);
                     }
                     if (rows.length != 0) {
                         console.log('this email is already taken');
+                        connection.release();
                         return done(null, false);
                     }else {
 
@@ -247,9 +250,10 @@ app.use(function(req, res, next){
                         newUserMysql.id = rows.insertId;
 
                         insert_newCustomer(connection,customer_info,done)
+                        connection.release();
                         return done(null, newUserMysql);
                     }
-                    connection.release();
+
                 }
             );
             //set parameterized query
@@ -290,6 +294,7 @@ app.use(function(req, res, next){
                     console.log(rowCount);
 
                     console.log('number of row returned')
+                    connection.release();
                     if(err){
                         //connection.release();
                         return done(err);
@@ -313,7 +318,10 @@ app.use(function(req, res, next){
                         currentUser = Customer(username1[0]);
                     }
 
+<<<<<<< HEAD
                     connection.release();
+=======
+>>>>>>> fe76476cfcf4dd6e7067d6789678d7790b019261
             });
             request.addParameter('username',TYPES.VarChar,username);
             var login_request = [];
@@ -369,20 +377,6 @@ function loggedIn(req, res, next) {
         res.redirect('/login');
     }
 }
-function isLoggedIn(req, res, next) {
-  // if user is authenticated in the session, carry on
-  if (req.isAuthenticated()) {
-    // obviouisly, don't use static strings...
-    // get these values from your authentication
-    // mmechanism
-    res.locals.currentUser = req.user;
-    //res.locals.userEmail = 'user@domain.com';
-    return next();
-  }
-
-  // if they aren't redirect them to the home page
-  res.redirect('/');
-}
 
 // loggedIn using example
 // app.get('/orders', loggedIn, function(req, res, next) {
@@ -419,7 +413,7 @@ storage: storage,
 app.get('/', function(req, res){
     res.redirect('/home');
 });
-app.get('/home', function(req, res){
+app.get('/home',loggedIn, function(req, res){
     res.render('home', {username: req.user});
 });
 
@@ -458,6 +452,9 @@ app.get('/status', function(req, res){
 app.get('/userinfo', function(req, res){
    res.render('userinfo', {currentUser: currentUser});
 });
+app.get('/userinfo2', function(req, res){
+   res.render('userinfo2');
+});
 
 //ROUTE TO TEMPORARY PAGE
 app.get('/temp', function(req, res){
@@ -467,17 +464,63 @@ app.get('/statustemp', function(req, res){
     res.render('statusTemp');
 });
 
+<<<<<<< HEAD
+app.get('/receipt', function(req, res){
+    res.render('receipt');
+});
+
+
+
+=======
+app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
+  console.log('Trying to add car');
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          return;
+      }
+      var img = fs.readFileSync(req.file.path);
+      var encode_image = img.toString('base64');
+      //use the connection as normal
+      var request = new Request(
+          'INSERT INTO dbo.Car(PlateNumber,Username,CarBrand,CarModel,CarPicture,CarColor) VALUES (@PlateNumber,@Username,@CarBrand,@CarModel,@CarPicture,@CarColor)',
+          function(err, rowCount, rows){
+
+              if(err){
+                  //connection.release();
+                  res.redirect('/carregister');
+              }else{
+                  console.log('Car added!!!');
+                  res.redirect('/home')
+              }
+              connection.release();
+      });
+      request.addParameter('PlateNumber',TYPES.VarChar,req.body.plateNumber);
+      request.addParameter('Username',TYPES.VarChar,req.user[0]);
+      request.addParameter('CarBrand',TYPES.VarChar,req.body.carBrand);
+      request.addParameter('CarModel',TYPES.VarChar,req.body.Model);
+      request.addParameter('CarPicture',TYPES.VarChar,encode_image);
+      request.addParameter('CarColor',TYPES.VarChar,req.body.carColor);
+
+      request.on('Done',function(err, rowCount, rows){
+      });
+
+      connection.execSql(request);
+      //_login(req, username, password, done, );
+  });
+},autoReap);
+>>>>>>> 20e4706addb7bfca1d418ebfad91b1e6f3035e2f
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',
     failureRedirect: '/login',
     session: true,
 }));
-app.post('/register', upload.single('profilePic'),autoReap ,passport.authenticate('local-signup' ,{
+app.post('/register', upload.single('profilePic'),passport.authenticate('local-signup' ,{
     successRedirect: '/login',
     failureRedirect: '/register',
     session: false
-}));
+}),autoReap);
 
 app.listen(3000, process.env.IP, function(){
     console.log('Park King Server is running on port 3000.....');
