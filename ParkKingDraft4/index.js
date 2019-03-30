@@ -1,3 +1,5 @@
+var username1;
+var currentUser;
 //NPM REQUIRE
 var express = require('express');
 const app = express();
@@ -306,9 +308,11 @@ app.use(function(req, res, next){
                         console.log('logged in!!!');
                         // var UserImage = new Image();
                         //  UserImage.src = 'data:image/png;base64,'+imgPhase;
-
-                        return done(null, login_request);
+                        done(null, login_request);
+                        username1 = req.user;
+                        currentUser = Customer(username1[0]);
                     }
+
                     connection.release();
             });
             request.addParameter('username',TYPES.VarChar,username);
@@ -452,7 +456,7 @@ app.get('/status', function(req, res){
 
 //ROUTE TO USER INFO
 app.get('/userinfo', function(req, res){
-   res.render('userinfo');
+   res.render('userinfo', {currentUser: currentUser});
 });
 
 //ROUTE TO TEMPORARY PAGE

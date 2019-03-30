@@ -1,17 +1,15 @@
-function Customer(username) {
-  this.username = username;
-  this.password = getUserPassword(username);
-  this.email = getUserEmail(username);
-  this.firstname = getUserFirstName(username);
-  this.lastname = getUserLastName(username);
-  this.type = getUserCustomerType(username)
-  if (this.type = student) {
-    this.userID = getUserStudentID(username)
-  } else if (this.type = professor) {
-    this.userID = getUserProfessorID(username)
-  } else {
-    this.userID = getUserNationalID(username)
-  }
-  this.reservable = getUserReservable(username);
-  this.cancel = getUserCancel(username);
+require('getterSetter')
+export function Customer(username) {
+  var username = username;
+  var password = getUserPassword(username);
+  var email = getUserEmail(username);
+  var firstname = getUserFirstName(username);
+  var lastname = getUserLastName(username);
+  var type = getUserCustomerType(username);
+  var studentID = getUserStudentID(username);
+  var professorID = getUserProfessorID(username);
+  var nationalID = getUserNationalID(username);
+  var cancel = getUserCancel(username);
+  var customerpicture = getUserCustomerPicture(username);
+  var reservable = getUserReservable(username);
 }
