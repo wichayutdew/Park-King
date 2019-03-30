@@ -455,6 +455,9 @@ app.get('/status', function(req, res){
 app.get('/userinfo', function(req, res){
    res.render('userinfo');
 });
+app.get('/userinfo2', function(req, res){
+   res.render('userinfo2');
+});
 
 //ROUTE TO TEMPORARY PAGE
 app.get('/temp', function(req, res){
@@ -464,6 +467,14 @@ app.get('/statustemp', function(req, res){
     res.render('statusTemp');
 });
 
+<<<<<<< HEAD
+app.get('/receipt', function(req, res){
+    res.render('receipt');
+});
+
+
+
+=======
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
   pool.acquire(function (err, connection) {
@@ -502,6 +513,7 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
       //_login(req, username, password, done, );
   });
 },autoReap);
+>>>>>>> 20e4706addb7bfca1d418ebfad91b1e6f3035e2f
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',

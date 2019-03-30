@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Home Page</title>
+  <!-- <link rel="stylesheet" href="/stylesheet/tempStyle.css"> -->
+  <!-- font awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+  <style>
+
+    body {
+      background-color: black;
+    }
+
+    .bodyDiv {
+        display: flex;
+        height: 100vh;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .receiptDiv {
+      background: white;
+      border-radius: 25px;
+      width: 60%;
+      height: 70%;
+      padding: 0px 20px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    #receiptHeader {
+      <!-- background: grey; -->
+    }
+    #dateAndName {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .detailSec{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      padding-bottom: 10px;
+    }
+
+    #receipt-footer {
+      text-align: center;
+      font-size: 11px;
+    }
+
+
+  </style>
+</head>
+
+<body>
+
+  <div class="bodyDiv">
+
+    <div class="receiptDiv">
+
+
+      <div>
+      <section id="receiptHeader">
+        <h3><center>Reserve ID: 27638126378</center></h3>
+      </section>
+      <hr>
+      <section id="dateAndName">
+        <span id="date"> 13/2/18 </span>
+        <span id="name"> John Doe </span>
+      </section>
+      <hr>
+
+
+        <section class="detailSec">
+          <span>Check-in:</span>
+          <span>13:03</span>
+        </section>
+        <section class="detailSec">
+          <span>Check-out:</span>
+          <span>13:02</span>
+        </section>
+        <section class="detailSec">
+          <span>Duration:</span>
+          <span>3 HRS. 23 MINS</span>
+        </section>
+        <section class="detailSec">
+          <span>Building:</span>
+          <span>AKSORN BUILDING</span>
+        </section>
+        <section class="detailSec">
+          <span>Fee:</span>
+          <span>75 BAHT</span>
+        </section>
+        <section class="detailSec">
+          <span>Payment:</span>
+          <span>K-BANK</span>
+        </section>
+        </div>
+
+
+        <div id="receipt-footer">
+            Park King Co. Ltd., South Sathorn Road, <br>Silom. Bangrak, 10500, Bangkok
+            <br>Tel: 02675775757 <br>E-mail: noreply@parkking.com
+        </div>
+
+
+    </div>
+
+
+  </div>
+
+</body>
+</html>
