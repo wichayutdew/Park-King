@@ -18,7 +18,7 @@ var TYPES =require('tedious').TYPES;
             returnedValue = null;
           } else {
             connection.release();
-            console.log(returnedValue[0]);
+            //console.log(returnedValue[0]);
             return returnedValue[0]
           }
 

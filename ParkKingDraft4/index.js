@@ -140,6 +140,7 @@ app.use(function(req, res, next){
         pool.acquire(function (err, connection) {
             if (err) {
               console.error(err);
+              connection.release();
               return;
             }
             var request = new Request(
@@ -165,14 +166,6 @@ app.use(function(req, res, next){
 
             connection.execSql(request);
           });
-        // connection.on('connect',function(err){
-        //     if(err){
-        //         console.log(err);
-        //     }else{
-        //     }
-        // });
-        // deserializer(user,done);
-
     });
 
     //passport model use for registeration
@@ -418,9 +411,8 @@ app.get('/home',loggedIn, function(req, res){
 
         //let username = getterSetter.getUserUsername(connection,req.user[0]);
         console.log(username.username);
-        console.log(username.getUserUsername());
+        res.render('home', {username: username.username});
     });
-    res.render('home', {username: username.username});
 });
 
 //ROUTE TO USER REGISTER PAGE
@@ -440,7 +432,7 @@ app.get('/carregister', function(req, res){
 });
 
 //ROUTE TO RESERVE PAGE
-app.get('/reserve', function(req, res){
+app.get('/reserve',loggedIn, function(req, res){
     res.render('reserve');
 });
 
@@ -471,6 +463,9 @@ app.get('/statustemp', function(req, res){
 });
 app.get('/receipt', function(req, res){
     res.render('receipt');
+});
+app.post('/reserve',function(req,res){
+
 });
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
