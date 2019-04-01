@@ -7,7 +7,7 @@ const multer = require('multer');
 //auto delete image after upload
 const autoReap  = require('multer-autoreap');
 var fs = require('fs');
-var getterSetter = require('./getterSetter');
+var getterSetter = require('./getterSetter.js');
 
 //tedious section
 var Connection = require('tedious').Connection;
@@ -414,10 +414,13 @@ app.get('/home',loggedIn, function(req, res){
             connection.release();
             return;
         }
-        username = getterSetter.getUserUsername(connection,'u');
-        console.log(username);
+        username = new getterSetter(connection,req.user[0]);
+
+        //let username = getterSetter.getUserUsername(connection,req.user[0]);
+        console.log(username.username);
+        console.log(username.getUserUsername());
     });
-    res.render('home', {username: username});
+    res.render('home', {username: username.username});
 });
 
 //ROUTE TO USER REGISTER PAGE
@@ -466,15 +469,9 @@ app.get('/temp', function(req, res){
 app.get('/statustemp', function(req, res){
     res.render('statusTemp');
 });
-
-<<<<<<< HEAD
 app.get('/receipt', function(req, res){
     res.render('receipt');
 });
-
-
-
-=======
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
   pool.acquire(function (err, connection) {
@@ -513,7 +510,7 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
       //_login(req, username, password, done, );
   });
 },autoReap);
->>>>>>> 20e4706addb7bfca1d418ebfad91b1e6f3035e2f
+
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',

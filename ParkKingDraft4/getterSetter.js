@@ -2,33 +2,41 @@ var Connection = require('tedious').Connection;
 var ConnectionPool = require('tedious-connection-pool');
 var Request = require('tedious').Request;
 var TYPES =require('tedious').TYPES;
-module.exports ={
 //*******************************************************Customer's Getter***********************************************
-  getUserUsername : function(connection,username) {
-  var request = new Request(
-    'SELECT Username FROM dbo.Customer WHERE Username = @username',
-    function(err, rowCount, rows) {
-      if (err) {
-        console.log(err);
-        connection.release();
-        return ;
-      } else {
-        connection.release();
 
-      }
-    });
-  var returnedValue = [];
-  request.addParameter('username',TYPES.VarChar,username);
+  module.exports = function(connection,username) {
+    this.connection = connection;
+    this.username = username;
 
-  request.on('row', function(columns) {
-    columns.forEach(function(column) {
-      returnedValue.push(column.value);
-    });
-  });
-  connection.execSql(request);
-  return returnedValue;
-}
-}
+    this.getUserUsername = function(){
+      var request = new Request(
+        'SELECT Username FROM dbo.Customer WHERE Username = @username',
+        function(err, rowCount, rows) {
+          if (err) {
+            console.log(err);
+            connection.release();
+            returnedValue = null;
+          } else {
+            connection.release();
+            console.log(returnedValue[0]);
+            return returnedValue[0]
+          }
+
+        });
+      request.addParameter('username',TYPES.VarChar,username);
+
+      var returnedValue  = [];
+      request.on('row', function (columns) {
+          columns.forEach(function(column) {
+              returnedValue.push(column.value);
+          });
+          //console.log(login_request + 'info');
+      });
+      connection.execSql(request);
+      //return returnedValue[0];
+    }
+
+  }
 //   function getUserPassword(username) {
 //   var request = new request("SELECT C.Password FROM dbo.Customer C WHERE C.Username = ' " + username + " ' ",
 //     function(err, rowCount, rows) {
