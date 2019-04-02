@@ -463,12 +463,13 @@ app.get('/status', function(req, res){
 });
 
 //ROUTE TO USER INFO
-app.get('/userinfo', function(req, res){
+app.get('/userinfo', loggedIn, function(req, res){
 
    res.render('userinfo', {
      currentUser: req.user ,
      currentUserID: checkUserType(req.user[5]),
-     userPicmenu: req.user[10]
+     userPicmenu: req.user[10],
+     username: req.user[0]
    });
 
    // res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5])});

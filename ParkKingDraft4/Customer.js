@@ -18,7 +18,6 @@ module.exports = function(connection,username) {
           //console.log(returnedValue[0]);
           return returnedValue[0];
         }
-
       });
     request.addParameter('username',TYPES.VarChar,username);
 
