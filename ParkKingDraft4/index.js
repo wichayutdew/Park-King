@@ -399,6 +399,7 @@ storage: storage,
 app.get('/', function(req, res){
     res.redirect('/home');
 });
+
 app.get('/home',loggedIn, function(req, res){
     var username = [];
     pool.acquire(function (err, connection) {
@@ -408,13 +409,17 @@ app.get('/home',loggedIn, function(req, res){
             return;
         }
         username = new getterSetter(connection,req.user[0]);
-
         //let username = getterSetter.getUserUsername(connection,req.user[0]);
         console.log(username.username);
         res.render('home', {username: username.username});
     });
 });
-
+app.get('/menuBar',function(req,res){
+    //var IMG = base64_encode(req.user[10]);
+    console.log('menuBar: sending image string');
+    var IMG = req.user[10];
+    res.render('menuBar', {userPicmenu: IMG});
+});
 //ROUTE TO USER REGISTER PAGE
 app.get('/register', function(req, res){
     res.render('register');
