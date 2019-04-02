@@ -482,7 +482,7 @@ app.get('/userinfo', loggedIn, function(req, res){
 
 =======
 app.get('/userinfo', function(req, res){
-<<<<<<< HEAD
+
    pool.acquire(function (err, connection) {
        if (err) {
            console.error(err);
@@ -492,23 +492,13 @@ app.get('/userinfo', function(req, res){
          console.log(data);
          currentCustomer = data;
        })
-       res.render('userinfo', {current: currentCustomer,currentUser: req.user,currentUserID: checkUserType(req.user[5]),userPicmenu: req.user[10]});
+       res.render('userinfo', {current: currentCustomer, currentUser: req.user,currentUserID: checkUserType(req.user[5]),userPicmenu: req.user[10]});
      });
-     // console.log(currentCustomer);
 
-=======
-<<<<<<< HEAD
-   res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5]),userPicmenu: req.user[10] });
-=======
-   // res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5])});
-<<<<<<< HEAD
-   res.render('userinfo', {currentUser: currentUser, username: req.user[0], userPicmenu: req.user[10]});
-=======
-   res.render('userinfo', {currentUser: currentUser, userPicmenu: req.user[10]});
->>>>>>> 656b375747f63bd81a64ef0aab4db4dd4f1fda63
->>>>>>> 010f5430cb984b88a0a10bfabefbce3caa9c4487
->>>>>>> 7078d9f059aaa6cd72e8e26df535bb6aa45028f3
->>>>>>> 2b509c2675cb0ebf8813864f2aeb4582853c28be
+
+   // res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5]),userPicmenu: req.user[10] });
+
+
 });
 app.get('/userinfo2', function(req, res){
    res.render('userinfo2');
