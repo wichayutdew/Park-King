@@ -1,5 +1,5 @@
-var username1;
 var currentUser;
+var currentCustomer;
 var customer = require('./Customer.js');
 //NPM REQUIRE
 var express = require('express');
@@ -427,7 +427,7 @@ app.get('/home',loggedIn, function(req, res){
     //     //console.log(username.getUserUsername());
     //     // var output = username.getUserUsername();
     //     console.log(username);
-    //res.send({username: req.user[0]});
+    // res.send({username: req.user[0]});
     res.render('home',{username: req.user[0],userPicmenu: req.user[10]});
     // });
 });
@@ -464,8 +464,19 @@ app.get('/status', function(req, res){
 
 //ROUTE TO USER INFO
 app.get('/userinfo', function(req, res){
-   // res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5])});
-   res.render('userinfo', {currentUser: currentUser, userPicmenu: req.user[10]});
+   pool.acquire(function (err, connection) {
+       if (err) {
+           console.error(err);
+           connection.release();
+       }
+       currentUser = new customer(connection,req.user[0],function(data){
+         console.log(data);
+         currentCustomer = data;
+       })
+       res.render('userinfo', {current: currentCustomer,currentUser: req.user,currentUserID: checkUserType(req.user[5]),userPicmenu: req.user[10]});
+     });
+     // console.log(currentCustomer);
+
 });
 app.get('/userinfo2', function(req, res){
    res.render('userinfo2');
