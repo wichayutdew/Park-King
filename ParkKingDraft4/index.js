@@ -1,3 +1,6 @@
+var username1;
+var currentUser;
+var customer = require('./Customer.js');
 //NPM REQUIRE
 var express = require('express');
 const app = express();
@@ -7,7 +10,7 @@ const multer = require('multer');
 //auto delete image after upload
 const autoReap  = require('multer-autoreap');
 var fs = require('fs');
-
+var getterSetter = require('./getterSetter.js');
 
 //tedious section
 var Connection = require('tedious').Connection;
@@ -18,6 +21,17 @@ var TYPES =require('tedious').TYPES;
 //authentication section
 passport = require('passport');
 LocalStrategy = require('passport-local');
+
+//check user TYPE
+var userID
+function checkUserType(user) {
+  if(user="Student")
+  userID=user[6];
+  else if (user="Professor")
+  userID=user[7];
+  else userID=user[8];
+  return userID;
+}
 
 
 //===================================================================================================================================================
@@ -140,6 +154,7 @@ app.use(function(req, res, next){
         pool.acquire(function (err, connection) {
             if (err) {
               console.error(err);
+              connection.release();
               return;
             }
             var request = new Request(
@@ -165,14 +180,6 @@ app.use(function(req, res, next){
 
             connection.execSql(request);
           });
-        // connection.on('connect',function(err){
-        //     if(err){
-        //         console.log(err);
-        //     }else{
-        //     }
-        // });
-        // deserializer(user,done);
-
     });
 
     //passport model use for registeration
@@ -311,10 +318,10 @@ app.use(function(req, res, next){
                         console.log('logged in!!!');
                         // var UserImage = new Image();
                         //  UserImage.src = 'data:image/png;base64,'+imgPhase;
-
-                        return done(null, login_request);
+                        done(null, login_request);
                     }
 
+                    connection.release();
             });
             request.addParameter('username',TYPES.VarChar,username);
             var login_request = [];
@@ -403,14 +410,28 @@ storage: storage,
 //=======================================================
 
 //ROUTE TO HOME PAGE
-app.get('/', function(req, res){
+app.get('/',loggedIn, function(req, res){
     res.redirect('/home');
 });
+
 app.get('/home',loggedIn, function(req, res){
-    res.render('home', {username: req.user});
+    // var username = [];
+    // pool.acquire(function (err, connection) {
+    //     if (err) {
+    //         console.error(err);
+    //         connection.release();
+    //         return;
+    //     }
+    //     username = getterSetter.test(connection,req.user[0]);
+    //     //let username = getterSetter.getUserUsername(connection,req.user[0]);
+    //     //console.log(username.getUserUsername());
+    //     // var output = username.getUserUsername();
+    //     console.log(username);
+    //res.send({username: req.user[0]});
+    res.render('home',{username: req.user[0],userPicmenu: req.user[10]});
+    // });
 });
 
-//ROUTE TO USER REGISTER PAGE
 app.get('/register', function(req, res){
     res.render('register');
     //res.sendFile(__dirname + '/register.ejs');
@@ -427,7 +448,7 @@ app.get('/carregister', function(req, res){
 });
 
 //ROUTE TO RESERVE PAGE
-app.get('/reserve', function(req, res){
+app.get('/reserve',loggedIn, function(req, res){
     res.render('reserve');
 });
 
@@ -443,7 +464,8 @@ app.get('/status', function(req, res){
 
 //ROUTE TO USER INFO
 app.get('/userinfo', function(req, res){
-   res.render('userinfo');
+   // res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5])});
+   res.render('userinfo', {currentUser: currentUser, userPicmenu: req.user[10]});
 });
 app.get('/userinfo2', function(req, res){
    res.render('userinfo2');
@@ -460,9 +482,52 @@ app.get('/statustemp', function(req, res){
 app.get('/receipt', function(req, res){
     res.render('receipt');
 });
+app.post('/reserve',function(req,res){
+
+<<<<<<< HEAD
 
 
+=======
+});
+app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
+  console.log('Trying to add car');
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+          return;
+      }
+      var img = fs.readFileSync(req.file.path);
+      var encode_image = img.toString('base64');
+      //use the connection as normal
+      var request = new Request(
+          'INSERT INTO dbo.Car(PlateNumber,Username,CarBrand,CarModel,CarPicture,CarColor) VALUES (@PlateNumber,@Username,@CarBrand,@CarModel,@CarPicture,@CarColor)',
+          function(err, rowCount, rows){
 
+              if(err){
+                  //connection.release();
+                  res.redirect('/carregister');
+              }else{
+                  console.log('Car added!!!');
+                  res.redirect('/home')
+              }
+              connection.release();
+      });
+      request.addParameter('PlateNumber',TYPES.VarChar,req.body.plateNumber);
+      request.addParameter('Username',TYPES.VarChar,req.user[0]);
+      request.addParameter('CarBrand',TYPES.VarChar,req.body.carBrand);
+      request.addParameter('CarModel',TYPES.VarChar,req.body.Model);
+      request.addParameter('CarPicture',TYPES.VarChar,encode_image);
+      request.addParameter('CarColor',TYPES.VarChar,req.body.carColor);
+
+      request.on('Done',function(err, rowCount, rows){
+      });
+
+      connection.execSql(request);
+      //_login(req, username, password, done, );
+  });
+},autoReap);
+>>>>>>> b8693e7c98f35b92f8a568b867f2dc52d97c4815
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',
