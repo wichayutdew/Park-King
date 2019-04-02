@@ -405,9 +405,6 @@ app.get('/', function(req, res){
 });
 
 app.get('/home',loggedIn, function(req, res){
-<<<<<<< HEAD
-    res.render('home');
-=======
     var username = [];
     pool.acquire(function (err, connection) {
         if (err) {
@@ -420,7 +417,6 @@ app.get('/home',loggedIn, function(req, res){
         console.log(username.username);
         res.render('home', {username: username.username});
     });
->>>>>>> a7f3d2dae6b414f4f7d0029b8c31faa78bfc991d
 });
 app.get('/menuBar',function(req,res){
     //var IMG = base64_encode(req.user[10]);
