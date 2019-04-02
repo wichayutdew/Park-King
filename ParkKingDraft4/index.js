@@ -415,21 +415,6 @@ app.get('/',loggedIn, function(req, res){
 });
 
 app.get('/home',loggedIn, function(req, res){
-<<<<<<< HEAD
-    var username = [];
-    pool.acquire(function (err, connection) {
-        if (err) {
-            console.error(err);
-            connection.release();
-            return;
-        }
-        username = new getterSetter(connection,req.user[0]);
-        currentUser = new customer(connection,req.user[0]);
-        //let username = getterSetter.getUserUsername(connection,req.user[0]);
-        console.log(currentUser.username);
-        res.render('home', {currentUser: currentUser.username});
-    });
-=======
     // var username = [];
     // pool.acquire(function (err, connection) {
     //     if (err) {
@@ -445,7 +430,6 @@ app.get('/home',loggedIn, function(req, res){
     //res.send({username: req.user[0]});
     res.render('home',{username: req.user[0],userPicmenu: req.user[10]});
     // });
->>>>>>> a05c3fca12eb2a54d5558d079a61de6ee4a536cb
 });
 
 app.get('/register', function(req, res){
@@ -480,27 +464,8 @@ app.get('/status', function(req, res){
 
 //ROUTE TO USER INFO
 app.get('/userinfo', function(req, res){
-<<<<<<< HEAD
-  var username = [];
-  pool.acquire(function (err, connection) {
-      if (err) {
-          console.error(err);
-          connection.release();
-          return;
-      }
-      username = new getterSetter(connection,req.user[0]);
-
-      //let username = getterSetter.getUserUsername(connection,req.user[0]);
-      console.log(username.username);
-      res.render('userinfo', {username: username.username});
-  });
-=======
-<<<<<<< HEAD
-   res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5]) });
-=======
+   // res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5])});
    res.render('userinfo', {currentUser: currentUser, userPicmenu: req.user[10]});
->>>>>>> e72784ef2cfe6ad734d19b612458005ea4019e75
->>>>>>> a05c3fca12eb2a54d5558d079a61de6ee4a536cb
 });
 app.get('/userinfo2', function(req, res){
    res.render('userinfo2');
@@ -513,10 +478,7 @@ app.get('/temp', function(req, res){
 app.get('/statustemp', function(req, res){
     res.render('statusTemp');
 });
-<<<<<<< HEAD
-=======
 
->>>>>>> a05c3fca12eb2a54d5558d079a61de6ee4a536cb
 app.get('/receipt', function(req, res){
     res.render('receipt');
 });
@@ -561,10 +523,6 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
       //_login(req, username, password, done, );
   });
 },autoReap);
-<<<<<<< HEAD
-
-=======
->>>>>>> a05c3fca12eb2a54d5558d079a61de6ee4a536cb
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',
