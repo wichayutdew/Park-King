@@ -1,8 +1,11 @@
+var express = require('express');
+var bodyParser = require('body-parser');
 var Connection = require('tedious').Connection;
 var ConnectionPool = require('tedious-connection-pool');
 var Request = require('tedious').Request;
 var TYPES =require('tedious').TYPES;
 //*******************************************************Customer's Getter***********************************************
+<<<<<<< HEAD
 
   module.exports = function(connection,username) {
     this.connection = connection;
@@ -36,6 +39,49 @@ var TYPES =require('tedious').TYPES;
       //return returnedValue[0];
     }
   }
+=======
+var returnedValue = [];
+function test(connection, username){
+  getUserUsername (connection, username);
+  console.log(returnedValue);
+  return returnedValue;
+}
+function getUserUsername (connection, username){
+  var request = new Request(
+    'SELECT Username FROM dbo.Customer WHERE Username = @username',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+
+        //return 'hello';
+      }
+
+    });
+  request.addParameter('username',TYPES.VarChar,username);
+
+  //var returnedValue  = [];
+  request.on('row', function (columns) {
+      columns.forEach(function(column) {
+          returnedValue.push(column.value);
+      });
+      //console.log(login_request + 'info');
+  });
+
+  // request.on('Done',function(err, rowCount, rows){
+  //   console.log(returnedValue[0]);
+  //   return returnedValue[0];
+  // });
+  connection.execSql(request);
+
+  //return 'hello';
+}
+
+module.exports.test = test;
+>>>>>>> a05c3fca12eb2a54d5558d079a61de6ee4a536cb
 //   function getUserPassword(username) {
 //   var request = new request("SELECT C.Password FROM dbo.Customer C WHERE C.Username = ' " + username + " ' ",
 //     function(err, rowCount, rows) {
