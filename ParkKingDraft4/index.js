@@ -427,8 +427,13 @@ app.get('/home',loggedIn, function(req, res){
     //     //console.log(username.getUserUsername());
     //     // var output = username.getUserUsername();
     //     console.log(username);
+<<<<<<< HEAD
     // res.send({username: req.user[0]});
     res.render('home',{username: req.user[0],userPicmenu: req.user[10]});
+=======
+    //res.send({username: req.user[0]});
+    res.render('home',{currentUser: currentUser, username: req.user[0],userPicmenu: req.user[10]});
+>>>>>>> 7078d9f059aaa6cd72e8e26df535bb6aa45028f3
     // });
 });
 
@@ -464,6 +469,7 @@ app.get('/status', function(req, res){
 
 //ROUTE TO USER INFO
 app.get('/userinfo', function(req, res){
+<<<<<<< HEAD
    pool.acquire(function (err, connection) {
        if (err) {
            console.error(err);
@@ -477,6 +483,18 @@ app.get('/userinfo', function(req, res){
      });
      // console.log(currentCustomer);
 
+=======
+<<<<<<< HEAD
+   res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5]),userPicmenu: req.user[10] });
+=======
+   // res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5])});
+<<<<<<< HEAD
+   res.render('userinfo', {currentUser: currentUser, username: req.user[0], userPicmenu: req.user[10]});
+=======
+   res.render('userinfo', {currentUser: currentUser, userPicmenu: req.user[10]});
+>>>>>>> 656b375747f63bd81a64ef0aab4db4dd4f1fda63
+>>>>>>> 010f5430cb984b88a0a10bfabefbce3caa9c4487
+>>>>>>> 7078d9f059aaa6cd72e8e26df535bb6aa45028f3
 });
 app.get('/userinfo2', function(req, res){
    res.render('userinfo2');
@@ -495,6 +513,10 @@ app.get('/receipt', function(req, res){
 });
 app.post('/reserve',function(req,res){
 
+// <<<<<<< HEAD
+//
+//
+// =======
 });
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
@@ -534,6 +556,7 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
       //_login(req, username, password, done, );
   });
 },autoReap);
+// >>>>>>> b8693e7c98f35b92f8a568b867f2dc52d97c4815
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',
