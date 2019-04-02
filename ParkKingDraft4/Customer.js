@@ -4,8 +4,8 @@ var Request = require('tedious').Request;
 var TYPES =require('tedious').TYPES;
 
 
-module.exports = function(connection,username) {
-  this.username = function(){
+module.exports = function(connection,username,Callback) {
+  this.firstname = function(){
     var request = new Request(
       'SELECT Username FROM dbo.Customer WHERE Username = @username',
       function(err, rowCount, rows) {
@@ -14,13 +14,12 @@ module.exports = function(connection,username) {
           connection.release();
           returnedValue = null;
         } else {
+          Callback(returnedValue[3]);
           connection.release();
           //console.log(returnedValue[0]);
-          return returnedValue[0];
         }
       });
     request.addParameter('username',TYPES.VarChar,username);
-
     var returnedValue  = [];
     request.on('row', function (columns) {
         columns.forEach(function(column) {
