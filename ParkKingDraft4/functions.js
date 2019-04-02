@@ -128,7 +128,9 @@ function checkAvailabiliy(buildingname){
 //click reserve, generate reserve
 function reserveSpot(platenumber, username, floor, slot, buildingname){
   if(getUserReservable(username) == 1 && (getParkingSpotOccupied(floor, slot, buildingname) == 0 || getParkingSpotSensor(floor, slot, buildingname) == 0)){
+    //create reserve ID
     var reserveid = generateTokenID();
+    //insert reserve
     Reserve(platenumber, username, floor, slot, buildingname, null, null, null, null, reserveid, 0);
     setUserReservable(username,0);
     setParkingSpotOccupied(floor, slot, buidlingname, 1);
