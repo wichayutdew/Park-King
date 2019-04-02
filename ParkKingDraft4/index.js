@@ -21,6 +21,17 @@ var TYPES =require('tedious').TYPES;
 passport = require('passport');
 LocalStrategy = require('passport-local');
 
+//check user TYPE
+var userID
+function checkUserType(user) {
+  if(user="Student")
+  userID=user[6];
+  else if (user="Professor")
+  userID=user[7];
+  else userID=user[8];
+  return userID;
+}
+
 
 //===================================================================================================================================================
 var poolConfig = {
@@ -457,7 +468,7 @@ app.get('/status', function(req, res){
 
 //ROUTE TO USER INFO
 app.get('/userinfo', function(req, res){
-   res.render('userinfo', {currentUser: currentUser});
+   res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5]) });
 });
 app.get('/userinfo2', function(req, res){
    res.render('userinfo2');
@@ -470,16 +481,13 @@ app.get('/temp', function(req, res){
 app.get('/statustemp', function(req, res){
     res.render('statusTemp');
 });
-<<<<<<< HEAD
 
-=======
 app.get('/receipt', function(req, res){
     res.render('receipt');
 });
 app.post('/reserve',function(req,res){
 
 });
->>>>>>> a7f3d2dae6b414f4f7d0029b8c31faa78bfc991d
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
   pool.acquire(function (err, connection) {
@@ -518,10 +526,6 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
       //_login(req, username, password, done, );
   });
 },autoReap);
-<<<<<<< HEAD
-=======
-
->>>>>>> a7f3d2dae6b414f4f7d0029b8c31faa78bfc991d
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',
