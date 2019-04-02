@@ -1,5 +1,5 @@
-var username1;
 var currentUser;
+var currentCustomer;
 var customer = require('./Customer.js');
 
 //NPM REQUIRE
@@ -443,7 +443,7 @@ app.get('/home',loggedIn, function(req, res){
     //     //console.log(username.getUserUsername());
     //     // var output = username.getUserUsername();
     //     console.log(username);
-    //res.send({username: req.user[0]});
+    // res.send({username: req.user[0]});
     res.render('home',{username: req.user[0],userPicmenu: req.user[10]});
     // });
 });
@@ -480,8 +480,21 @@ app.get('/status', function(req, res){
 });
 
 //ROUTE TO USER INFO
-app.get('/userinfo', function(req, res){
-   res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5]),userPicmenu: req.user[10] });
+app.get('/userinfo', loggedIn, function(req, res){
+
+   res.render('userinfo', {
+     currentUser: req.user ,
+     currentUserID: checkUserType(req.user[5]),
+     userPicmenu: req.user[10],
+     username: req.user[0]
+   });
+
+   // res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5])});
+
+>>>>>>> 010f5430cb984b88a0a10bfabefbce3caa9c4487
+>>>>>>> 7078d9f059aaa6cd72e8e26df535bb6aa45028f3
+>>>>>>> 2b509c2675cb0ebf8813864f2aeb4582853c28be
+>>>>>>> bfdfaadabcd206bb320ad824076619c7a2d82125
 });
 app.get('/userinfo2', function(req, res){
    res.render('userinfo2');
