@@ -1,8 +1,8 @@
-<div id="mainNavBar">
+<!-- <div id="mainNavBar">
     <div id="navArea" class="d-flex w-100 p-0 justify-content-between">
         <div id="logoDiv">
             <a href="/">
-              <img src="data:image/png;base64,<%=userPicmenu%>" class="rounded-circle border border-light" width="60" height="60" alt="PARK KING">
+              <img src="data:image/png;base64,!!!!!userPicmenu!!!!!" class="rounded-circle border border-light" width="60" height="60" alt="PARK KING">
             </a>
         </div>
         <div id="menuButton">
@@ -15,7 +15,7 @@
     <div id="mySidenav" class="sidenav">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
         <section id="profileMenu">
-            <img src="data:image/png;base64,<%=userPicmenu%>" width="50" height="50" id="profileBtn" alt="">
+            <img src="data:image/png;base64,!!!!!!userPicmenu!!!!!" width="50" height="50" id="profileBtn" alt="">
             <a href="/userinfo" id="profileName">John Doe</a>
         </section>
         <a href="/home">Home</a>
@@ -51,4 +51,45 @@
     //   }
     //   prevScrollpos = currentScrollPos;
     // }
-  </script>
+  </script>  -->
+
+
+
+
+    <nav>
+        <section class="menu">
+            <a class="top-menu-item" href="#"><img src="img/pklogo2.png"></a>
+            <a id="profileBut" class="top-menu-item" href="#"><img src="img/profileeee22.png"></a>
+        </section>
+
+        <section class="profile-menu">
+            <div class="profile-menu-div">
+                <li><img src="data:image/png;base64,<%= userPicmenu %>" alt=""></li>
+                <li><h4>Welcome <%= username %> !</h4></li>
+                <div class="notification">
+                    <li>Your car have beeen stolen!!!</li>
+                    <li>Click here to learn more about our payment system</li>
+                </div>
+                <li><a href="#" class="button pink">View Profile</a></li>
+            </div>
+        </section>
+
+        <section class="menu">
+            <a class="menu-item green" href="#">status</a>
+            <a class="menu-item orange" href="#">my QR</a>
+            <a class="menu-item purple" href="#">reserve</a>
+        </section>
+    </nav>
+
+    <section class="body-section">
+
+    </section>
+
+
+    <script>
+
+        $('#profileBut').on('click', function(){
+            $('.profile-menu').slideToggle(500);
+        });
+
+    </script>

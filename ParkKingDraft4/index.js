@@ -484,10 +484,10 @@ app.get('/receipt', function(req, res){
 });
 app.post('/reserve',function(req,res){
 
-<<<<<<< HEAD
-
-
-=======
+// <<<<<<< HEAD
+//
+//
+// =======
 });
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
@@ -527,7 +527,7 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
       //_login(req, username, password, done, );
   });
 },autoReap);
->>>>>>> b8693e7c98f35b92f8a568b867f2dc52d97c4815
+// >>>>>>> b8693e7c98f35b92f8a568b867f2dc52d97c4815
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',
