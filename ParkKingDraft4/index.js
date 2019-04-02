@@ -1,5 +1,6 @@
 var username1;
 var currentUser;
+var customer = require('./Customer.js');
 //NPM REQUIRE
 var express = require('express');
 const app = express();
@@ -318,8 +319,6 @@ app.use(function(req, res, next){
                         // var UserImage = new Image();
                         //  UserImage.src = 'data:image/png;base64,'+imgPhase;
                         done(null, login_request);
-                        username1 = req.user;
-                        currentUser = require('./Customer.js').Customer(username1);
                     }
 
                     connection.release();
@@ -465,7 +464,12 @@ app.get('/status', function(req, res){
 
 //ROUTE TO USER INFO
 app.get('/userinfo', function(req, res){
+<<<<<<< HEAD
    res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5]),userPicmenu: req.user[10] });
+=======
+   // res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5])});
+   res.render('userinfo', {currentUser: currentUser, userPicmenu: req.user[10]});
+>>>>>>> 656b375747f63bd81a64ef0aab4db4dd4f1fda63
 });
 app.get('/userinfo2', function(req, res){
    res.render('userinfo2');
@@ -484,6 +488,10 @@ app.get('/receipt', function(req, res){
 });
 app.post('/reserve',function(req,res){
 
+<<<<<<< HEAD
+
+
+=======
 });
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
@@ -523,6 +531,7 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
       //_login(req, username, password, done, );
   });
 },autoReap);
+>>>>>>> b8693e7c98f35b92f8a568b867f2dc52d97c4815
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',
