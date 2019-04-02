@@ -428,7 +428,7 @@ app.get('/home',loggedIn, function(req, res){
     //     // var output = username.getUserUsername();
     //     console.log(username);
     //res.send({username: req.user[0]});
-    res.render('home',{username: req.user[0],userPicmenu: req.user[10]});
+    res.render('home',{currentUser: currentUser, username: req.user[0],userPicmenu: req.user[10]});
     // });
 });
 
@@ -465,7 +465,7 @@ app.get('/status', function(req, res){
 //ROUTE TO USER INFO
 app.get('/userinfo', function(req, res){
    // res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5])});
-   res.render('userinfo', {currentUser: currentUser, userPicmenu: req.user[10]});
+   res.render('userinfo', {currentUser: currentUser, username: req.user[0], userPicmenu: req.user[10]});
 });
 app.get('/userinfo2', function(req, res){
    res.render('userinfo2');

@@ -102,18 +102,28 @@ Set background color using class
 Menu Bar
 ============================================================ */
 nav {
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
-    flex-direction: column;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
 }
 
 nav .menu {
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
-    justify-content: space-between;
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
     margin: 5px 0;
 }
 
 nav .menu a.top-menu-item {
-    flex-basis: 10%;
+    -ms-flex-preferred-size: 10%;
+        flex-basis: 10%;
 }
 
 .menu img {
@@ -140,9 +150,16 @@ nav .menu a.menu-item {
 
 .profile-menu-div {
   padding: 20px 20px 10px;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
 
 .profile-menu-div li {
@@ -163,8 +180,13 @@ nav .menu a.menu-item {
 }
 
 .notification{
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  flex-direction: column;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
   width: 80%;
   margin-bottom: 15px;
   margin-right: 3px;
@@ -190,7 +212,6 @@ nav .menu a.menu-item {
   padding: 10px 20px;
   border-radius: 10px;
 }
-
 
 /* ============================================================
 Home Page

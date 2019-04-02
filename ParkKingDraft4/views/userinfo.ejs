@@ -14,11 +14,12 @@
     </head>
 
     <body>
+
         <% include partials/menuBar %>
 
         <div id="main">
             <div id="profileDiv" style="background: white; color: black;">
-                <img src="data:image/png;base64,<%= currentUser[10]%>" width="70px" height="70px" alt="" class="rounded-circle"><br>
+                <img src="data:image/png;base64,<%= userPicmenu %>" width="70px" height="70px" alt="" class="rounded-circle"><br>
                 <h3><strong>Profile</strong></h3>
                 <a href="/"><img src="/img/edit.png" width="10px" height="10px" alt=""></a>
                 <p>
