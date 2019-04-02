@@ -454,7 +454,7 @@ app.get('/status', function(req, res){
 
 //ROUTE TO USER INFO
 app.get('/userinfo', function(req, res){
-   res.render('userinfo', {currentUser: currentUser});
+   res.render('userinfo', {currentUser: currentUser, userPicmenu: req.user[10]});
 });
 app.get('/userinfo2', function(req, res){
    res.render('userinfo2');
