@@ -1,5 +1,6 @@
 var username1;
 var currentUser;
+var customer = require('./Customer.js');
 //NPM REQUIRE
 var express = require('express');
 const app = express();
@@ -307,8 +308,6 @@ app.use(function(req, res, next){
                         // var UserImage = new Image();
                         //  UserImage.src = 'data:image/png;base64,'+imgPhase;
                         done(null, login_request);
-                        username1 = req.user;
-                        currentUser = require('./Customer.js').Customer(username1);
                     }
 
                     connection.release();
@@ -404,9 +403,6 @@ app.get('/', function(req, res){
     res.redirect('/home');
 });
 app.get('/home',loggedIn, function(req, res){
-<<<<<<< HEAD
-    res.render('home');
-=======
     var username = [];
     pool.acquire(function (err, connection) {
         if (err) {
@@ -415,12 +411,11 @@ app.get('/home',loggedIn, function(req, res){
             return;
         }
         username = new getterSetter(connection,req.user[0]);
-
+        currentUser = new customer(connection,req.user[0]);
         //let username = getterSetter.getUserUsername(connection,req.user[0]);
-        console.log(username.username);
-        res.render('home', {username: username.username});
+        console.log(currentUser.username);
+        res.render('home', {currentUser: currentUser.username});
     });
->>>>>>> a7f3d2dae6b414f4f7d0029b8c31faa78bfc991d
 });
 
 //ROUTE TO USER REGISTER PAGE
@@ -456,7 +451,19 @@ app.get('/status', function(req, res){
 
 //ROUTE TO USER INFO
 app.get('/userinfo', function(req, res){
-   res.render('userinfo', {currentUser: currentUser});
+  var username = [];
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+          return;
+      }
+      username = new getterSetter(connection,req.user[0]);
+
+      //let username = getterSetter.getUserUsername(connection,req.user[0]);
+      console.log(username.username);
+      res.render('userinfo', {username: username.username});
+  });
 });
 app.get('/userinfo2', function(req, res){
    res.render('userinfo2');
@@ -469,16 +476,12 @@ app.get('/temp', function(req, res){
 app.get('/statustemp', function(req, res){
     res.render('statusTemp');
 });
-<<<<<<< HEAD
-
-=======
 app.get('/receipt', function(req, res){
     res.render('receipt');
 });
 app.post('/reserve',function(req,res){
 
 });
->>>>>>> a7f3d2dae6b414f4f7d0029b8c31faa78bfc991d
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
   pool.acquire(function (err, connection) {
@@ -517,10 +520,7 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
       //_login(req, username, password, done, );
   });
 },autoReap);
-<<<<<<< HEAD
-=======
 
->>>>>>> a7f3d2dae6b414f4f7d0029b8c31faa78bfc991d
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',
