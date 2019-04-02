@@ -464,8 +464,16 @@ app.get('/status', function(req, res){
 
 //ROUTE TO USER INFO
 app.get('/userinfo', function(req, res){
+<<<<<<< HEAD
+   res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5]),userPicmenu: req.user[10] });
+=======
    // res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5])});
+<<<<<<< HEAD
    res.render('userinfo', {currentUser: currentUser, username: req.user[0], userPicmenu: req.user[10]});
+=======
+   res.render('userinfo', {currentUser: currentUser, userPicmenu: req.user[10]});
+>>>>>>> 656b375747f63bd81a64ef0aab4db4dd4f1fda63
+>>>>>>> 010f5430cb984b88a0a10bfabefbce3caa9c4487
 });
 app.get('/userinfo2', function(req, res){
    res.render('userinfo2');
