@@ -427,13 +427,12 @@ app.get('/home',loggedIn, function(req, res){
     //     //console.log(username.getUserUsername());
     //     // var output = username.getUserUsername();
     //     console.log(username);
-<<<<<<< HEAD
+
     // res.send({username: req.user[0]});
-    res.render('home',{username: req.user[0],userPicmenu: req.user[10]});
-=======
+
     //res.send({username: req.user[0]});
     res.render('home',{currentUser: currentUser, username: req.user[0],userPicmenu: req.user[10]});
->>>>>>> 7078d9f059aaa6cd72e8e26df535bb6aa45028f3
+
     // });
 });
 
@@ -468,7 +467,7 @@ app.get('/status', function(req, res){
 });
 
 //ROUTE TO USER INFO
-<<<<<<< HEAD
+
 app.get('/userinfo', loggedIn, function(req, res){
 
    res.render('userinfo', {
@@ -480,20 +479,20 @@ app.get('/userinfo', loggedIn, function(req, res){
 
    // res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5])});
 
-=======
-app.get('/userinfo', function(req, res){
 
-   pool.acquire(function (err, connection) {
-       if (err) {
-           console.error(err);
-           connection.release();
-       }
-       currentUser = new customer(connection,req.user[0],function(data){
-         console.log(data);
-         currentCustomer = data;
-       })
-       res.render('userinfo', {current: currentCustomer, currentUser: req.user,currentUserID: checkUserType(req.user[5]),userPicmenu: req.user[10]});
-     });
+// app.get('/userinfo', function(req, res){
+//
+//    pool.acquire(function (err, connection) {
+//        if (err) {
+//            console.error(err);
+//            connection.release();
+//        }
+//        currentUser = new customer(connection,req.user[0],function(data){
+//          console.log(data);
+//          currentCustomer = data;
+//        })
+//        res.render('userinfo', {current: currentCustomer, currentUser: req.user,currentUserID: checkUserType(req.user[5]),userPicmenu: req.user[10]});
+//      });
 
 
    // res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5]),userPicmenu: req.user[10] });
@@ -517,10 +516,7 @@ app.get('/receipt', function(req, res){
 });
 app.post('/reserve',function(req,res){
 
-// <<<<<<< HEAD
-//
-//
-// =======
+
 });
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
@@ -560,7 +556,7 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
       //_login(req, username, password, done, );
   });
 },autoReap);
-// >>>>>>> b8693e7c98f35b92f8a568b867f2dc52d97c4815
+
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',
