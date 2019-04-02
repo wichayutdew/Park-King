@@ -465,7 +465,11 @@ app.get('/status', function(req, res){
 
 //ROUTE TO USER INFO
 app.get('/userinfo', function(req, res){
+<<<<<<< HEAD
    res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5]) });
+=======
+   res.render('userinfo', {currentUser: currentUser, userPicmenu: req.user[10]});
+>>>>>>> e72784ef2cfe6ad734d19b612458005ea4019e75
 });
 app.get('/userinfo2', function(req, res){
    res.render('userinfo2');
