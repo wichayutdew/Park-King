@@ -411,31 +411,28 @@ storage: storage,
 //=======================================================
 
 //ROUTE TO HOME PAGE
-app.get('/', function(req, res){
+app.get('/',loggedIn, function(req, res){
     res.redirect('/home');
 });
 
 app.get('/home',loggedIn, function(req, res){
-    var username = [];
-    pool.acquire(function (err, connection) {
-        if (err) {
-            console.error(err);
-            connection.release();
-            return;
-        }
-        username = new getterSetter(connection,req.user[0]);
-        //let username = getterSetter.getUserUsername(connection,req.user[0]);
-        console.log(username.username);
-        res.render('home', {username: username.username});
-    });
+    // var username = [];
+    // pool.acquire(function (err, connection) {
+    //     if (err) {
+    //         console.error(err);
+    //         connection.release();
+    //         return;
+    //     }
+    //     username = getterSetter.test(connection,req.user[0]);
+    //     //let username = getterSetter.getUserUsername(connection,req.user[0]);
+    //     //console.log(username.getUserUsername());
+    //     // var output = username.getUserUsername();
+    //     console.log(username);
+    //res.send({username: req.user[0]});
+    res.render('home',{username: req.user[0],userPicmenu: req.user[10]});
+    // });
 });
-app.get('/menuBar',function(req,res){
-    //var IMG = base64_encode(req.user[10]);
-    console.log('menuBar: sending image string');
-    var IMG = req.user[10];
-    res.render('menuBar', {userPicmenu: IMG});
-});
-//ROUTE TO USER REGISTER PAGE
+
 app.get('/register', function(req, res){
     res.render('register');
     //res.sendFile(__dirname + '/register.ejs');

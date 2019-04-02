@@ -5,40 +5,47 @@ var ConnectionPool = require('tedious-connection-pool');
 var Request = require('tedious').Request;
 var TYPES =require('tedious').TYPES;
 //*******************************************************Customer's Getter***********************************************
+var returnedValue = [];
+function test(connection, username){
+  getUserUsername (connection, username);
+  console.log(returnedValue);
+  return returnedValue;
+}
+function getUserUsername (connection, username){
+  var request = new Request(
+    'SELECT Username FROM dbo.Customer WHERE Username = @username',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
 
-  module.exports = function(connection,username) {
-    this.connection = connection;
-    this.username = username;
+        //return 'hello';
+      }
 
-    this.getUserUsername = function(){
-      var request = new Request(
-        'SELECT Username FROM dbo.Customer WHERE Username = @username',
-        function(err, rowCount, rows) {
-          if (err) {
-            console.log(err);
-            connection.release();
-            returnedValue = null;
-          } else {
-            connection.release();
-            //console.log(returnedValue[0]);
-            return returnedValue[0]
-          }
+    });
+  request.addParameter('username',TYPES.VarChar,username);
 
-        });
-      request.addParameter('username',TYPES.VarChar,username);
-
-      var returnedValue  = [];
-      request.on('row', function (columns) {
-          columns.forEach(function(column) {
-              returnedValue.push(column.value);
-          });
-          //console.log(login_request + 'info');
+  //var returnedValue  = [];
+  request.on('row', function (columns) {
+      columns.forEach(function(column) {
+          returnedValue.push(column.value);
       });
-      connection.execSql(request);
-      //return returnedValue[0];
-    }
+      //console.log(login_request + 'info');
+  });
 
-  }
+  // request.on('Done',function(err, rowCount, rows){
+  //   console.log(returnedValue[0]);
+  //   return returnedValue[0];
+  // });
+  connection.execSql(request);
+
+  //return 'hello';
+}
+
+module.exports.test = test;
 //   function getUserPassword(username) {
 //   var request = new request("SELECT C.Password FROM dbo.Customer C WHERE C.Username = ' " + username + " ' ",
 //     function(err, rowCount, rows) {
