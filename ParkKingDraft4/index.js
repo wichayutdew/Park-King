@@ -1,3 +1,5 @@
+var username1;
+var currentUser;
 //NPM REQUIRE
 var express = require('express');
 const app = express();
@@ -304,10 +306,12 @@ app.use(function(req, res, next){
                         console.log('logged in!!!');
                         // var UserImage = new Image();
                         //  UserImage.src = 'data:image/png;base64,'+imgPhase;
-
-                        return done(null, login_request);
+                        done(null, login_request);
+                        username1 = req.user;
+                        currentUser = require('./Customer.js').Customer(username1);
                     }
 
+                    connection.release();
             });
             request.addParameter('username',TYPES.VarChar,username);
             var login_request = [];
@@ -401,6 +405,9 @@ app.get('/', function(req, res){
 });
 
 app.get('/home',loggedIn, function(req, res){
+<<<<<<< HEAD
+    res.render('home');
+=======
     var username = [];
     pool.acquire(function (err, connection) {
         if (err) {
@@ -413,6 +420,7 @@ app.get('/home',loggedIn, function(req, res){
         console.log(username.username);
         res.render('home', {username: username.username});
     });
+>>>>>>> a7f3d2dae6b414f4f7d0029b8c31faa78bfc991d
 });
 app.get('/menuBar',function(req,res){
     //var IMG = base64_encode(req.user[10]);
@@ -453,7 +461,7 @@ app.get('/status', function(req, res){
 
 //ROUTE TO USER INFO
 app.get('/userinfo', function(req, res){
-   res.render('userinfo');
+   res.render('userinfo', {currentUser: currentUser});
 });
 app.get('/userinfo2', function(req, res){
    res.render('userinfo2');
@@ -466,12 +474,16 @@ app.get('/temp', function(req, res){
 app.get('/statustemp', function(req, res){
     res.render('statusTemp');
 });
+<<<<<<< HEAD
+
+=======
 app.get('/receipt', function(req, res){
     res.render('receipt');
 });
 app.post('/reserve',function(req,res){
 
 });
+>>>>>>> a7f3d2dae6b414f4f7d0029b8c31faa78bfc991d
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
   pool.acquire(function (err, connection) {
@@ -510,7 +522,10 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
       //_login(req, username, password, done, );
   });
 },autoReap);
+<<<<<<< HEAD
+=======
 
+>>>>>>> a7f3d2dae6b414f4f7d0029b8c31faa78bfc991d
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',
