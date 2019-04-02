@@ -457,52 +457,12 @@ app.get('/statustemp', function(req, res){
     res.render('statusTemp');
 });
 
-<<<<<<< HEAD
 app.get('/receipt', function(req, res){
     res.render('receipt');
 });
 
 
 
-=======
-app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
-  console.log('Trying to add car');
-  pool.acquire(function (err, connection) {
-      if (err) {
-          console.error(err);
-          return;
-      }
-      var img = fs.readFileSync(req.file.path);
-      var encode_image = img.toString('base64');
-      //use the connection as normal
-      var request = new Request(
-          'INSERT INTO dbo.Car(PlateNumber,Username,CarBrand,CarModel,CarPicture,CarColor) VALUES (@PlateNumber,@Username,@CarBrand,@CarModel,@CarPicture,@CarColor)',
-          function(err, rowCount, rows){
-
-              if(err){
-                  //connection.release();
-                  res.redirect('/carregister');
-              }else{
-                  console.log('Car added!!!');
-                  res.redirect('/home')
-              }
-              connection.release();
-      });
-      request.addParameter('PlateNumber',TYPES.VarChar,req.body.plateNumber);
-      request.addParameter('Username',TYPES.VarChar,req.user[0]);
-      request.addParameter('CarBrand',TYPES.VarChar,req.body.carBrand);
-      request.addParameter('CarModel',TYPES.VarChar,req.body.Model);
-      request.addParameter('CarPicture',TYPES.VarChar,encode_image);
-      request.addParameter('CarColor',TYPES.VarChar,req.body.carColor);
-
-      request.on('Done',function(err, rowCount, rows){
-      });
-
-      connection.execSql(request);
-      //_login(req, username, password, done, );
-  });
-},autoReap);
->>>>>>> 20e4706addb7bfca1d418ebfad91b1e6f3035e2f
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',
