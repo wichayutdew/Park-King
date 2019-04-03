@@ -19,7 +19,7 @@
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "passport-local-authenticate": "^1.2.0",
-    "statman-stopwatch": "^2.7.0",
+    "statman-stopwatch": "^2.8.2",
     "tedious": "^5.0.3",
     "tedious-connection-pool": "^1.0.5"
   }

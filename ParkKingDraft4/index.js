@@ -375,7 +375,61 @@ app.use(function(req, res, next){
 //===================================================================================================================================================
 // Operation
 //===================================================================================================================================================
+var Stopwatch = require('statman-stopwatch');
+var stopwatch = new Stopwatch();
+var elaspedInterval = 0;
+var arriveTimeout = 0;
+var leftTimeout = 0;
+// startUserTimer();
+// userCurrentTime();
+// setTimeout(stopUserTimer,5000);
 
+//How to start stopwatch for each reserveid or username?????????
+
+//start user's timer
+function startUserTimer(){
+  stopwatch.start();
+}
+
+//show elasped time
+function userCurrentTime() {
+  elaspedInterval = setInterval(function() {
+    var time = parseInt(stopwatch.read()/1000);
+    var hours = ~~(time / 3600);
+    var min = ~~((time % 3600) / 60);
+    var sec = time % 60;
+    console.log(hours+":"+min+":"+sec);
+  },1000);
+}
+
+//stop the stopwatch
+function stopUserTimer(){
+  var totalTime = parseInt(stopwatch.read()/1000);
+  clearInterval(elaspedInterval);
+  stopwatch.stop();
+  return totalTime;
+}
+
+//make countdown timer in seconds if finish return false
+function countdownTimer(seconds){
+  var timeout = false;
+  var countdownInterval =  setInterval(function () {
+        duration --;
+        //console.log(duration);
+        if(duration <= 0){
+          clearInterval(countdownInterval);
+          timeout = true;
+        }
+    }, 1000);
+    return timeout;
+}
+
+//get current time in hr:min:sec format
+function getCurrentTime(){
+  var today = new Date();
+  var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+  return time;
+}
 //check log-in state
 function loggedInBoolean(req) {
     if (req.user) {
@@ -434,7 +488,10 @@ storage: storage,
 app.get('/',loggedIn, function(req, res){
     res.redirect('/home');
 });
-
+app.get('/logout', function(req, res){
+  req.logout();
+  res.redirect('/login');
+});
 app.get('/home',loggedIn, function(req, res){
     // var username = [];
     // pool.acquire(function (err, connection) {
@@ -471,7 +528,7 @@ app.get('/carregister', function(req, res){
 //ROUTE TO RESERVE PAGE
 app.get('/reserve',loggedIn, function(req, res){
 
-    res.render('reserve',{userPicmenu: req.user[10]});
+    res.render('reserve',{username: req.user[0],userPicmenu: req.user[10]});
 });
 
 //ROUTE TO QR CODE PAGE
@@ -546,62 +603,60 @@ app.get('/receipt', function(req, res){
     res.render('receipt');
 });
 
-// function Reserve(floor,slot,buildingName,plateNumber,username,QRin,QRout,Timein,Timepout,reserveid,haspaid){
-//   var request = new Request(
-//       "INSERT INTO dbo.Reserve(PlateNumber,Username,Floor,Slot,BuildingName,QRCodeIn,QRCodeOut,Time_In,Time_Out,reserveID,hasPaid) VALUES ()",
-//       function(err, rowCount, rows){
-//
-//           if(err){
-//               connection.release();
-//               res.redirect('/reserve');
-//           }else{
-//               var reserveId = generateTokenID();
-//               console.log('Spot available : '+ buildingState);
-//               Reserve(buildingState[0], buildingState[1], buildingState[2], buildingState[3], buildingState[4], null, null, null, null, reserveId, 0);
-//
-//               setUserReservable(username,0);
-//               setParkingSpotOccupied(floor, slot, buidlingname, 1);
-//               arriveTimeout = countdownTimer(60*30);
-//               res.redirect('/showqr')
-//           }
-//           connection.release();
-//   });
-//   request.addParameter('PlateNumber',TYPES.VarChar,car[0]);
-//   request.addParameter('Username',TYPES.VarChar,car[1]);
-//   request.addParameter('Building',TYPES.VarChar,parking[3]);
-//   request.addParameter('Floor',TYPES.VarChar,car[1]);
-//   request.addParameter('Slot',TYPES.VarChar,car[1]);
-//   request.addParameter('BuildingName',TYPES.VarChar,car[1]);
-//   request.addParameter('Username',TYPES.VarChar,car[1]);
-//   request.addParameter('Username',TYPES.VarChar,car[1]);
-//   request.addParameter('Username',TYPES.VarChar,car[1]);
-//   request.addParameter('Username',TYPES.VarChar,car[1]);
-//   request.addParameter('Username',TYPES.VarChar,car[1]);
-//   PlateNumber varchar(255),
-// Username varchar(255),
-// Floor varchar(255),
-// Slot varchar(255),
-// BuildingName varchar(255),
-// QRCodeIn varchar(255),
-// QRCodeOut varchar(255),
-// Time_In varchar(255),
-// Time_Out varchar(255),
-// reserveID varchar(255),
-// hasPaid bit,
-//
-//   var buildingState =[];
-//   request.on('row', function (columns) {
-//       columns.forEach(function(column) {
-//           buildingState.push(column.value);
-//       });
-//       //console.log(login_request + 'info');
-//   });
-//
-//   request.on('Done',function(err, rowCount, rows){
-//   });
-//
-//   connection.execSql(request);
-// }
+function Reserve(floor,slot,buildingName,plateNumber,username,QRin,QRout,Timein,Timepout,reserveid,haspaid,connection){
+  var request = new Request(
+      "INSERT INTO dbo.Reserve(PlateNumber,Username,Floor,Slot,BuildingName,QRCodeIn,QRCodeOut,Time_In,Time_Out,reserveID,hasPaid) VALUES (@PlateNumber,@Username,@Floor,@Slot,@BuildingName,@QRCodeIn,@QRCodeOut,@Time_In,@Time_Out,@reserveID,@hasPaid)",
+      function(err, rowCount, rows){
+
+          if(err){
+              connection.release();
+              res.redirect('/reserve');
+          }else{
+              console.log('!!!Parking spot reserved!!!');
+          }
+  });
+  request.addParameter('PlateNumber',TYPES.VarChar,plateNumber);
+  request.addParameter('Username',TYPES.VarChar,username);
+  request.addParameter('Floor',TYPES.VarChar,floor);
+  request.addParameter('Slot',TYPES.VarChar,slot);
+  request.addParameter('BuildingName',TYPES.VarChar,buildingName);
+  request.addParameter('QRCodeIn',TYPES.VarChar,QRin);
+  request.addParameter('QRCodeOut',TYPES.VarChar,QRout);
+  request.addParameter('Time_In',TYPES.VarChar,Timein);
+  request.addParameter('Time_Out',TYPES.VarChar,Timeout);
+  request.addParameter('reserveID',TYPES.VarChar,reserveid);
+  request.addParameter('hasPaid',TYPES.Bit,haspaid);
+
+  request.on('Done',function(err, rowCount, rows){
+  });
+
+  connection.execSql(request);
+}
+function UpdateReserve (floor,slot,buildingName,username){
+  var request = new Request(
+      "UPDATE dbo.Customer, dbo.ParkingSpot SET dbo.Customer.Reserveable=0,dbo.parkingSpot.isFull=1 WHERE dbo.Customer.Username=@Username OR dbo.ParkingSpot.Floor = @Floor AND dbo.ParkingSpot.Slot = @Slot AND dbo.ParkingSpot.BuildingName =@BuildingName" ,
+      function(err, rowCount, rows){
+
+          if(err){
+              connection.release();
+              res.redirect('/reserve');
+          }else{
+              connection.release();
+              console.log('!!!Parking spot updated!!!');
+          }
+  });
+
+  request.addParameter('Username',TYPES.VarChar,username);
+  request.addParameter('Floor',TYPES.VarChar,floor);
+  request.addParameter('Slot',TYPES.VarChar,slot);
+  request.addParameter('BuildingName',TYPES.VarChar,buildingName);
+
+
+  request.on('Done',function(err, rowCount, rows){
+  });
+
+  connection.execSql(request);
+}
 app.post('/reserve',function(req,res){
 
   // function reserveSpot(platenumber, username, floor, slot, buildingname){
@@ -615,58 +670,55 @@ app.post('/reserve',function(req,res){
   //     arriveTimeout = countdownTimer(60*30);
   //   }
   // }
-  // var car=['5555','x'];
-  // var parkingSpot=['01','0001','buildingPoli'];
-  //
-  // pool.acquire(function (err, connection) {
-  //     if (err) {
-  //         console.error(err);
-  //         connection.release();
-  //         return;
-  //     }
-  //     if(req.user[11]='0'){
-  //         console.log('your accout is decline to reserve')
-  //         connection.release();
-  //         res.redirect('/home');
-  //     }
-  //     var request = new Request(
-  //         "SELECT Floor,MIN(Slot),BuildingName,isFull,Sensor,PlateNumber,Username FROM dbo.ParkingSpot,dbo.Car WHERE dbo.ParkingSpot.isfull='0' AND dbo.ParkingSpot.Sensor='0',dbo.Car.PlateNumber = @PlateNumber,dbo.Car.Username = @Username",
-  //         function(err, rowCount, rows){
-  //
-  //             if(err){
-  //                 connection.release();
-  //                 res.redirect('/reserve');
-  //             }else{
-  //                 var reserveId = generateTokenID();
-  //                 console.log('Spot available : '+ buildingState);
-  //                 Reserve(buildingState[0], buildingState[1], buildingState[2], buildingState[3], buildingState[4], null, null, null, null, reserveId, 0);
-  //
-  //                 setUserReservable(username,0);
-  //                 setParkingSpotOccupied(floor, slot, buidlingname, 1);
-  //                 arriveTimeout = countdownTimer(60*30);
-  //                 res.redirect('/showqr')
-  //             }
-  //             connection.release();
-  //     });
-  //     request.addParameter('PlateNumber',TYPES.VarChar,car[0]);
-  //     request.addParameter('Username',TYPES.VarChar,car[1]);
-  //     request.addParameter('Building',TYPES.VarChar,parking[3]);
-  //
-  //     var buildingState =[];
-  //     request.on('row', function (columns) {
-  //         columns.forEach(function(column) {
-  //             buildingState.push(column.value);
-  //         });
-  //         //console.log(login_request + 'info');
-  //     });
-  //
-  //     request.on('Done',function(err, rowCount, rows){
-  //     });
-  //
-  //     connection.execSql(request);
-      //_login(req, username, password, done, );
-      res.render('/reserve');
-  // });
+  var car=['5555','x'];
+  var parkingSpot=['01','0001','buildingPoli'];
+
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+          return;
+      }
+      if(req.user[11]=0){
+          console.log('your accout is decline to reserve')
+          connection.release();
+          res.redirect('/home');
+      }else{
+        var request = new Request(
+          "SELECT Floor,MIN(Slot) as Slot,BuildingName,PlateNumber,Username FROM dbo.ParkingSpot,dbo.Car WHERE dbo.ParkingSpot.isfull='0' AND dbo.ParkingSpot.Sensor='0' AND dbo.Car.PlateNumber = @PlateNumber AND dbo.Car.Username = @Username",
+          function(err, rowCount, rows){
+
+              if(err){
+                  console.log(err);
+                  connection.release();
+                  res.redirect('/reserve');
+              }else{
+                  var reserveId = generateTokenID();
+                  console.log('Spot available : '+ buildingState);
+                  Reserve(buildingState[0], buildingState[1], buildingState[2], buildingState[3], buildingState[4], null, null, null, null, reserveId, 0,connection);
+                  UpdateReserve(buildingState[0],buildingState[1],buildingState[2],buildingState[4],connection);
+                  arriveTimeout = countdownTimer(60*30);
+                  res.redirect('/userinfo');
+              }
+          });
+      request.addParameter('PlateNumber',TYPES.VarChar,car[0]);
+      request.addParameter('Username',TYPES.VarChar,car[1]);
+      request.addParameter('Building',TYPES.VarChar,parkingSpot[3]);
+
+      var buildingState =[];
+      request.on('row', function (columns) {
+          columns.forEach(function(column) {
+              buildingState.push(column.value);
+          });
+          //console.log(login_request + 'info');
+      });
+
+      request.on('Done',function(err, rowCount, rows){
+      });
+
+      connection.execSql(request);
+    }
+  });
 });
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
