@@ -1,4 +1,4 @@
-var currentUser;
+var currentUsername,currentEmail,currentFirstname,currentLastname,currentCustomerType,currentID,currentPicture;
 var customer = require('./Customer.js');
 
 //NPM REQUIRE
@@ -21,20 +21,6 @@ var TYPES =require('tedious').TYPES;
 //authentication section
 passport = require('passport');
 LocalStrategy = require('passport-local');
-
-//check user TYPE
-var userID;
-function checkUserType(user) {
-  if(user[5] == "Student"){
-    userID = user[6];
-  }else if(user[5] == "Professor"){
-    userID = user[7];
-  }else{
-    userID = user[8];
-  }
-  return userID;
-}
-
 
 //===================================================================================================================================================
 var poolConfig = {
@@ -506,7 +492,17 @@ app.get('/home',loggedIn, function(req, res){
     //     // var output = username.getUserUsername();
     //     console.log(username);
     // res.send({username: req.user[0]});
-    res.render('home',{username: req.user[0],userPicmenu: req.user[10]});
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      customer.getCustomerPicture(connection,req.user[0],function(data){
+        currentPicture = data;
+        res.render('home', {currentUsername: req.user[0],currentPicture: currentPicture});
+      })
+    });
+    // res.render('home',{username: req.user[0],userPicmenu: req.user[10]});
     // });
 });
 
@@ -555,15 +551,31 @@ app.get('/userinfo', loggedIn, function(req, res){
        console.error(err);
        connection.release();
      }
-     // currentUser = new customer(connection,req.user[0]);
-     // console.log(currentUser.firstname);
+     customer.getEmail(connection,req.user[0],function(data){
+       console.log(data);
+       currentEmail = data;
+     })
      customer.getFirstname(connection,req.user[0],function(data){
        console.log(data);
-       currentUser = data;
-       res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
+       currentFirstname = data;
      })
+     customer.getLastname(connection,req.user[0],function(data){
+       console.log(data);
+       currentLastname = data;
+     })
+     customer.getCustomerType(connection,req.user[0],function(data){
+       console.log(data);
+       currentCustomerType = data;
+     })
+     customer.getCustomerPicture(connection,req.user[0],function(data){
+       console.log(data);
+       currentPicture = data;
+       res.render('userinfo', {currentUsername: req.user[0],currentEmail:currentEmail,currentFirstname:currentFirstname,currentLastname:currentLastname,currentCustomerType:currentCustomerType,currentID:customer.getID(req.user),currentPicture:currentPicture});
+     })
+     // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
    });
 });
+
 
 app.get('/edituserinfo', loggedIn, function(req, res){
   pool.acquire(function (err, connection) {
