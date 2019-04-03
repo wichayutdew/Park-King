@@ -3,49 +3,6 @@ var ConnectionPool = require('tedious-connection-pool');
 var Request = require('tedious').Request;
 var TYPES =require('tedious').TYPES;
 
-//*******************************************************Inserting new customer into database***********************************************
-exports.insert_newCustomer = function(connection,customer_info,done,newUserMysql){
-  var request = new Request("INSERT INTO dbo.Customer (FirstName,LastName,Email,Username,Password,customerType,studentID,professorID,NationalID,CustomerPicture,Reserveable) values (@firstName,@lastName,@email,@username,@password,@occupation,@studentID,@professorID,@CitizenID,@profilePic,@reserveAble)",
-  //CustomerPicture,profilePic
-  function (err, rowCount, rows){
-    if(err){
-      connection.release();
-      return done(err);
-    }else{
-      connection.release();
-      return done(null, newUserMysql);
-    }
-  });
-  request.addParameter('firstName',TYPES.VarChar,customer_info.fname);
-  request.addParameter('lastName',TYPES.VarChar,customer_info.lname);
-  request.addParameter('email',TYPES.VarChar,customer_info.email);
-  request.addParameter('username',TYPES.VarChar,customer_info.username);
-  request.addParameter('password',TYPES.VarChar,customer_info.password);
-  request.addParameter('occupation',TYPES.VarChar,customer_info.occupation);
-  request.addParameter('studentID',TYPES.VarChar,customer_info.studentID);
-  request.addParameter('professorID',TYPES.VarChar,customer_info.professorID);
-  request.addParameter('CitizenID',TYPES.VarChar,customer_info.guestID);
-  request.addParameter('profilePic',TYPES.VarChar,customer_info.CustomerPicture);
-  request.addParameter('reserveAble',TYPES.Bit,customer_info.Reserveable);
-  request.on('requestCompleted', function (){
-    //connection.close();
-    //error here
-  })
-  connection.execSql(request);
-}
-
-//*******************************************************Only used in Index.js***********************************************
-exports.getID = function(user) {
-  var userID;
-  if(user[5] == "Student"){
-    userID = user[6];
-  }else if(user[5] == "Professor"){
-    userID = user[7];
-  }else{
-    userID = user[8];
-  }
-  return userID;
-}
 
 //*******************************************************Customer's Getter***********************************************
 exports.getPassword = function(connection,username,Callback) {
