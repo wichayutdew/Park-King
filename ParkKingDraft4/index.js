@@ -491,6 +491,27 @@ app.get('/userinfo', loggedIn, function(req, res){
    res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
 });
 
+app.get('/edituserinfo', loggedIn, function(req, res){
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    currentUser = new customer(connection,req.user[0]);
+    console.log(currentUser.firstname);
+    // customer.getFirstname(connection,req.user[0],function(data){
+    //   console.log(data);
+    //   currentUser = data;
+    // })
+  });
+  res.render('edituserinfo', {current: currentUser,
+                              currentUser: req.user,
+                              currentUserID: checkUserType(req.user),
+                              userPicmenu: req.user[10],
+                              username: req.user[0]
+            });
+});
+
 
 app.get('/userinfo2', function(req, res){
    res.render('userinfo2');
