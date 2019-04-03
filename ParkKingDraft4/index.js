@@ -1,5 +1,4 @@
 var currentUser;
-var currentCustomer;
 var customer = require('./Customer.js');
 
 //NPM REQUIRE
@@ -12,7 +11,6 @@ const multer = require('multer');
 //auto delete image after upload
 const autoReap  = require('multer-autoreap');
 var fs = require('fs');
-var getterSetter = require('./getterSetter.js');
 
 //tedious section
 var Connection = require('tedious').Connection;
@@ -25,13 +23,15 @@ passport = require('passport');
 LocalStrategy = require('passport-local');
 
 //check user TYPE
-var userID
+var userID;
 function checkUserType(user) {
-  if(user="Student")
-  userID=user[6];
-  else if (user="Professor")
-  userID=user[7];
-  else userID=user[8];
+  if(user[5] == "Student"){
+    userID = user[6];
+  }else if(user[5] == "Professor"){
+    userID = user[7];
+  }else{
+    userID = user[8];
+  }
   return userID;
 }
 
@@ -335,7 +335,7 @@ app.use(function(req, res, next){
                         console.log('logged in!!!');
                         // var UserImage = new Image();
                         //  UserImage.src = 'data:image/png;base64,'+imgPhase;
-                        done(null, login_request);
+                        return done(null, login_request);
                     }
 
                     connection.release();
@@ -488,16 +488,49 @@ app.get('/status', function(req, res){
 //ROUTE TO USER INFO
 app.get('/userinfo', loggedIn, function(req, res){
 
-   res.render('userinfo', {
-     currentUser: req.user ,
-     currentUserID: checkUserType(req.user[5]),
-     userPicmenu: req.user[10],
-     username: req.user[0]
+   // res.render('userinfo', {
+   //   currentUser: req.user ,
+   //   currentUserID: checkUserType(req.user[5]),
+   //   userPicmenu: req.user[10],
+   //   username: req.user[0]
+   // });
+   pool.acquire(function (err, connection) {
+     if (err) {
+       console.error(err);
+       connection.release();
+     }
+     currentUser = new customer(connection,req.user[0]);
+     console.log(currentUser.firstname);
+     // customer.getFirstname(connection,req.user[0],function(data){
+     //   console.log(data);
+     //   currentUser = data;
+     // })
    });
-
-   // res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5])});
-
+   res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
 });
+
+app.get('/edituserinfo', loggedIn, function(req, res){
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    currentUser = new customer(connection,req.user[0]);
+    console.log(currentUser.firstname);
+    // customer.getFirstname(connection,req.user[0],function(data){
+    //   console.log(data);
+    //   currentUser = data;
+    // })
+  });
+  res.render('edituserinfo', {current: currentUser,
+                              currentUser: req.user,
+                              currentUserID: checkUserType(req.user),
+                              userPicmenu: req.user[10],
+                              username: req.user[0]
+            });
+});
+
+
 app.get('/userinfo2', function(req, res){
    res.render('userinfo2');
 });

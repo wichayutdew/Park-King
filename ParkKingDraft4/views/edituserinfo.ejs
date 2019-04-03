@@ -28,12 +28,12 @@
             <span class="login100-form-title p-b-37">Register</span>
 
             <div class="wrap-input100 validate-input m-b-20">
-              <input class="input100" type="text" name="username" placeholder="Username" id="username" required>
+              <input class="input100" type="text" name="username" placeholder="username" id="username" value="<%= username %>" required>
               <span class="focus-input100"></span>
             </div>
 
             <div class="wrap-input100 validate-input m-b-25">
-              <input class="input100" type="password" name="password" placeholder="Password" id="password" required>
+              <input class="input100" type="password" name="password" placeholder="Change password" id="password" required>
               <span class="focus-input100"></span>
             </div>
 
@@ -43,17 +43,17 @@
             </div>
 
             <div class="wrap-input100 validate-input m-b-25">
-              <input class="input100" type="email" name="email" placeholder="E-Mail" id="email" required>
+              <input class="input100" type="email" name="email" value="<%= currentUser[2] %>" placeholder="E-Mail" id="email" required>
               <span class="focus-input100"></span>
             </div>
 
             <div class="wrap-input100 validate-input m-b-20">
-              <input class="input100" type="text" name="firstName" placeholder="First Name" id="firstname" required>
+              <input class="input100" type="text" name="firstName" value="<%= currentUser[3] %>"placeholder="First Name" id="firstname" required>
               <span class="focus-input100"></span>
             </div>
 
             <div class="wrap-input100 validate-input m-b-25">
-              <input class="input100" type="text" name="lastName" placeholder="Last Name" id="lastname" required>
+              <input class="input100" type="text" name="lastName" value="<%= currentUser[4] %>" placeholder="Last Name" id="lastname" required>
               <span class="focus-input100"></span>
             </div>
                             <!-- <div class="wrap-input100 validate-input m-b-25" data-validate = "Enter password">
@@ -61,7 +61,7 @@
                                     <span class="focus-input100"></span>
                             </div>   -->
             <div class="wrap-input100 validate-input m-b-25">
-              <select class="input100 select100" id="occupationInput" name="occupation" onchange="occupationCheck(this)" id="occupation">
+              <select class="input100 select100" name="occupation" onchange="occupationCheck(this)" id="occupation">
                 <option>Select your occupation</option>
                 <option value="Student">Student</option>
                 <option value="Professor">Professor or Faculty member</option>
@@ -119,11 +119,11 @@
                             <div class="container-login100-form-btn">
                                 <button type="submit" class="login100-form-btn">
                                     Submit
-                                </a>
+                                </button>
                             </div>
 
                             <div class="text-center">
-                                <a href="/login" class="txt2 hov1">
+                                <a href="/userinfo" class="txt2 hov1">
                                     Go Back
                                 </a>
                             </div>
