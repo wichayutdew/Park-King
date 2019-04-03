@@ -4,6 +4,39 @@ var Request = require('tedious').Request;
 var TYPES =require('tedious').TYPES;
 
 
+
+
+//*******************************************************Inserting new customer into database***********************************************
+exports.insert_newCustomer = function(connection,customer_info,done,newUserMysql){
+  var request = new Request("INSERT INTO dbo.Customer (FirstName,LastName,Email,Username,Password,customerType,studentID,professorID,NationalID,CustomerPicture,Reserveable) values (@firstName,@lastName,@email,@username,@password,@occupation,@studentID,@professorID,@CitizenID,@profilePic,@reserveAble)",
+  //CustomerPicture,profilePic
+  function (err, rowCount, rows){
+    if(err){
+      connection.release();
+      return done(err);
+    }else{
+      connection.release();
+      return done(null, newUserMysql);
+    }
+  });
+  request.addParameter('firstName',TYPES.VarChar,customer_info.fname);
+  request.addParameter('lastName',TYPES.VarChar,customer_info.lname);
+  request.addParameter('email',TYPES.VarChar,customer_info.email);
+  request.addParameter('username',TYPES.VarChar,customer_info.username);
+  request.addParameter('password',TYPES.VarChar,customer_info.password);
+  request.addParameter('occupation',TYPES.VarChar,customer_info.occupation);
+  request.addParameter('studentID',TYPES.VarChar,customer_info.studentID);
+  request.addParameter('professorID',TYPES.VarChar,customer_info.professorID);
+  request.addParameter('CitizenID',TYPES.VarChar,customer_info.guestID);
+  request.addParameter('profilePic',TYPES.VarChar,customer_info.CustomerPicture);
+  request.addParameter('reserveAble',TYPES.Bit,customer_info.Reserveable);
+  request.on('requestCompleted', function (){
+    //connection.close();
+    //error here
+  })
+  connection.execSql(request);
+}
+
 //*******************************************************Only used in Index.js***********************************************
 exports.getID = function(user) {
   var userID;
@@ -272,13 +305,14 @@ exports.getReservable = function(connection,username,Callback) {
 }
 
 //*******************************************************Customer's Setter***********************************************
-function setUserUsername(username, newUsername) {
+exports.setUsername = function(username, newUsername) {
   var request = new request("UPDATE dbo.Customer C SET C.Username = @newUsername WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
-        done(err);
+        console.log(err);
+        connection.release();
       } else {
-
+        connection.release();
       }
     });
   request.addParameter('newUsername',TYPES.VarChar,newUsername);
@@ -290,7 +324,7 @@ function setUserUsername(username, newUsername) {
   connection.execSql(request);
 }
 
-function setUserPassword(username, password) {
+exports.setPassword = function(username, password) {
   var request = new request("UPDATE dbo.Customer C SET C.Password =  @password WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
@@ -308,13 +342,14 @@ function setUserPassword(username, password) {
   connection.execSql(request);
 }
 
-function setUserEmail(username, email) {
+exports.setEmail = function(username, email) {
   var request = new request("UPDATE dbo.Customer C SET C.Email = @email WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
-        done(err);
+        console.log(err);
+        connection.release();
       } else {
-
+        connection.release();
       }
     });
   request.addParameter('email',TYPES.VarChar,email);
@@ -326,13 +361,14 @@ function setUserEmail(username, email) {
   connection.execSql(request);
 }
 
-function setUserFirstName(username, firstname) {
+exports.setFirstname = function(username, firstname) {
   var request = new request("UPDATE dbo.Customer C SET C.FirstName =  @firstname WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
-        done(err);
+        console.log(err);
+        connection.release();
       } else {
-
+        connection.release();
       }
     });
   request.addParameter('firstname',TYPES.VarChar,firstname);
@@ -344,13 +380,14 @@ function setUserFirstName(username, firstname) {
   connection.execSql(request);
 }
 
-function setUserLastName(username, lastname) {
+exports.setLastname = function(username, lastname) {
   var request = new request("UPDATE dbo.Customer C SET C.LastName = @lastname WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
-        done(err);
+        console.log(err);
+        connection.release();
       } else {
-
+        connection.release();
       }
     });
   request.addParameter('lastname',TYPES.VarChar,lastname);
@@ -362,13 +399,14 @@ function setUserLastName(username, lastname) {
   connection.execSql(request);
 }
 
-function setUserCustomerType(username, customertype) {
+exports.setCustomerType = function(username, customertype) {
   var request = new request("UPDATE dbo.Customer C SET C.customerType = @customertype WHERE C.Username =  @username",
     function(err, rowCount, rows) {
       if (err) {
-        done(err);
+        console.log(err);
+        connection.release();
       } else {
-
+        connection.release();
       }
     });
     request.addParameter('customertype',TYPES.VarChar,customertype);
@@ -380,13 +418,14 @@ function setUserCustomerType(username, customertype) {
   connection.execSql(request);
 }
 
-function setUserStudentID(username, studentid) {
+exports.setStudentID = function(username, studentid) {
   var request = new request("UPDATE dbo.Customer C SET C.StudentID =  @studentid WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
-        done(err);
+        console.log(err);
+        connection.release();
       } else {
-
+        connection.release();
       }
     });
   request.addParameter('studentid',TYPES.VarChar,studentid);
@@ -398,13 +437,14 @@ function setUserStudentID(username, studentid) {
   connection.execSql(request);
 }
 
-function setUserProfessorID(username, professorid) {
+exports.setProfessorID = function(username, professorid) {
   var request = new request("UPDATE dbo.Customer C SET C.ProfessorID =  @professorid WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
-        done(err);
+        console.log(err);
+        connection.release();
       } else {
-
+        connection.release();
       }
     });
   request.addParameter('professorid',TYPES.VarChar,professorid);
@@ -416,13 +456,14 @@ function setUserProfessorID(username, professorid) {
   connection.execSql(request);
 }
 
-function setUserNationalID(username, nationalid) {
+exports.setNationalID = function(username, nationalid) {
   var request = new request("UPDATE dbo.Customer C SET C.NationalID = @nationalid WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
-        done(err);
+        console.log(err);
+        connection.release();
       } else {
-
+        connection.release();
       }
     });
   request.addParameter('nationalid',TYPES.VarChar,nationalid);
@@ -434,13 +475,14 @@ function setUserNationalID(username, nationalid) {
   connection.execSql(request);
 }
 
-function setUserCustomerPicture(username, customerpicture) {
+exports.setCustomerPicture = function(username, customerpicture) {
   var request = new request("UPDATE dbo.Customer C SET C.CustomerPicture =  @customerpicture WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
-        done(err);
+        console.log(err);
+        connection.release();
       } else {
-
+        connection.release();
       }
     });
   request.addParameter('customerpicture',TYPES.VarChar,customerpicture);
@@ -452,13 +494,14 @@ function setUserCustomerPicture(username, customerpicture) {
   connection.execSql(request);
 }
 
-function setUserCancel(username, cancel) {
+exports.setCancel = function(username, cancel) {
   var request = new request("UPDATE dbo.Customer C SET C.Cancel =  @cancel WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
-        done(err);
+        console.log(err);
+        connection.release();
       } else {
-
+        connection.release();
       }
     });
     request.addParameter('cancel',TYPES.VarChar,cancel);
@@ -470,13 +513,14 @@ function setUserCancel(username, cancel) {
   connection.execSql(request);
 }
 
-function setUserReservable(username, reservable) {
+exports.setReservable = function(username, reservable) {
   var request = new request("UPDATE dbo.Customer C SET C.Reservable =  @reservable WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
-        done(err);
+        console.log(err);
+        connection.release();
       } else {
-
+        connection.release();
       }
     });
     request.addParameter('reservable',TYPES.Bit,reservable);
@@ -489,13 +533,14 @@ function setUserReservable(username, reservable) {
 }
 
 //*******************************************************Customer's Remover***********************************************
-function removeUser(username) {
+exports.removeUser = function(username) {
   var request = new request("DELETE FROM dbo.Customer C WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
-        done(err);
+        console.log(err);
+        connection.release();
       } else {
-
+        connection.release();
       }
     });
     request.addParameter('username',TYPES.VarChar,username);

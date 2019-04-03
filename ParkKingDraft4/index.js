@@ -114,39 +114,6 @@ app.use(function(req, res, next){
 //   });
 // });
 
-    function insert_newCustomer(connection,customer_info,done,newUserMysql){
-    var request = new Request("INSERT INTO dbo.Customer (FirstName,LastName,Email,Username,Password,customerType,studentID,professorID,NationalID,CustomerPicture,Reserveable) values (@firstName,@lastName,@email,@username,@password,@occupation,@studentID,@professorID,@CitizenID,@profilePic,@reserveAble)",
-    //CustomerPicture,profilePic
-        function (err, rowCount, rows){
-            if(err){
-                connection.release();
-                return done(err);
-            }else{
-                connection.release();
-                return done(null, newUserMysql);
-            }
-        });
-
-    request.addParameter('firstName',TYPES.VarChar,customer_info.fname);
-    request.addParameter('lastName',TYPES.VarChar,customer_info.lname);
-    request.addParameter('email',TYPES.VarChar,customer_info.email);
-    request.addParameter('username',TYPES.VarChar,customer_info.username);
-    request.addParameter('password',TYPES.VarChar,customer_info.password);
-    request.addParameter('occupation',TYPES.VarChar,customer_info.occupation);
-    request.addParameter('studentID',TYPES.VarChar,customer_info.studentID);
-    request.addParameter('professorID',TYPES.VarChar,customer_info.professorID);
-    request.addParameter('CitizenID',TYPES.VarChar,customer_info.guestID);
-    request.addParameter('profilePic',TYPES.VarChar,customer_info.CustomerPicture);
-    request.addParameter('reserveAble',TYPES.Bit,customer_info.Reserveable);
-
-
-    request.on('requestCompleted', function (){
-    //connection.close();
-    //error here
-    })
-    connection.execSql(request);
-}
-
     //for login session
     passport.serializeUser(function(user, done) {
         console.log('serializer');
@@ -258,7 +225,7 @@ app.use(function(req, res, next){
 
                         newUserMysql.id = rows.insertId;
 
-                        insert_newCustomer(connection,customer_info,done,newUserMysql);
+                        customer.insert_newCustomer(connection,customer_info,done,newUserMysql);
                     }
 
                 }
@@ -495,23 +462,46 @@ app.get('/userinfo', loggedIn, function(req, res){
        connection.release();
      }
      customer.getEmail(connection,req.user[0],function(data){
-       console.log(data);
        currentEmail = data;
      })
+     // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
+   });
+   pool.acquire(function (err, connection) {
+     if (err) {
+       console.error(err);
+       connection.release();
+     }
      customer.getFirstname(connection,req.user[0],function(data){
-       console.log(data);
        currentFirstname = data;
      })
+     // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
+   });
+   pool.acquire(function (err, connection) {
+     if (err) {
+       console.error(err);
+       connection.release();
+     }
      customer.getLastname(connection,req.user[0],function(data){
-       console.log(data);
        currentLastname = data;
      })
+     // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
+   });
+   pool.acquire(function (err, connection) {
+     if (err) {
+       console.error(err);
+       connection.release();
+     }
      customer.getCustomerType(connection,req.user[0],function(data){
-       console.log(data);
        currentCustomerType = data;
      })
+     // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
+   });
+   pool.acquire(function (err, connection) {
+     if (err) {
+       console.error(err);
+       connection.release();
+     }
      customer.getCustomerPicture(connection,req.user[0],function(data){
-       console.log(data);
        currentPicture = data;
        res.render('userinfo', {currentUsername: req.user[0],currentEmail:currentEmail,currentFirstname:currentFirstname,currentLastname:currentLastname,currentCustomerType:currentCustomerType,currentID:customer.getID(req.user),currentPicture:currentPicture});
      })
