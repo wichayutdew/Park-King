@@ -1,5 +1,4 @@
 var currentUser;
-var currentCustomer;
 var customer = require('./Customer.js');
 //NPM REQUIRE
 var express = require('express');
@@ -10,7 +9,6 @@ const multer = require('multer');
 //auto delete image after upload
 const autoReap  = require('multer-autoreap');
 var fs = require('fs');
-var getterSetter = require('./getterSetter.js');
 
 //tedious section
 var Connection = require('tedious').Connection;
@@ -318,7 +316,7 @@ app.use(function(req, res, next){
                         console.log('logged in!!!');
                         // var UserImage = new Image();
                         //  UserImage.src = 'data:image/png;base64,'+imgPhase;
-                        done(null, login_request);
+                        return done(null, login_request);
                     }
 
                     connection.release();
@@ -431,7 +429,7 @@ app.get('/home',loggedIn, function(req, res){
     // res.send({username: req.user[0]});
 
     //res.send({username: req.user[0]});
-    res.render('home',{currentUser: currentUser, username: req.user[0],userPicmenu: req.user[10]});
+    res.render('home',{username: req.user[0],userPicmenu: req.user[10]});
 
     // });
 });
@@ -470,35 +468,26 @@ app.get('/status', function(req, res){
 
 app.get('/userinfo', loggedIn, function(req, res){
 
-   res.render('userinfo', {
-     currentUser: req.user ,
-     currentUserID: checkUserType(req.user[5]),
-     userPicmenu: req.user[10],
-     username: req.user[0]
+   // res.render('userinfo', {
+   //   currentUser: req.user ,
+   //   currentUserID: checkUserType(req.user[5]),
+   //   userPicmenu: req.user[10],
+   //   username: req.user[0]
+   // });
+   pool.acquire(function (err, connection) {
+     if (err) {
+       console.error(err);
+       connection.release();
+     }
+     customer.getFirstname(connection,req.user[0],function(data){
+       console.log(data);
+       currentUser = data;
+     })
    });
-
-   // res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5])});
-
-
-// app.get('/userinfo', function(req, res){
-//
-//    pool.acquire(function (err, connection) {
-//        if (err) {
-//            console.error(err);
-//            connection.release();
-//        }
-//        currentUser = new customer(connection,req.user[0],function(data){
-//          console.log(data);
-//          currentCustomer = data;
-//        })
-//        res.render('userinfo', {current: currentCustomer, currentUser: req.user,currentUserID: checkUserType(req.user[5]),userPicmenu: req.user[10]});
-//      });
-
-
-   // res.render('userinfo', {currentUser: req.user ,currentUserID: checkUserType(req.user[5]),userPicmenu: req.user[10] });
-
-
+   res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user[5]),userPicmenu: req.user[10],username: req.user[0]});
 });
+
+
 app.get('/userinfo2', function(req, res){
    res.render('userinfo2');
 });
