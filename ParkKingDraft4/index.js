@@ -1,5 +1,6 @@
-var currentUser;
+var currentUsername,currentEmail,currentFirstname,currentLastname,currentCustomerType,currentID,currentPicture;
 var customer = require('./Customer.js');
+
 
 //NPM REQUIRE
 var express = require('express');
@@ -21,20 +22,6 @@ var TYPES =require('tedious').TYPES;
 //authentication section
 passport = require('passport');
 LocalStrategy = require('passport-local');
-
-//check user TYPE
-var userID;
-function checkUserType(user) {
-  if(user[5] == "Student"){
-    userID = user[6];
-  }else if(user[5] == "Professor"){
-    userID = user[7];
-  }else{
-    userID = user[8];
-  }
-  return userID;
-}
-
 
 //===================================================================================================================================================
 var poolConfig = {
@@ -128,45 +115,13 @@ app.use(function(req, res, next){
 //   });
 // });
 
-    function insert_newCustomer(connection,customer_info,done){
-    var request = new Request("INSERT INTO dbo.Customer (FirstName,LastName,Email,Username,Password,customerType,studentID,professorID,NationalID,CustomerPicture,Reserveable) values (@firstName,@lastName,@email,@username,@password,@occupation,@studentID,@professorID,@CitizenID,@profilePic,@reserveAble)",
-    //CustomerPicture,profilePic
-        function (err, rowCount, rows){
-            if(err){
-                connection.release();
-                done(err);
-            }else{
-                connection.release();
-            }
-        });
-
-    request.addParameter('firstName',TYPES.VarChar,customer_info.fname);
-    request.addParameter('lastName',TYPES.VarChar,customer_info.lname);
-    request.addParameter('email',TYPES.VarChar,customer_info.email);
-    request.addParameter('username',TYPES.VarChar,customer_info.username);
-    request.addParameter('password',TYPES.VarChar,customer_info.password);
-    request.addParameter('occupation',TYPES.VarChar,customer_info.occupation);
-    request.addParameter('studentID',TYPES.VarChar,customer_info.studentID);
-    request.addParameter('professorID',TYPES.VarChar,customer_info.professorID);
-    request.addParameter('CitizenID',TYPES.VarChar,customer_info.guestID);
-    request.addParameter('profilePic',TYPES.VarChar,customer_info.CustomerPicture);
-    request.addParameter('reserveAble',TYPES.Bit,customer_info.Reserveable);
-
-
-    request.on('requestCompleted', function (){
-    //connection.close();
-    //error here
-    })
-    connection.execSql(request);
-}
-
-    //for login session
-    passport.serializeUser(function(user, done) {
+//for login session
+passport.serializeUser(function(user, done) {
         console.log('serializer');
         //console.log(user);
         done(null, user[0]);
     });
-    passport.deserializeUser(function(user, done) {
+passport.deserializeUser(function(user, done) {
         console.log('deserializer')
         pool.acquire(function (err, connection) {
             if (err) {
@@ -199,8 +154,8 @@ app.use(function(req, res, next){
           });
     });
 
-    //passport model use for registeration
-    passport.use('local-signup', new LocalStrategy({
+//passport model use for registeration
+passport.use('local-signup', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
         //console.log('check 00');
         usernameField : 'username',
@@ -271,9 +226,7 @@ app.use(function(req, res, next){
 
                         newUserMysql.id = rows.insertId;
 
-                        insert_newCustomer(connection,customer_info,done)
-
-                        return done(null, newUserMysql);
+                        customer.insert_newCustomer(connection,customer_info,done,newUserMysql);
                     }
 
                 }
@@ -292,8 +245,8 @@ app.use(function(req, res, next){
 
         //res.redirect('/login');
     }));
-    //passport model use for login
-    passport.use('local-login', new LocalStrategy({
+//passport model use for login
+passport.use('local-login', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
         usernameField : 'username',
         passwordField : 'password',
@@ -366,13 +319,13 @@ app.use(function(req, res, next){
 
     }));
 
-    app.use(require('express-session')({
+app.use(require('express-session')({
         secret: "Fuck You",
         resave: false,
         saveUninitialized: false
     }));
-    app.use(passport.initialize());
-    app.use(passport.session());
+app.use(passport.initialize());
+app.use(passport.session());
 //===================================================================================================================================================
 // Operation
 //===================================================================================================================================================
@@ -450,7 +403,17 @@ app.get('/home',loggedIn, function(req, res){
     //     // var output = username.getUserUsername();
     //     console.log(username);
     // res.send({username: req.user[0]});
-    res.render('home',{username: req.user[0],userPicmenu: req.user[10]});
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      customer.getCustomerPicture(connection,req.user[0],function(data){
+        currentPicture = data;
+        res.render('home', {currentUsername: req.user[0],currentPicture: currentPicture});
+      })
+    });
+    // res.render('home',{username: req.user[0],userPicmenu: req.user[10]});
     // });
 });
 
@@ -471,18 +434,44 @@ app.get('/carregister', function(req, res){
 
 //ROUTE TO RESERVE PAGE
 app.get('/reserve',loggedIn, function(req, res){
-
-    res.render('reserve',{userPicmenu: req.user[10]});
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    customer.getCustomerPicture(connection,req.user[0],function(data){
+      currentPicture = data;
+      res.render('reserve', {currentUsername: req.user[0],currentPicture: currentPicture});
+    })
+  });
 });
 
 //ROUTE TO QR CODE PAGE
 app.get('/showqr', function(req, res){
-    res.render('showqr');
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    customer.getCustomerPicture(connection,req.user[0],function(data){
+      currentPicture = data;
+      res.render('showqr', {currentUsername: req.user[0],currentPicture: currentPicture});
+    })
+  });
 });
 
 //ROUTE TO STATUS
 app.get('/status', function(req, res){
-    res.render('status');
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    customer.getCustomerPicture(connection,req.user[0],function(data){
+      currentPicture = data;
+      res.render('status', {currentUsername: req.user[0],currentPicture: currentPicture});
+    })
+  });
 });
 
 //ROUTE TO USER INFO
@@ -499,16 +488,55 @@ app.get('/userinfo', loggedIn, function(req, res){
        console.error(err);
        connection.release();
      }
-     // currentUser = new customer(connection,req.user[0]);
-     // console.log(currentUser.firstname);
-     customer.getFirstname(connection,req.user[0],function(data){
-       console.log(data);
-       currentUser = data;
-       res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
+     customer.getEmail(connection,req.user[0],function(data){
+       currentEmail = data;
      })
+     // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
+   });
+   pool.acquire(function (err, connection) {
+     if (err) {
+       console.error(err);
+       connection.release();
+     }
+     customer.getFirstname(connection,req.user[0],function(data){
+       currentFirstname = data;
+     })
+     // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
+   });
+   pool.acquire(function (err, connection) {
+     if (err) {
+       console.error(err);
+       connection.release();
+     }
+     customer.getLastname(connection,req.user[0],function(data){
+       currentLastname = data;
+     })
+     // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
+   });
+   pool.acquire(function (err, connection) {
+     if (err) {
+       console.error(err);
+       connection.release();
+     }
+     customer.getCustomerType(connection,req.user[0],function(data){
+       currentCustomerType = data;
+     })
+     // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
+   });
+   pool.acquire(function (err, connection) {
+     if (err) {
+       console.error(err);
+       connection.release();
+     }
+     customer.getCustomerPicture(connection,req.user[0],function(data){
+       currentPicture = data;
+       res.render('userinfo', {currentUsername: req.user[0],currentEmail:currentEmail,currentFirstname:currentFirstname,currentLastname:currentLastname,currentCustomerType:currentCustomerType,currentID:customer.getID(req.user),currentPicture:currentPicture});
+     })
+     // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
    });
 });
 
+//ROUTE TO EDIT USER
 app.get('/edituserinfo', loggedIn, function(req, res){
   pool.acquire(function (err, connection) {
     if (err) {
@@ -616,58 +644,60 @@ app.post('/reserve',function(req,res){
   //     arriveTimeout = countdownTimer(60*30);
   //   }
   // }
-  var car=['5555','x'];
-  var parkingSpot=['01','0001','buildingPoli'];
-
-  pool.acquire(function (err, connection) {
-      if (err) {
-          console.error(err);
-          connection.release();
-          return;
-      }
-      if(req.user[11]='0'){
-          console.log('your accout is decline to reserve')
-          connection.release();
-          res.redirect('/home');
-      }
-      var request = new Request(
-          "SELECT Floor,MIN(Slot),BuildingName,isFull,Sensor,PlateNumber,Username FROM dbo.ParkingSpot,dbo.Car WHERE dbo.ParkingSpot.isfull='0' AND dbo.ParkingSpot.Sensor='0',dbo.Car.PlateNumber = @PlateNumber,dbo.Car.Username = @Username",
-          function(err, rowCount, rows){
-
-              if(err){
-                  connection.release();
-                  res.redirect('/reserve');
-              }else{
-                  var reserveId = generateTokenID();
-                  console.log('Spot available : '+ buildingState);
-                  Reserve(buildingState[0], buildingState[1], buildingState[2], buildingState[3], buildingState[4], null, null, null, null, reserveId, 0);
-
-                  setUserReservable(username,0);
-                  setParkingSpotOccupied(floor, slot, buidlingname, 1);
-                  arriveTimeout = countdownTimer(60*30);
-                  res.redirect('/showqr')
-              }
-              connection.release();
-      });
-      request.addParameter('PlateNumber',TYPES.VarChar,car[0]);
-      request.addParameter('Username',TYPES.VarChar,car[1]);
-      request.addParameter('Building',TYPES.VarChar,parking[3]);
-
-      var buildingState =[];
-      request.on('row', function (columns) {
-          columns.forEach(function(column) {
-              buildingState.push(column.value);
-          });
-          //console.log(login_request + 'info');
-      });
-
-      request.on('Done',function(err, rowCount, rows){
-      });
-
-      connection.execSql(request);
+  // var car=['5555','x'];
+  // var parkingSpot=['01','0001','buildingPoli'];
+  //
+  // pool.acquire(function (err, connection) {
+  //     if (err) {
+  //         console.error(err);
+  //         connection.release();
+  //         return;
+  //     }
+  //     if(req.user[11]='0'){
+  //         console.log('your accout is decline to reserve')
+  //         connection.release();
+  //         res.redirect('/home');
+  //     }
+  //     var request = new Request(
+  //         "SELECT Floor,MIN(Slot),BuildingName,isFull,Sensor,PlateNumber,Username FROM dbo.ParkingSpot,dbo.Car WHERE dbo.ParkingSpot.isfull='0' AND dbo.ParkingSpot.Sensor='0',dbo.Car.PlateNumber = @PlateNumber,dbo.Car.Username = @Username",
+  //         function(err, rowCount, rows){
+  //
+  //             if(err){
+  //                 connection.release();
+  //                 res.redirect('/reserve');
+  //             }else{
+  //                 var reserveId = generateTokenID();
+  //                 console.log('Spot available : '+ buildingState);
+  //                 Reserve(buildingState[0], buildingState[1], buildingState[2], buildingState[3], buildingState[4], null, null, null, null, reserveId, 0);
+  //
+  //                 setUserReservable(username,0);
+  //                 setParkingSpotOccupied(floor, slot, buidlingname, 1);
+  //                 arriveTimeout = countdownTimer(60*30);
+  //                 res.redirect('/showqr')
+  //             }
+  //             connection.release();
+  //     });
+  //     request.addParameter('PlateNumber',TYPES.VarChar,car[0]);
+  //     request.addParameter('Username',TYPES.VarChar,car[1]);
+  //     request.addParameter('Building',TYPES.VarChar,parking[3]);
+  //
+  //     var buildingState =[];
+  //     request.on('row', function (columns) {
+  //         columns.forEach(function(column) {
+  //             buildingState.push(column.value);
+  //         });
+  //         //console.log(login_request + 'info');
+  //     });
+  //
+  //     request.on('Done',function(err, rowCount, rows){
+  //     });
+  //
+  //     connection.execSql(request);
       //_login(req, username, password, done, );
-  });
+      res.render('/reserve');
+  // });
 });
+
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
   pool.acquire(function (err, connection) {
@@ -708,6 +738,7 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
       //_login(req, username, password, done, );
   });
 },autoReap);
+
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',
