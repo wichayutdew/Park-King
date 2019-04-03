@@ -128,15 +128,16 @@ app.use(function(req, res, next){
 //   });
 // });
 
-    function insert_newCustomer(connection,customer_info,done){
+    function insert_newCustomer(connection,customer_info,done,newUserMysql){
     var request = new Request("INSERT INTO dbo.Customer (FirstName,LastName,Email,Username,Password,customerType,studentID,professorID,NationalID,CustomerPicture,Reserveable) values (@firstName,@lastName,@email,@username,@password,@occupation,@studentID,@professorID,@CitizenID,@profilePic,@reserveAble)",
     //CustomerPicture,profilePic
         function (err, rowCount, rows){
             if(err){
                 connection.release();
-                done(err);
+                return done(err);
             }else{
                 connection.release();
+                return done(null, newUserMysql);
             }
         });
 
@@ -271,9 +272,7 @@ app.use(function(req, res, next){
 
                         newUserMysql.id = rows.insertId;
 
-                        insert_newCustomer(connection,customer_info,done)
-
-                        return done(null, newUserMysql);
+                        insert_newCustomer(connection,customer_info,done,newUserMysql);
                     }
 
                 }
@@ -616,57 +615,58 @@ app.post('/reserve',function(req,res){
   //     arriveTimeout = countdownTimer(60*30);
   //   }
   // }
-  var car=['5555','x'];
-  var parkingSpot=['01','0001','buildingPoli'];
-
-  pool.acquire(function (err, connection) {
-      if (err) {
-          console.error(err);
-          connection.release();
-          return;
-      }
-      if(req.user[11]='0'){
-          console.log('your accout is decline to reserve')
-          connection.release();
-          res.redirect('/home');
-      }
-      var request = new Request(
-          "SELECT Floor,MIN(Slot),BuildingName,isFull,Sensor,PlateNumber,Username FROM dbo.ParkingSpot,dbo.Car WHERE dbo.ParkingSpot.isfull='0' AND dbo.ParkingSpot.Sensor='0',dbo.Car.PlateNumber = @PlateNumber,dbo.Car.Username = @Username",
-          function(err, rowCount, rows){
-
-              if(err){
-                  connection.release();
-                  res.redirect('/reserve');
-              }else{
-                  var reserveId = generateTokenID();
-                  console.log('Spot available : '+ buildingState);
-                  Reserve(buildingState[0], buildingState[1], buildingState[2], buildingState[3], buildingState[4], null, null, null, null, reserveId, 0);
-
-                  setUserReservable(username,0);
-                  setParkingSpotOccupied(floor, slot, buidlingname, 1);
-                  arriveTimeout = countdownTimer(60*30);
-                  res.redirect('/showqr')
-              }
-              connection.release();
-      });
-      request.addParameter('PlateNumber',TYPES.VarChar,car[0]);
-      request.addParameter('Username',TYPES.VarChar,car[1]);
-      request.addParameter('Building',TYPES.VarChar,parking[3]);
-
-      var buildingState =[];
-      request.on('row', function (columns) {
-          columns.forEach(function(column) {
-              buildingState.push(column.value);
-          });
-          //console.log(login_request + 'info');
-      });
-
-      request.on('Done',function(err, rowCount, rows){
-      });
-
-      connection.execSql(request);
+  // var car=['5555','x'];
+  // var parkingSpot=['01','0001','buildingPoli'];
+  //
+  // pool.acquire(function (err, connection) {
+  //     if (err) {
+  //         console.error(err);
+  //         connection.release();
+  //         return;
+  //     }
+  //     if(req.user[11]='0'){
+  //         console.log('your accout is decline to reserve')
+  //         connection.release();
+  //         res.redirect('/home');
+  //     }
+  //     var request = new Request(
+  //         "SELECT Floor,MIN(Slot),BuildingName,isFull,Sensor,PlateNumber,Username FROM dbo.ParkingSpot,dbo.Car WHERE dbo.ParkingSpot.isfull='0' AND dbo.ParkingSpot.Sensor='0',dbo.Car.PlateNumber = @PlateNumber,dbo.Car.Username = @Username",
+  //         function(err, rowCount, rows){
+  //
+  //             if(err){
+  //                 connection.release();
+  //                 res.redirect('/reserve');
+  //             }else{
+  //                 var reserveId = generateTokenID();
+  //                 console.log('Spot available : '+ buildingState);
+  //                 Reserve(buildingState[0], buildingState[1], buildingState[2], buildingState[3], buildingState[4], null, null, null, null, reserveId, 0);
+  //
+  //                 setUserReservable(username,0);
+  //                 setParkingSpotOccupied(floor, slot, buidlingname, 1);
+  //                 arriveTimeout = countdownTimer(60*30);
+  //                 res.redirect('/showqr')
+  //             }
+  //             connection.release();
+  //     });
+  //     request.addParameter('PlateNumber',TYPES.VarChar,car[0]);
+  //     request.addParameter('Username',TYPES.VarChar,car[1]);
+  //     request.addParameter('Building',TYPES.VarChar,parking[3]);
+  //
+  //     var buildingState =[];
+  //     request.on('row', function (columns) {
+  //         columns.forEach(function(column) {
+  //             buildingState.push(column.value);
+  //         });
+  //         //console.log(login_request + 'info');
+  //     });
+  //
+  //     request.on('Done',function(err, rowCount, rows){
+  //     });
+  //
+  //     connection.execSql(request);
       //_login(req, username, password, done, );
-  });
+      res.render('/reserve');
+  // });
 });
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
