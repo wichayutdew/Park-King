@@ -1,6 +1,7 @@
 var currentUsername,currentEmail,currentFirstname,currentLastname,currentCustomerType,currentID,currentPicture;
 var customer = require('./Customer.js');
 
+
 //NPM REQUIRE
 var express = require('express');
 const app = express();
@@ -114,13 +115,13 @@ app.use(function(req, res, next){
 //   });
 // });
 
-    //for login session
-    passport.serializeUser(function(user, done) {
+//for login session
+passport.serializeUser(function(user, done) {
         console.log('serializer');
         //console.log(user);
         done(null, user[0]);
     });
-    passport.deserializeUser(function(user, done) {
+passport.deserializeUser(function(user, done) {
         console.log('deserializer')
         pool.acquire(function (err, connection) {
             if (err) {
@@ -153,8 +154,8 @@ app.use(function(req, res, next){
           });
     });
 
-    //passport model use for registeration
-    passport.use('local-signup', new LocalStrategy({
+//passport model use for registeration
+passport.use('local-signup', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
         //console.log('check 00');
         usernameField : 'username',
@@ -244,8 +245,8 @@ app.use(function(req, res, next){
 
         //res.redirect('/login');
     }));
-    //passport model use for login
-    passport.use('local-login', new LocalStrategy({
+//passport model use for login
+passport.use('local-login', new LocalStrategy({
         // by default, local strategy uses username and password, we will override with email
         usernameField : 'username',
         passwordField : 'password',
@@ -318,13 +319,13 @@ app.use(function(req, res, next){
 
     }));
 
-    app.use(require('express-session')({
+app.use(require('express-session')({
         secret: "Fuck You",
         resave: false,
         saveUninitialized: false
     }));
-    app.use(passport.initialize());
-    app.use(passport.session());
+app.use(passport.initialize());
+app.use(passport.session());
 //===================================================================================================================================================
 // Operation
 //===================================================================================================================================================
@@ -433,18 +434,44 @@ app.get('/carregister', function(req, res){
 
 //ROUTE TO RESERVE PAGE
 app.get('/reserve',loggedIn, function(req, res){
-
-    res.render('reserve',{userPicmenu: req.user[10]});
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    customer.getCustomerPicture(connection,req.user[0],function(data){
+      currentPicture = data;
+      res.render('reserve', {currentUsername: req.user[0],currentPicture: currentPicture});
+    })
+  });
 });
 
 //ROUTE TO QR CODE PAGE
 app.get('/showqr', function(req, res){
-    res.render('showqr');
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    customer.getCustomerPicture(connection,req.user[0],function(data){
+      currentPicture = data;
+      res.render('showqr', {currentUsername: req.user[0],currentPicture: currentPicture});
+    })
+  });
 });
 
 //ROUTE TO STATUS
 app.get('/status', function(req, res){
-    res.render('status');
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    customer.getCustomerPicture(connection,req.user[0],function(data){
+      currentPicture = data;
+      res.render('status', {currentUsername: req.user[0],currentPicture: currentPicture});
+    })
+  });
 });
 
 //ROUTE TO USER INFO
@@ -509,7 +536,7 @@ app.get('/userinfo', loggedIn, function(req, res){
    });
 });
 
-
+//ROUTE TO EDIT USER
 app.get('/edituserinfo', loggedIn, function(req, res){
   pool.acquire(function (err, connection) {
     if (err) {
@@ -670,6 +697,7 @@ app.post('/reserve',function(req,res){
       res.render('/reserve');
   // });
 });
+
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
   pool.acquire(function (err, connection) {
@@ -710,6 +738,7 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
       //_login(req, username, password, done, );
   });
 },autoReap);
+
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',
