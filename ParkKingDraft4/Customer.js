@@ -3,14 +3,14 @@ var ConnectionPool = require('tedious-connection-pool');
 var Request = require('tedious').Request;
 var TYPES =require('tedious').TYPES;
 
-module.exports = function(connection,username){
-  getFirstname(connection,username,function(data){
-    this.firstname = data;
-  });
-}
+// module.exports = function(connection,username){
+//   getFirstname(connection,username,function(data){
+//     this.firstname = data;
+//   });
+// }
 
 var returnedValue  = [];
-function getFirstname(connection,username,Callback) {
+exports.getFirstname = function(connection,username,Callback) {
     var request = new Request(
       'SELECT FirstName FROM dbo.Customer WHERE Username = @username',
       function(err, rowCount, rows) {
