@@ -21,13 +21,15 @@ passport = require('passport');
 LocalStrategy = require('passport-local');
 
 //check user TYPE
-var userID
+var userID;
 function checkUserType(user) {
-  if(user="Student")
-  userID=user[6];
-  else if (user="Professor")
-  userID=user[7];
-  else userID=user[8];
+  if(user[5] == "Student"){
+    userID = user[6];
+  }else if(user[5] == "Professor"){
+    userID = user[7];
+  }else{
+    userID = user[8];
+  }
   return userID;
 }
 
@@ -479,12 +481,14 @@ app.get('/userinfo', loggedIn, function(req, res){
        console.error(err);
        connection.release();
      }
-     customer.getFirstname(connection,req.user[0],function(data){
-       console.log(data);
-       currentUser = data;
-     })
+     currentUser = new customer(connection,req.user[0]);
+     console.log(currentUser.firstname);
+     // customer.getFirstname(connection,req.user[0],function(data){
+     //   console.log(data);
+     //   currentUser = data;
+     // })
    });
-   res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user[5]),userPicmenu: req.user[10],username: req.user[0]});
+   res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
 });
 
 
