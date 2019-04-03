@@ -1,6 +1,8 @@
+//require customer.js file
 var currentUsername,currentEmail,currentFirstname,currentLastname,currentCustomerType,currentID,currentPicture;
 var customer = require('./Customer.js');
-
+//require car.js file
+var car = require('./Car.js');
 
 //NPM REQUIRE
 var express = require('express');
@@ -211,12 +213,12 @@ passport.use('local-signup', new LocalStrategy({
                         return done(null,false);
                     }
                     if (rows.length != 0) {
-                        console.log('this email is already taken');
+                        console.log('this username is already taken');
                         connection.release();
                         return done(null, false);
                     }else {
 
-                        console.log('this email doesnot taken')
+                        console.log('this username doesnot taken')
                         // if there is no user with that email
                         // create the use
                         var newUserMysql = new Object();
@@ -263,7 +265,7 @@ passport.use('local-login', new LocalStrategy({
             }
             console.log('log-in requested');
             var request = new Request(
-                'SELECT * FROM dbo.Customer WHERE Username = @username Or Email = @username',
+                'SELECT * FROM dbo.Customer WHERE Username = @username',
                 function(err, rowCount, rows){
                     console.log(username);
                     console.log(rowCount);
@@ -708,34 +710,40 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
       }
       var img = fs.readFileSync(req.file.path);
       var encode_image = img.toString('base64');
-      //use the connection as normal
-      var request = new Request(
-          'INSERT INTO dbo.Car(PlateNumber,Username,CarBrand,CarModel,CarPicture,CarColor) VALUES (@PlateNumber,@Username,@CarBrand,@CarModel,@CarPicture,@CarColor)',
-          function(err, rowCount, rows){
-
-              if(err){
-                  //connection.release();
-                  connection.release();
-                  res.redirect('/carregister');
-              }else{
-                  console.log('Car added!!!');
-                  connection.release();
-                  res.redirect('/home')
-              }
-
-      });
-      request.addParameter('PlateNumber',TYPES.VarChar,req.body.plateNumber);
-      request.addParameter('Username',TYPES.VarChar,req.user[0]);
-      request.addParameter('CarBrand',TYPES.VarChar,req.body.carBrand);
-      request.addParameter('CarModel',TYPES.VarChar,req.body.Model);
-      request.addParameter('CarPicture',TYPES.VarChar,encode_image);
-      request.addParameter('CarColor',TYPES.VarChar,req.body.carColor);
-
-      request.on('Done',function(err, rowCount, rows){
-      });
-
-      connection.execSql(request);
-      //_login(req, username, password, done, );
+      var car_info = {
+        platenumber:req.body.plateNumber,
+        username :req.user[0],
+        carbrand:req.body.carBrand,
+        carmodel:req.body.carModel,
+        carpicture:encode_image,
+        carcolor:req.bod.carColor,
+      };
+      car.insert_newCar(connection,car_info);
+      // //use the connection as normal
+      // var request = new Request(
+      //     'INSERT INTO dbo.Car(PlateNumber,Username,CarBrand,CarModel,CarPicture,CarColor) VALUES (@PlateNumber,@Username,@CarBrand,@CarModel,@CarPicture,@CarColor)',
+      //     function(err, rowCount, rows){
+      //         if(err){
+      //             connection.release();
+      //             res.redirect('/carregister');
+      //         }else{
+      //             console.log('Car added!!!');
+      //             connection.release();
+      //             res.redirect('/home')
+      //         }
+      // });
+      // request.addParameter('PlateNumber',TYPES.VarChar,req.body.plateNumber);
+      // request.addParameter('Username',TYPES.VarChar,req.user[0]);
+      // request.addParameter('CarBrand',TYPES.VarChar,req.body.carBrand);
+      // request.addParameter('CarModel',TYPES.VarChar,req.body.Model);
+      // request.addParameter('CarPicture',TYPES.VarChar,encode_image);
+      // request.addParameter('CarColor',TYPES.VarChar,req.body.carColor);
+      //
+      // request.on('Done',function(err, rowCount, rows){
+      // });
+      //
+      // connection.execSql(request);
+      // //_login(req, username, password, done, );
   });
 },autoReap);
 
