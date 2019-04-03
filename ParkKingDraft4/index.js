@@ -123,7 +123,7 @@ app.use(function(req, res, next){
                 return done(err);
             }else{
                 connection.release();
-                return done(null, newUserMysql);
+
             }
         });
 
@@ -207,7 +207,7 @@ app.use(function(req, res, next){
             //var IMG = base64_encode(req.body.profilePic);
             var img = fs.readFileSync(req.file.path);
             var encode_image = img.toString('base64');
-            //console.log(encode_image);
+            console.log(encode_image);
 
             // var finalImg = {
             //      contentType: req.file.mimetype,
@@ -258,7 +258,8 @@ app.use(function(req, res, next){
 
                         newUserMysql.id = rows.insertId;
 
-                        insert_newCustomer(connection,customer_info,done,newUserMysql);
+                        insert_newCustomer(connection,customer_info,done);
+                        return done(null, newUserMysql);
                     }
 
                 }
@@ -299,6 +300,7 @@ app.use(function(req, res, next){
                 function(err, rowCount, rows){
                     console.log(username);
                     console.log(rowCount);
+                    //console.log(login_request[10]);
 
                     console.log('number of row returned')
                     connection.release();
@@ -322,8 +324,6 @@ app.use(function(req, res, next){
                         //  UserImage.src = 'data:image/png;base64,'+imgPhase;
                         return done(null, login_request);
                     }
-
-                    connection.release();
             });
             request.addParameter('username',TYPES.VarChar,username);
             var login_request = [];
@@ -499,6 +499,7 @@ app.get('/home',loggedIn, function(req, res){
       }
       customer.getCustomerPicture(connection,req.user[0],function(data){
         currentPicture = data;
+        console.log(currentPicture);
         res.render('home', {currentUsername: req.user[0],currentPicture: currentPicture});
       })
     });
@@ -524,7 +525,7 @@ app.get('/carregister', function(req, res){
 //ROUTE TO RESERVE PAGE
 app.get('/reserve',loggedIn, function(req, res){
 
-    res.render('reserve',{username: req.user[0],userPicmenu: req.user[10]});
+    res.render('reserve',{currentUsername: req.user[0],currentPicture: req.user[10]});
 });
 
 //ROUTE TO QR CODE PAGE
@@ -697,7 +698,7 @@ app.post('/reserve',function(req,res){
           res.redirect('/home');
       }else{
         var request = new Request(
-          "SELECT Floor,MIN(Slot) as Slot,BuildingName,PlateNumber,Username FROM dbo.ParkingSpot,dbo.Car WHERE dbo.ParkingSpot.isfull='0' AND dbo.ParkingSpot.Sensor='0' AND dbo.Car.PlateNumber = @PlateNumber AND dbo.Car.Username = @Username",
+          "SELECT Floor,MIN(Slot) as MinSlot,Slot,BuildingName,PlateNumber,Username FROM dbo.ParkingSpot,dbo.Car GROUP BY Slot,Username WHERE dbo.ParkingSpot.isfull=0 AND dbo.ParkingSpot.Sensor=0 OR dbo.Car.PlateNumber = @PlateNumber AND dbo.Car.Username = @Username",
           function(err, rowCount, rows){
 
               if(err){
@@ -707,8 +708,8 @@ app.post('/reserve',function(req,res){
               }else{
                   var reserveId = generateTokenID();
                   console.log('Spot available : '+ buildingState);
-                  Reserve(buildingState[0], buildingState[1], buildingState[2], buildingState[3], buildingState[4], null, null, null, null, reserveId, 0,connection);
-                  UpdateReserve(buildingState[0],buildingState[1],buildingState[2],buildingState[4],connection);
+                  Reserve(buildingState[0], buildingState[1], buildingState[3], buildingState[4], buildingState[5], null, null, null, null, reserveId, 0,connection);
+                  UpdateReserve(buildingState[0],buildingState[1],buildingState[3],buildingState[5],connection);
                   arriveTimeout = countdownTimer(60*30);
                   res.redirect('/userinfo');
               }
