@@ -2,6 +2,7 @@
 var currentUsername,currentEmail,currentFirstname,currentLastname,currentCustomerType,currentID,currentPicture;
 var customer = require('./Customer.js');
 //require car.js file
+var currentPlateNumber=[],currentBrand=[],currentModel=[],currentColor=[],currentPictur=[];
 var car = require('./Car.js');
 
 //NPM REQUIRE
@@ -412,9 +413,34 @@ app.get('/home',loggedIn, function(req, res){
       }
       customer.getCustomerPicture(connection,req.user[0],function(data){
         currentPicture = data;
-        res.render('home', {currentUsername: req.user[0],currentPicture: currentPicture});
+        // res.render('home', {currentUsername: req.user[0],currentPicture: currentPicture});
       })
     });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      car.getAllPlateNumber(connection,req.user[0],function(data){
+        currentPlateNumber = data;
+        res.render('home', {currentPlateNumber: currentPlateNumber,currentUsername: req.user[0],currentPicture: currentPicture});
+      })
+    });
+  // for(var i = 0;i<currentPlateNumber.length;i++){
+  //     pool.acquire(function (err, connection) {
+  //       if (err) {
+  //         console.error(err);
+  //         connection.release();
+  //       }
+  //       car.getCarModel(connection,currentPlateNumber[0],req.user[0],function(data){
+  //         currentModel = data;
+  //         if(i = currentPlateNumber.lenght){
+  //           res.render('home', {currentModel:currentModel,currentPlateNumber: currentPlateNumber,currentUsername: req.user[0],currentPicture: currentPicture});
+  //         }
+  //       })
+  //     });
+  //   }
+
     // res.render('home',{username: req.user[0],userPicmenu: req.user[10]});
     // });
 });
