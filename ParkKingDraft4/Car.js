@@ -56,7 +56,7 @@ exports.getAllPlateNumber = function(connection,username,Callback) {
 exports.getCarBrand = function(connection,platenumber, username,Callback) {
   var returnedValue  = [];
   var request = new Request(
-    'SELECT CarBrand FROM dbo.Customer WHERE Username = @username AND PlateNumber = @platenumber',
+    'SELECT CarBrand FROM dbo.Car WHERE Username = @username AND PlateNumber = @platenumber',
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -80,7 +80,7 @@ exports.getCarBrand = function(connection,platenumber, username,Callback) {
 exports.getCarModel = function(connection,platenumber, username,Callback) {
   var returnedValue  = [];
   var request = new Request(
-    'SELECT CarModel FROM dbo.Customer WHERE Username = @username AND PlateNumber = @platenumber',
+    'SELECT CarModel FROM dbo.Car WHERE Username = @username AND PlateNumber = @platenumber',
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -104,7 +104,7 @@ exports.getCarModel = function(connection,platenumber, username,Callback) {
 exports.getCarPicture = function(connection,platenumber, username,Callback) {
   var returnedValue  = [];
   var request = new Request(
-    'SELECT CarPicture FROM dbo.Customer WHERE Username = @username AND PlateNumber = @platenumber',
+    'SELECT CarPicture FROM dbo.Car WHERE Username = @username AND PlateNumber = @platenumber',
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -128,7 +128,7 @@ exports.getCarPicture = function(connection,platenumber, username,Callback) {
 exports.getCarColor = function(connection,platenumber, username,Callback) {
   var returnedValue  = [];
   var request = new Request(
-    'SELECT CarColor FROM dbo.Customer WHERE Username = @username AND PlateNumber = @platenumber',
+    'SELECT CarColor FROM dbo.Car WHERE Username = @username AND PlateNumber = @platenumber',
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
