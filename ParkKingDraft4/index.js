@@ -542,120 +542,17 @@ app.get('/userinfo', loggedIn, function(req, res){
 
 //ROUTE TO EDIT USER
 app.get('/edituserinfo', loggedIn, function(req, res){
-<<<<<<< HEAD
-  res.render('edituserinfo', {currentUsername: req.user[0],currentEmail:currentEmail,currentFirstname:currentFirstname,currentLastname:currentLastname,currentCustomerType:currentCustomerType,currentStudentID:req.user[6],currentProfessorID:req.user[7],currentNationalID:req.user[8],currentPicture:currentPicture});
-=======
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    customer.getEmail(connection,req.user[0],function(data){
-      currentEmail = data;
-    })
-    // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
-  });
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    customer.getFirstname(connection,req.user[0],function(data){
-      currentFirstname = data;
-    })
-    // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
-  });
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    customer.getLastname(connection,req.user[0],function(data){
-      currentLastname = data;
-    })
-    // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
-  });
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    customer.getCustomerType(connection,req.user[0],function(data){
-      currentCustomerType = data;
-    })
-    // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
-  });
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    customer.getCustomerPicture(connection,req.user[0],function(data){
-      currentPicture = data;
-      // res.render('userinfo', {currentUsername: req.user[0],currentEmail:currentEmail,currentFirstname:currentFirstname,currentLastname:currentLastname,currentCustomerType:currentCustomerType,currentID:customer.getID(req.user),currentPicture:currentPicture});
-    })
-    // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
-  });
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    car.getAllPlateNumber(connection,req.user[0],function(data){
-      currentPlateNumber = data;
-    })
-  });
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    car.getAllCarBrand(connection,req.user[0],function(data){
-      currentBrand = data;
-    })
-  });
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    car.getAllCarModel(connection,req.user[0],function(data){
-      currentModel = data;
-    })
-  });
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    car.getAllCarColor(connection,req.user[0],function(data){
-      currentColor = data;
-    })
-  });
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    car.getAllCarPicture(connection,req.user[0],function(data){
-      currentCarPicture = data;
-      res.render('edituserinfo', {currentCarPicture: currentCarPicture,
-                             currentBrand:currentBrand,
-                             currentColor:currentColor,
-                             currentModel:currentModel,
-                             currentPlateNumber: currentPlateNumber,
-                             currentUsername: req.user[0],
+      res.render('edituserinfo', {currentUsername: req.user[0],
                              currentEmail:currentEmail,
                              currentFirstname:currentFirstname,
                              currentLastname:currentLastname,
                              currentCustomerType:currentCustomerType,
-                             currentID:customer.getID(req.user),
+                             currentStudentID:req.user[6],
+                             currentProfessorID:req.user[7],
+                             currentNationalID:req.user[8],
                              currentPicture:currentPicture
                            });
 
-    });
-  });
->>>>>>> b58651e80f612ab51dfad0ec911bed1460e035c3
 });
 
 
@@ -817,30 +714,6 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
         carpicture:encode_image,
       };
       car.insert_newCar(connection,car_info);
-      // //use the connection as normal
-      // var request = new Request(
-      //     'INSERT INTO dbo.Car(PlateNumber,Username,CarBrand,CarModel,CarPicture,CarColor) VALUES (@PlateNumber,@Username,@CarBrand,@CarModel,@CarPicture,@CarColor)',
-      //     function(err, rowCount, rows){
-      //         if(err){
-      //             connection.release();
-      //             res.redirect('/carregister');
-      //         }else{
-      //             console.log('Car added!!!');
-      //             connection.release();
-      //             res.redirect('/home')
-      //         }
-      // });
-      // request.addParameter('PlateNumber',TYPES.VarChar,req.body.plateNumber);
-      // request.addParameter('Username',TYPES.VarChar,req.user[0]);
-      // request.addParameter('CarBrand',TYPES.VarChar,req.body.carBrand);
-      // request.addParameter('CarModel',TYPES.VarChar,req.body.Model);
-      // request.addParameter('CarPicture',TYPES.VarChar,encode_image);
-      // request.addParameter('CarColor',TYPES.VarChar,req.body.carColor);
-      //
-      // request.on('Done',function(err, rowCount, rows){
-      // });
-      //
-      // connection.execSql(request);
       // //_login(req, username, password, done, );
   });
 },autoReap);
@@ -865,28 +738,28 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
 //   });
 // },autoReap);
 
-// app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
-//   console.log('Trying to edit profile');
-//   pool.acquire(function (err, connection) {
-//     if (err) {
-//       console.error(err);
-//       connection.release();
-//     }
-//     var img = fs.readFileSync(req.file.path);
-//     var encode_image = img.toString('base64');
-//     var edited_info = {
-//       email : req.body.email,
-//       firstname : req.body.firstName,
-//       lastname : req.body.lastName,
-//       customertype: req.body.occupation,
-//       studentID: req.body.studentID,
-//       professorID: req.body.professorID,
-//       nationalID: req.body.NationalID,
-//       CustomerPicture: encode_image,
-//     };
-//     customer.editCustomer(connection,req.user[0],edited_info);
-//   });
-// },autoReap);
+app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
+  console.log('Trying to edit profile');
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    var img = fs.readFileSync(req.file.path);
+    var encode_image = img.toString('base64');
+    var edited_info = {
+      email : req.body.email,
+      firstname : req.body.firstName,
+      lastname : req.body.lastName,
+      customertype: req.body.occupation,
+      studentID: req.body.studentID,
+      professorID: req.body.professorID,
+      nationalID: req.body.NationalID,
+      CustomerPicture: encode_image,
+    };
+    customer.editCustomer(connection,req.user[0],edited_info);
+  });
+},autoReap);
 
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
