@@ -4,7 +4,6 @@ var customer = require('./Customer.js');
 //require car.js file
 var currentPlateNumber=[],currentBrand=[],currentModel=[],currentColor=[],currentCarPicture=[];
 var car = require('./Car.js');
-var async = require('async');
 
 //NPM REQUIRE
 var express = require('express');
@@ -271,7 +270,6 @@ passport.use('local-login', new LocalStrategy({
                 function(err, rowCount, rows){
                     console.log(username);
                     console.log(rowCount);
-
                     console.log('number of row returned')
                     connection.release();
                     if(err){
@@ -294,7 +292,6 @@ passport.use('local-login', new LocalStrategy({
                         //  UserImage.src = 'data:image/png;base64,'+imgPhase;
                         return done(null, login_request);
                     }
-
                     connection.release();
             });
             request.addParameter('username',TYPES.VarChar,username);
@@ -404,24 +401,6 @@ app.get('/home',loggedIn,function(req, res){
         res.render('home', {currentUsername: req.user[0],currentPicture: currentPicture});
       })
     });
-    // pool error memory
-    // for(var i = 0;i<currentPlateNumber.length;i++){
-    //   pool.acquire(function (err, connection) {
-    //     if (err) {
-    //       console.error(err);
-    //       connection.release();
-    //     }
-    //     car.getCarModel(connection,currentPlateNumber[i],req.user[0], function(data){
-    //       currentModel.push(data);
-    //       if(i == currentPlateNumber.length){
-    //         res.render('home', {currentModel:currentModel,currentPlateNumber: currentPlateNumber,currentUsername: req.user[0],currentPicture: currentPicture});
-    //       }
-    //     });
-    //   });
-    // }
-
-    // res.render('home',{username: req.user[0],userPicmenu: req.user[10]});
-    // });
 });
 
 app.get('/register', function(req, res){
@@ -441,55 +420,21 @@ app.get('/carregister', function(req, res){
 
 //ROUTE TO RESERVE PAGE
 app.get('/reserve',loggedIn, function(req, res){
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    customer.getCustomerPicture(connection,req.user[0],function(data){
-      currentPicture = data;
-      res.render('reserve', {currentUsername: req.user[0],currentPicture: currentPicture});
-    })
-  });
+    res.render('reserve', {currentUsername: req.user[0],currentPicture: currentPicture});
 });
 
 //ROUTE TO QR CODE PAGE
 app.get('/showqr', function(req, res){
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    customer.getCustomerPicture(connection,req.user[0],function(data){
-      currentPicture = data;
-      res.render('showqr', {currentUsername: req.user[0],currentPicture: currentPicture});
-    })
-  });
+  res.render('showqr', {currentUsername: req.user[0],currentPicture: currentPicture});
 });
 
 //ROUTE TO STATUS
 app.get('/status', function(req, res){
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    customer.getCustomerPicture(connection,req.user[0],function(data){
-      currentPicture = data;
-      res.render('status', {currentUsername: req.user[0],currentPicture: currentPicture});
-    })
-  });
+  res.render('status', {currentUsername: req.user[0],currentPicture: currentPicture});
 });
 
 //ROUTE TO USER INFO
 app.get('/userinfo', loggedIn, function(req, res){
-
-   // res.render('userinfo', {
-   //   currentUser: req.user ,
-   //   currentUserID: checkUserType(req.user[5]),
-   //   userPicmenu: req.user[10],
-   //   username: req.user[0]
-   // });
    pool.acquire(function (err, connection) {
      if (err) {
        console.error(err);
@@ -498,7 +443,6 @@ app.get('/userinfo', loggedIn, function(req, res){
      customer.getEmail(connection,req.user[0],function(data){
        currentEmail = data;
      })
-     // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
    });
    pool.acquire(function (err, connection) {
      if (err) {
@@ -508,7 +452,6 @@ app.get('/userinfo', loggedIn, function(req, res){
      customer.getFirstname(connection,req.user[0],function(data){
        currentFirstname = data;
      })
-     // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
    });
    pool.acquire(function (err, connection) {
      if (err) {
@@ -518,7 +461,6 @@ app.get('/userinfo', loggedIn, function(req, res){
      customer.getLastname(connection,req.user[0],function(data){
        currentLastname = data;
      })
-     // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
    });
    pool.acquire(function (err, connection) {
      if (err) {
@@ -528,7 +470,6 @@ app.get('/userinfo', loggedIn, function(req, res){
      customer.getCustomerType(connection,req.user[0],function(data){
        currentCustomerType = data;
      })
-     // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
    });
    pool.acquire(function (err, connection) {
      if (err) {
@@ -537,9 +478,7 @@ app.get('/userinfo', loggedIn, function(req, res){
      }
      customer.getCustomerPicture(connection,req.user[0],function(data){
        currentPicture = data;
-       // res.render('userinfo', {currentUsername: req.user[0],currentEmail:currentEmail,currentFirstname:currentFirstname,currentLastname:currentLastname,currentCustomerType:currentCustomerType,currentID:customer.getID(req.user),currentPicture:currentPicture});
      })
-     // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
    });
    pool.acquire(function (err, connection) {
      if (err) {
@@ -592,24 +531,7 @@ app.get('/userinfo', loggedIn, function(req, res){
 
 //ROUTE TO EDIT USER
 app.get('/edituserinfo', loggedIn, function(req, res){
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    currentUser = new customer(connection,req.user[0]);
-    console.log(currentUser.firstname);
-    // customer.getFirstname(connection,req.user[0],function(data){
-    //   console.log(data);
-    //   currentUser = data;
-    // })
-  });
-  res.render('edituserinfo', {current: currentUser,
-                              currentUser: req.user,
-                              currentUserID: checkUserType(req.user),
-                              userPicmenu: req.user[10],
-                              username: req.user[0]
-            });
+  res.render('edituserinfo', {currentUsername: req.user[0],currentEmail:currentEmail,currentFirstname:currentFirstname,currentLastname:currentLastname,currentCustomerType:currentCustomerType,currentStudentID:req.user[6],currentProfessorID:req.user[7],currentNationalID:req.user[8],currentPicture:currentPicture});
 });
 
 
@@ -767,8 +689,8 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
         username :req.user[0],
         carbrand:req.body.carBrand,
         carmodel:req.body.carModel,
-        carpicture:encode_image,
         carcolor:req.bod.carColor,
+        carpicture:encode_image,
       };
       car.insert_newCar(connection,car_info);
       // //use the connection as normal
@@ -798,6 +720,49 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
       // //_login(req, username, password, done, );
   });
 },autoReap);
+
+// app.post('/editcarinfo',loggedIn,upload.single('carPic'),function(req,res){
+//   console.log('Trying to add car');
+//   pool.acquire(function (err, connection) {
+//       if (err) {
+//           console.error(err);
+//           connection.release();
+//           return;
+//       }
+//       var img = fs.readFileSync(req.file.path);
+//       var encode_image = img.toString('base64');
+//       var car_info = {
+//         carbrand:req.body.carBrand,
+//         carmodel:req.body.carModel,
+//         carcolor:req.bod.carColor,
+//         carpicture:encode_image,
+//       };
+//       car.editCar(connection,platenumber,req.user[0],car_info);
+//   });
+// },autoReap);
+
+// app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
+//   console.log('Trying to edit profile');
+//   pool.acquire(function (err, connection) {
+//     if (err) {
+//       console.error(err);
+//       connection.release();
+//     }
+//     var img = fs.readFileSync(req.file.path);
+//     var encode_image = img.toString('base64');
+//     var edited_info = {
+//       email : req.body.email,
+//       firstname : req.body.firstName,
+//       lastname : req.body.lastName,
+//       customertype: req.body.occupation,
+//       studentID: req.body.studentID,
+//       professorID: req.body.professorID,
+//       nationalID: req.body.NationalID,
+//       CustomerPicture: encode_image,
+//     };
+//     customer.editCustomer(connection,req.user[0],edited_info);
+//   });
+// },autoReap);
 
 //when login button click
 app.post('/login',passport.authenticate('local-login', {

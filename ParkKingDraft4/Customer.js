@@ -529,6 +529,32 @@ exports.setReservable = function(connection, username, reservable) {
   connection.execSql(request);
 }
 
+exports.editCustomer = function(connection,username,edited_info){
+  var request = new request("UPDATE dbo.Customer SET Email = @email, FirstName = @firstname, LastName = @lastname, customerType = @customertype, StudentID = @studentid, ProfessorID = @professorid, NationalID = @nationalid, CustomerPicture = @customerpicture WHERE Username = @username",
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+      } else {
+        connection.release();
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.addParameter('firstName',TYPES.VarChar,edited_info.firstname);
+    request.addParameter('lastName',TYPES.VarChar,edited_info.lastname);
+    request.addParameter('email',TYPES.VarChar,edited_info.email);
+    request.addParameter('customertype',TYPES.VarChar,edited_info.customertype);
+    request.addParameter('studentid',TYPES.VarChar,edited_info.studentID);
+    request.addParameter('professorid',TYPES.VarChar,edited_info.professorID);
+    request.addParameter('Citizenid',TYPES.VarChar,edited_info.nationalID);
+    request.addParameter('customerpicture',TYPES.VarChar,edited_info.CustomerPicture);
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+}
+
 //*******************************************************Customer's Remover***********************************************
 exports.removeUser = function(connection, username) {
   var request = new request("DELETE FROM dbo.Customer C WHERE C.Username = @username",
