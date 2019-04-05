@@ -266,6 +266,28 @@ exports.setCarColor = function(connection,platenumber, username, carcolor) {
   connection.execSql(request);
 }
 
+exports.editCar = function(connection,platenumber,username,edited_info){
+  var request = new request("UPDATE dbo.Car SET CarBrand = @carbrand, CarModel = @carmodel, CarColor = @carcolor, CarPicture = @carpicture WHERE Username = @username AND PlateNumber = @platenumber",
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+      } else {
+        connection.release();
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.addParameter('platenumber',TYPES.VarChar,platenumber);
+    request.addParameter('carbrand',TYPES.VarChar,edited_info.carbrand);
+    request.addParameter('carmodel',TYPES.VarChar,edited_info.carmodel);
+    request.addParameter('carcolor',TYPES.VarChar,edited_info.carcolor);
+    request.addParameter('carpicture',TYPES.VarChar,edited_info.carpicture);
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+}
 //*******************************************************Customer's Remover***********************************************
 exports.removeUser = function(connection,username,platenumber) {
   var request = new request("DELETE FROM dbo.Car C WHERE C.Username = @username AND C.PlateNumber = @platenumber",
