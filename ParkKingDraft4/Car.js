@@ -53,10 +53,10 @@ exports.getAllPlateNumber = function(connection,username,Callback) {
     connection.execSql(request);
 }
 
-exports.getCarBrand = function(connection,platenumber, username,Callback) {
+exports.getAllCarBrand = function(connection,username,Callback) {
   var returnedValue  = [];
   var request = new Request(
-    'SELECT CarBrand FROM dbo.Car WHERE Username = @username AND PlateNumber = @platenumber',
+    'SELECT CarBrand FROM dbo.Car WHERE Username = @username',
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -64,11 +64,10 @@ exports.getCarBrand = function(connection,platenumber, username,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue[0]);
+        return Callback(returnedValue);
       }
     });
     request.addParameter('username',TYPES.VarChar,username);
-    request.addParameter('platenumber',TYPES.VarChar,platenumber);
     request.on('row', function (columns) {
         columns.forEach(function(column) {
             returnedValue.push(column.value);
@@ -77,10 +76,10 @@ exports.getCarBrand = function(connection,platenumber, username,Callback) {
     connection.execSql(request);
 }
 
-exports.getCarModel = function(connection,platenumber, username,Callback) {
+exports.getAllCarModel = function(connection,username,Callback) {
   var returnedValue  = [];
   var request = new Request(
-    'SELECT CarModel FROM dbo.Car WHERE Username = @username AND PlateNumber = @platenumber',
+    'SELECT CarModel FROM dbo.Car WHERE Username = @username',
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -88,11 +87,10 @@ exports.getCarModel = function(connection,platenumber, username,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue[0]);
+        return Callback(returnedValue);
       }
     });
     request.addParameter('username',TYPES.VarChar,username);
-    request.addParameter('platenumber',TYPES.VarChar,platenumber);
     request.on('row', function (columns) {
         columns.forEach(function(column) {
             returnedValue.push(column.value);
@@ -101,10 +99,10 @@ exports.getCarModel = function(connection,platenumber, username,Callback) {
     connection.execSql(request);
 }
 
-exports.getCarPicture = function(connection,platenumber, username,Callback) {
+exports.getAllCarPicture = function(connection,username,Callback) {
   var returnedValue  = [];
   var request = new Request(
-    'SELECT CarPicture FROM dbo.Car WHERE Username = @username AND PlateNumber = @platenumber',
+    'SELECT CarPicture FROM dbo.Car WHERE Username = @username',
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -112,11 +110,10 @@ exports.getCarPicture = function(connection,platenumber, username,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue[0]);
+        return Callback(returnedValue);
       }
     });
     request.addParameter('username',TYPES.VarChar,username);
-    request.addParameter('platenumber',TYPES.VarChar,platenumber);
     request.on('row', function (columns) {
         columns.forEach(function(column) {
             returnedValue.push(column.value);
@@ -125,10 +122,10 @@ exports.getCarPicture = function(connection,platenumber, username,Callback) {
     connection.execSql(request);
 }
 
-exports.getCarColor = function(connection,platenumber, username,Callback) {
+exports.getAllCarColor = function(connection,username,Callback) {
   var returnedValue  = [];
   var request = new Request(
-    'SELECT CarColor FROM dbo.Car WHERE Username = @username AND PlateNumber = @platenumber',
+    'SELECT CarColor FROM dbo.Car WHERE Username = @username',
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -136,11 +133,10 @@ exports.getCarColor = function(connection,platenumber, username,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue[0]);
+        return Callback(returnedValue);
       }
     });
     request.addParameter('username',TYPES.VarChar,username);
-    request.addParameter('platenumber',TYPES.VarChar,platenumber);
     request.on('row', function (columns) {
         columns.forEach(function(column) {
             returnedValue.push(column.value);

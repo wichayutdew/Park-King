@@ -2,8 +2,9 @@
 var currentUsername,currentEmail,currentFirstname,currentLastname,currentCustomerType,currentID,currentPicture;
 var customer = require('./Customer.js');
 //require car.js file
-var currentPlateNumber=[],currentBrand=[],currentModel=[],currentColor=[],currentPictur=[];
+var currentPlateNumber=[],currentBrand=[],currentModel=[],currentColor=[],currentCarPicture=[];
 var car = require('./Car.js');
+var async = require('async');
 
 //NPM REQUIRE
 var express = require('express');
@@ -392,42 +393,17 @@ app.get('/',loggedIn, function(req, res){
     res.redirect('/home');
 });
 
-app.get('/home',loggedIn, function(req, res){
-    // var username = [];
-    // pool.acquire(function (err, connection) {
-    //     if (err) {
-    //         console.error(err);
-    //         connection.release();
-    //         return;
-    //     }
-    //     username = getterSetter.test(connection,req.user[0]);
-    //     //let username = getterSetter.getUserUsername(connection,req.user[0]);
-    //     //console.log(username.getUserUsername());
-    //     // var output = username.getUserUsername();
-    //     console.log(username);
-    // res.send({username: req.user[0]});
+app.get('/home',loggedIn,function(req, res){
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
         connection.release();
       }
-      customer.getCustomerPicture(connection,req.user[0],function(data){
+      customer.getCustomerPicture(connection,req.user[0],async function(data){
         currentPicture = data;
-        // res.render('home', {currentUsername: req.user[0],currentPicture: currentPicture});
+        res.render('home', {currentUsername: req.user[0],currentPicture: currentPicture});
       })
     });
-
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      car.getAllPlateNumber(connection,req.user[0],function(data){
-        currentPlateNumber = data;
-        res.render('home', {currentPlateNumber: currentPlateNumber,currentUsername: req.user[0],currentPicture: currentPicture});
-      })
-    });
-
     // pool error memory
     // for(var i = 0;i<currentPlateNumber.length;i++){
     //   pool.acquire(function (err, connection) {
@@ -435,8 +411,8 @@ app.get('/home',loggedIn, function(req, res){
     //       console.error(err);
     //       connection.release();
     //     }
-    //     car.getCarModel(connection,currentPlateNumber[i],req.user[0],function(data){
-    //       currentModel[i] = data;
+    //     car.getCarModel(connection,currentPlateNumber[i],req.user[0], function(data){
+    //       currentModel.push(data);
     //       if(i == currentPlateNumber.length){
     //         res.render('home', {currentModel:currentModel,currentPlateNumber: currentPlateNumber,currentUsername: req.user[0],currentPicture: currentPicture});
     //       }
@@ -561,9 +537,56 @@ app.get('/userinfo', loggedIn, function(req, res){
      }
      customer.getCustomerPicture(connection,req.user[0],function(data){
        currentPicture = data;
-       res.render('userinfo', {currentUsername: req.user[0],currentEmail:currentEmail,currentFirstname:currentFirstname,currentLastname:currentLastname,currentCustomerType:currentCustomerType,currentID:customer.getID(req.user),currentPicture:currentPicture});
+       // res.render('userinfo', {currentUsername: req.user[0],currentEmail:currentEmail,currentFirstname:currentFirstname,currentLastname:currentLastname,currentCustomerType:currentCustomerType,currentID:customer.getID(req.user),currentPicture:currentPicture});
      })
      // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
+   });
+   pool.acquire(function (err, connection) {
+     if (err) {
+       console.error(err);
+       connection.release();
+     }
+     car.getAllPlateNumber(connection,req.user[0],function(data){
+       currentPlateNumber = data;
+     })
+   });
+   pool.acquire(function (err, connection) {
+     if (err) {
+       console.error(err);
+       connection.release();
+     }
+     car.getAllCarBrand(connection,req.user[0],function(data){
+       currentBrand = data;
+     })
+   });
+   pool.acquire(function (err, connection) {
+     if (err) {
+       console.error(err);
+       connection.release();
+     }
+     car.getAllCarModel(connection,req.user[0],function(data){
+       currentModel = data;
+     })
+   });
+   pool.acquire(function (err, connection) {
+     if (err) {
+       console.error(err);
+       connection.release();
+     }
+     car.getAllCarColor(connection,req.user[0],function(data){
+       currentColor = data;
+     })
+   });
+   pool.acquire(function (err, connection) {
+     if (err) {
+       console.error(err);
+       connection.release();
+     }
+     car.getAllCarPicture(connection,req.user[0],function(data){
+       currentCarPicture = data;
+       res.render('userinfo', {currentCarPicture:currentCarPicture,currentBrand:currentBrand,currentColor:currentColor,currentModel:currentModel,currentPlateNumber: currentPlateNumber,currentUsername: req.user[0],currentEmail:currentEmail,currentFirstname:currentFirstname,currentLastname:currentLastname,currentCustomerType:currentCustomerType,currentID:customer.getID(req.user),currentPicture:currentPicture});
+
+     })
    });
 });
 
