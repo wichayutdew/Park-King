@@ -523,15 +523,139 @@ app.get('/userinfo', loggedIn, function(req, res){
      }
      car.getAllCarPicture(connection,req.user[0],function(data){
        currentCarPicture = data;
-       res.render('userinfo', {currentCarPicture:currentCarPicture,currentBrand:currentBrand,currentColor:currentColor,currentModel:currentModel,currentPlateNumber: currentPlateNumber,currentUsername: req.user[0],currentEmail:currentEmail,currentFirstname:currentFirstname,currentLastname:currentLastname,currentCustomerType:currentCustomerType,currentID:customer.getID(req.user),currentPicture:currentPicture});
+       res.render('userinfo', {currentCarPicture: currentCarPicture,
+                              currentBrand:currentBrand,
+                              currentColor:currentColor,
+                              currentModel:currentModel,
+                              currentPlateNumber: currentPlateNumber,
+                              currentUsername: req.user[0],
+                              currentEmail:currentEmail,
+                              currentFirstname:currentFirstname,
+                              currentLastname:currentLastname,
+                              currentCustomerType:currentCustomerType,
+                              currentID:customer.getID(req.user),
+                              currentPicture:currentPicture});
 
-     })
+     });
    });
 });
 
 //ROUTE TO EDIT USER
 app.get('/edituserinfo', loggedIn, function(req, res){
+<<<<<<< HEAD
   res.render('edituserinfo', {currentUsername: req.user[0],currentEmail:currentEmail,currentFirstname:currentFirstname,currentLastname:currentLastname,currentCustomerType:currentCustomerType,currentStudentID:req.user[6],currentProfessorID:req.user[7],currentNationalID:req.user[8],currentPicture:currentPicture});
+=======
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    customer.getEmail(connection,req.user[0],function(data){
+      currentEmail = data;
+    })
+    // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    customer.getFirstname(connection,req.user[0],function(data){
+      currentFirstname = data;
+    })
+    // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    customer.getLastname(connection,req.user[0],function(data){
+      currentLastname = data;
+    })
+    // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    customer.getCustomerType(connection,req.user[0],function(data){
+      currentCustomerType = data;
+    })
+    // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    customer.getCustomerPicture(connection,req.user[0],function(data){
+      currentPicture = data;
+      // res.render('userinfo', {currentUsername: req.user[0],currentEmail:currentEmail,currentFirstname:currentFirstname,currentLastname:currentLastname,currentCustomerType:currentCustomerType,currentID:customer.getID(req.user),currentPicture:currentPicture});
+    })
+    // res.render('userinfo', {current: currentUser, currentUser: req.user,currentUserID: checkUserType(req.user),userPicmenu: req.user[10],username: req.user[0]});
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    car.getAllPlateNumber(connection,req.user[0],function(data){
+      currentPlateNumber = data;
+    })
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    car.getAllCarBrand(connection,req.user[0],function(data){
+      currentBrand = data;
+    })
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    car.getAllCarModel(connection,req.user[0],function(data){
+      currentModel = data;
+    })
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    car.getAllCarColor(connection,req.user[0],function(data){
+      currentColor = data;
+    })
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    car.getAllCarPicture(connection,req.user[0],function(data){
+      currentCarPicture = data;
+      res.render('edituserinfo', {currentCarPicture: currentCarPicture,
+                             currentBrand:currentBrand,
+                             currentColor:currentColor,
+                             currentModel:currentModel,
+                             currentPlateNumber: currentPlateNumber,
+                             currentUsername: req.user[0],
+                             currentEmail:currentEmail,
+                             currentFirstname:currentFirstname,
+                             currentLastname:currentLastname,
+                             currentCustomerType:currentCustomerType,
+                             currentID:customer.getID(req.user),
+                             currentPicture:currentPicture
+                           });
+
+    });
+  });
+>>>>>>> b58651e80f612ab51dfad0ec911bed1460e035c3
 });
 
 
