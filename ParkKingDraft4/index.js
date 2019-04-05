@@ -697,7 +697,7 @@ app.get('/edituserinfo', loggedIn, function(req, res){
     }
     car.getAllCarPicture(connection,req.user[0],function(data){
       currentCarPicture = data;
-      res.render('userinfo', {currentCarPicture: currentCarPicture,
+      res.render('edituserinfo', {currentCarPicture: currentCarPicture,
                              currentBrand:currentBrand,
                              currentColor:currentColor,
                              currentModel:currentModel,
@@ -708,7 +708,8 @@ app.get('/edituserinfo', loggedIn, function(req, res){
                              currentLastname:currentLastname,
                              currentCustomerType:currentCustomerType,
                              currentID:customer.getID(req.user),
-                             currentPicture:currentPicture});
+                             currentPicture:currentPicture
+                           });
 
     });
   });
