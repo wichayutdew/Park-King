@@ -28,22 +28,13 @@
             <span class="login100-form-title p-b-37">Register</span>
 
             <div class="wrap-input100 validate-input m-b-20">
-              <input class="input100" type="text" name="username" placeholder="username" id="username" value="<%= username %>" required>
+              <input class="input100" type="text" name="username" placeholder="username" id="username" value="<%= currentUsername %>">
               <span class="focus-input100"></span>
             </div>
+
 
             <div class="wrap-input100 validate-input m-b-25">
-              <input class="input100" type="password" name="password" placeholder="Change password" id="password" required>
-              <span class="focus-input100"></span>
-            </div>
-
-            <div class="wrap-input100 validate-input m-b-25" >
-              <input class="input100" type="password" name="passwordConfirmation" placeholder="Re-Enter your Password" id="passwordConfirmation">
-              <span class="focus-input100"></span>
-            </div>
-
-            <div class="wrap-input100 validate-input m-b-25">
-              <input class="input100" type="email" name="email" value="<%= currentUser[2] %>" placeholder="E-Mail" id="email" required>
+              <input class="input100" type="email" name="email" value="<%= currentUser[2] %>" placeholder="E-Mail" id="email" value="currentEmail">
               <span class="focus-input100"></span>
             </div>
 
@@ -60,7 +51,7 @@
                                     <input class="input100" type="text" name="profession" placeholder="Profession">
                                     <span class="focus-input100"></span>
                             </div>   -->
-            <div class="wrap-input100 validate-input m-b-25">
+            <div id="" class="wrap-input100 validate-input m-b-25">
               <select class="input100 select100" name="occupation" onchange="occupationCheck(this)" id="occupation">
                 <option>Select your occupation</option>
                 <option value="Student">Student</option>
