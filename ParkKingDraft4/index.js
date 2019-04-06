@@ -196,6 +196,7 @@ passport.use('local-signup', new LocalStrategy({
               professorID: req.body.professorID,
               guestID: req.body.NationalID,
               CustomerPicture: encode_image,
+              Cancel:0,
               Reserveable: 1,
             };
             var request = new Request(
@@ -424,12 +425,12 @@ app.get('/reserve',loggedIn, function(req, res){
 });
 
 //ROUTE TO QR CODE PAGE
-app.get('/showqr', function(req, res){
+app.get('/showqr',loggedIn, function(req, res){
   res.render('showqr', {currentUsername: req.user[0],currentPicture: currentPicture});
 });
 
 //ROUTE TO STATUS
-app.get('/status', function(req, res){
+app.get('/status',loggedIn, function(req, res){
   res.render('status', {currentUsername: req.user[0],currentPicture: currentPicture});
 });
 
@@ -568,7 +569,7 @@ app.get('/statustemp', function(req, res){
     res.render('statusTemp');
 });
 
-app.get('/receipt', function(req, res){
+app.get('/receipt',loggedIn, function(req, res){
     res.render('receipt');
 });
 
@@ -695,6 +696,7 @@ app.post('/reserve',function(req,res){
   // });
 });
 
+var path = require('path');
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
   pool.acquire(function (err, connection) {
@@ -703,7 +705,7 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
           connection.release();
           return;
       }
-      var img = fs.readFileSync(req.file.path);
+      var img = fs.readFileSync(path.join(__dirname,req.file.path));
       var encode_image = img.toString('base64');
       var car_info = {
         platenumber:req.body.plateNumber,

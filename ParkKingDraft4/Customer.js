@@ -5,7 +5,7 @@ var TYPES =require('tedious').TYPES;
 
 //*******************************************************Inserting new customer into database***********************************************
 exports.insert_newCustomer = function(connection,car_info,done,newUserMysql){
-  var request = new Request("INSERT INTO dbo.Customer (FirstName,LastName,Email,Username,Password,customerType,studentID,professorID,NationalID,CustomerPicture,Reserveable) values (@firstName,@lastName,@email,@username,@password,@occupation,@studentID,@professorID,@CitizenID,@profilePic,@reserveAble)",
+  var request = new Request("INSERT INTO dbo.Customer (FirstName,LastName,Email,Username,Password,customerType,studentID,professorID,NationalID,CustomerPicture,Cancel,Reserveable) values (@firstName,@lastName,@email,@username,@password,@occupation,@studentID,@professorID,@CitizenID,@profilePic,@cancel,@reserveAble)",
   //CustomerPicture,profilePic
   function (err, rowCount, rows){
     if(err){
@@ -26,6 +26,7 @@ exports.insert_newCustomer = function(connection,car_info,done,newUserMysql){
   request.addParameter('professorID',TYPES.VarChar,customer_info.professorID);
   request.addParameter('CitizenID',TYPES.VarChar,customer_info.guestID);
   request.addParameter('profilePic',TYPES.VarChar,customer_info.CustomerPicture);
+  request.addParameter('cancel',TYPES.VarChar,customer_info.Cancel);
   request.addParameter('reserveAble',TYPES.Bit,customer_info.Reserveable);
   request.on('requestCompleted', function (){
     //connection.close();

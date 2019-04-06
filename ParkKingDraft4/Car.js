@@ -289,7 +289,7 @@ exports.editCar = function(connection,platenumber,username,edited_info){
   connection.execSql(request);
 }
 //*******************************************************Customer's Remover***********************************************
-exports.removeUser = function(connection,username,platenumber) {
+exports.removeCar = function(connection,username,platenumber) {
   var request = new request("DELETE FROM dbo.Car C WHERE C.Username = @username AND C.PlateNumber = @platenumber",
     function(err, rowCount, rows) {
       if (err) {
