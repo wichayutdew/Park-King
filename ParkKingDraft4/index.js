@@ -696,7 +696,6 @@ app.post('/reserve',function(req,res){
   // });
 });
 
-var path = require('path');
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
   pool.acquire(function (err, connection) {
@@ -705,7 +704,7 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
           connection.release();
           return;
       }
-      var img = fs.readFileSync(path.join(__dirname,req.file.path));
+      var img = fs.readFileSync(req.file.path);
       var encode_image = img.toString('base64');
       var car_info = {
         platenumber:req.body.plateNumber,
