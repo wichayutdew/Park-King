@@ -3,12 +3,37 @@ var ConnectionPool = require('tedious-connection-pool');
 var Request = require('tedious').Request;
 var TYPES =require('tedious').TYPES;
 
+//*******************************************************Inserting new car into database***********************************************
+exports.insert_newCar= function(connection,car_info){
+  var request = new Request('INSERT INTO dbo.Car(PlateNumber,Username,CarBrand,CarModel,CarPicture,CarColor) VALUES (@PlateNumber,@Username,@CarBrand,@CarModel,@CarPicture,@CarColor)',
+      function(err, rowCount, rows){
+          if(err){
+              connection.release();
+              res.redirect('/carregister');
+          }else{
+              console.log('Car added!!!');
+              connection.release();
+              res.redirect('/home')
+          }
+  });
+  request.addParameter('PlateNumber',TYPES.VarChar,car_info.platenumber);
+  request.addParameter('Username',TYPES.VarChar,car_info.username);
+  request.addParameter('CarBrand',TYPES.VarChar,car_info.carbrand);
+  request.addParameter('CarModel',TYPES.VarChar,car_info.carmodel);
+  request.addParameter('CarPicture',TYPES.VarChar,car_info.carpicture);
+  request.addParameter('CarColor',TYPES.VarChar,car_info.carcolor);
+
+  request.on('Done',function(err, rowCount, rows){
+  });
+
+  connection.execSql(request);
+}
 
 //*******************************************************Customer's Getter***********************************************
-exports.getPassword = function(connection,username,Callback) {
+exports.getAllPlateNumber = function(connection,username,Callback) {
   var returnedValue  = [];
   var request = new Request(
-    'SELECT Password FROM dbo.Customer WHERE Username = @username',
+    'SELECT PlateNumber FROM dbo.Car WHERE Username = @username',
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -16,7 +41,7 @@ exports.getPassword = function(connection,username,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue[0]);
+        return Callback(returnedValue);
       }
     });
     request.addParameter('username',TYPES.VarChar,username);
@@ -28,10 +53,10 @@ exports.getPassword = function(connection,username,Callback) {
     connection.execSql(request);
 }
 
-exports.getEmail = function(connection,username,Callback) {
+exports.getAllCarBrand = function(connection,username,Callback) {
   var returnedValue  = [];
   var request = new Request(
-    'SELECT Email FROM dbo.Customer WHERE Username = @username',
+    'SELECT CarBrand FROM dbo.Car WHERE Username = @username',
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -39,7 +64,7 @@ exports.getEmail = function(connection,username,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue[0]);
+        return Callback(returnedValue);
       }
     });
     request.addParameter('username',TYPES.VarChar,username);
@@ -51,10 +76,10 @@ exports.getEmail = function(connection,username,Callback) {
     connection.execSql(request);
 }
 
-exports.getFirstname = function(connection,username,Callback) {
+exports.getAllCarModel = function(connection,username,Callback) {
   var returnedValue  = [];
   var request = new Request(
-    'SELECT FirstName FROM dbo.Customer WHERE Username = @username',
+    'SELECT CarModel FROM dbo.Car WHERE Username = @username',
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -62,7 +87,7 @@ exports.getFirstname = function(connection,username,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue[0]);
+        return Callback(returnedValue);
       }
     });
     request.addParameter('username',TYPES.VarChar,username);
@@ -74,10 +99,10 @@ exports.getFirstname = function(connection,username,Callback) {
     connection.execSql(request);
 }
 
-exports.getLastname = function(connection,username,Callback) {
+exports.getAllCarPicture = function(connection,username,Callback) {
   var returnedValue  = [];
   var request = new Request(
-    'SELECT LastName FROM dbo.Customer WHERE Username = @username',
+    'SELECT CarPicture FROM dbo.Car WHERE Username = @username',
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -85,7 +110,7 @@ exports.getLastname = function(connection,username,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue[0]);
+        return Callback(returnedValue);
       }
     });
     request.addParameter('username',TYPES.VarChar,username);
@@ -97,10 +122,10 @@ exports.getLastname = function(connection,username,Callback) {
     connection.execSql(request);
 }
 
-exports.getCustomerType = function(connection,username,Callback) {
+exports.getAllCarColor = function(connection,username,Callback) {
   var returnedValue  = [];
   var request = new Request(
-    'SELECT customerType FROM dbo.Customer WHERE Username = @username',
+    'SELECT CarColor FROM dbo.Car WHERE Username = @username',
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -108,145 +133,7 @@ exports.getCustomerType = function(connection,username,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue[0]);
-      }
-    });
-    request.addParameter('username',TYPES.VarChar,username);
-    request.on('row', function (columns) {
-        columns.forEach(function(column) {
-            returnedValue.push(column.value);
-        });
-    });
-    connection.execSql(request);
-}
-
-exports.getStudentID = function(connection,username,Callback) {
-  var returnedValue  = [];
-  var request = new Request(
-    'SELECT StudentID FROM dbo.Customer WHERE Username = @username',
-    function(err, rowCount, rows) {
-      if (err) {
-        console.log(err);
-        connection.release();
-        returnedValue = null;
-      } else {
-        connection.release();
-        return Callback(returnedValue[0]);
-      }
-    });
-    request.addParameter('username',TYPES.VarChar,username);
-    request.on('row', function (columns) {
-        columns.forEach(function(column) {
-            returnedValue.push(column.value);
-        });
-    });
-    connection.execSql(request);
-}
-
-exports.getProfessorID = function(connection,username,Callback) {
-  var returnedValue  = [];
-  var request = new Request(
-    'SELECT ProfessorID FROM dbo.Customer WHERE Username = @username',
-    function(err, rowCount, rows) {
-      if (err) {
-        console.log(err);
-        connection.release();
-        returnedValue = null;
-      } else {
-        connection.release();
-        return Callback(returnedValue[0]);
-      }
-    });
-    request.addParameter('username',TYPES.VarChar,username);
-    request.on('row', function (columns) {
-        columns.forEach(function(column) {
-            returnedValue.push(column.value);
-        });
-    });
-    connection.execSql(request);
-}
-
-exports.getNationalID = function(connection,username,Callback) {
-  var returnedValue  = [];
-  var request = new Request(
-    'SELECT NationalID FROM dbo.Customer WHERE Username = @username',
-    function(err, rowCount, rows) {
-      if (err) {
-        console.log(err);
-        connection.release();
-        returnedValue = null;
-      } else {
-        connection.release();
-        return Callback(returnedValue[0]);
-      }
-    });
-    request.addParameter('username',TYPES.VarChar,username);
-    request.on('row', function (columns) {
-        columns.forEach(function(column) {
-            returnedValue.push(column.value);
-        });
-    });
-    connection.execSql(request);
-}
-
-exports.getCustomerPicture = function(connection,username,Callback) {
-  var returnedValue  = [];
-  var request = new Request(
-    'SELECT CustomerPicture FROM dbo.Customer WHERE Username = @username',
-    function(err, rowCount, rows) {
-      if (err) {
-        console.log(err);
-        connection.release();
-        returnedValue = null;
-      } else {
-        connection.release();
-        return Callback(returnedValue[0]);
-      }
-    });
-    request.addParameter('username',TYPES.VarChar,username);
-    request.on('row', function (columns) {
-        columns.forEach(function(column) {
-            returnedValue.push(column.value);
-        });
-    });
-    connection.execSql(request);
-}
-
-exports.getCancel = function(connection,username,Callback) {
-  var returnedValue  = [];
-  var request = new Request(
-    'SELECT Cancel FROM dbo.Customer WHERE Username = @username',
-    function(err, rowCount, rows) {
-      if (err) {
-        console.log(err);
-        connection.release();
-        returnedValue = null;
-      } else {
-        connection.release();
-        return Callback(returnedValue[0]);
-      }
-    });
-    request.addParameter('username',TYPES.VarChar,username);
-    request.on('row', function (columns) {
-        columns.forEach(function(column) {
-            returnedValue.push(column.value);
-        });
-    });
-    connection.execSql(request);
-}
-
-exports.getReservable = function(connection,username,Callback) {
-  var returnedValue  = [];
-  var request = new Request(
-    'SELECT Reservable FROM dbo.Customer WHERE Username = @username',
-    function(err, rowCount, rows) {
-      if (err) {
-        console.log(err);
-        connection.release();
-        returnedValue = null;
-      } else {
-        connection.release();
-        return Callback(returnedValue[0]);
+        return Callback(returnedValue);
       }
     });
     request.addParameter('username',TYPES.VarChar,username);
@@ -259,18 +146,39 @@ exports.getReservable = function(connection,username,Callback) {
 }
 
 //*******************************************************Customer's Setter***********************************************
-exports.setUsername = function(username, newUsername) {
-  var request = new request("UPDATE dbo.Customer C SET C.Username = @newUsername WHERE C.Username = @username",
-    function(err, rowCount, rows) {
-      if (err) {
-        console.log(err);
-        connection.release();
-      } else {
-        connection.release();
-      }
-    });
+exports.setPlateNumber = function(connection,platenumber, username, newPlatenumber) {
+  var request = new request("UPDATE dbo.Car C SET C.PlateNumber = @newPlatenumber WHERE C.PlateNumber = @platenumber AND C.Username = @username",
+  function(err, rowCount, rows) {
+    if (err) {
+      console.log(err);
+      connection.release();
+    } else {
+      connection.release();
+    }
+  });
+  request.addParameter('newPlatenumber',TYPES.VarChar,newPlateNumber);
+  request.addParameter('username',TYPES.VarChar,username);
+  request.addParameter('platenumber',TYPES.VarChar,platenumber);
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+}
+
+exports.setOwner = function(connection,platenumber, username, newUsername) {
+  var request = new request("UPDATE dbo.Car C SET C.Username = @newUsername WHERE C.PlateNumber = @platenumber AND C.Username = @username",
+  function(err, rowCount, rows) {
+    if (err) {
+      console.log(err);
+      connection.release();
+    } else {
+      connection.release();
+    }
+  });
   request.addParameter('newUsername',TYPES.VarChar,newUsername);
   request.addParameter('username',TYPES.VarChar,username);
+  request.addParameter('platenumber',TYPES.VarChar,platenumber);
   request.on('requestCompleted', function() {
     //connection.close();
     //error here
@@ -278,17 +186,19 @@ exports.setUsername = function(username, newUsername) {
   connection.execSql(request);
 }
 
-exports.setPassword = function(username, password) {
-  var request = new request("UPDATE dbo.Customer C SET C.Password =  @password WHERE C.Username = @username",
-    function(err, rowCount, rows) {
-      if (err) {
-        done(err);
-      } else {
-
-      }
-    });
-  request.addParameter('password',TYPES.VarChar,password);
+exports.setCarBrand = function(connection,platenumber, username, carbrand) {
+  var request = new request("UPDATE dbo.Car C SET C.CarBrand = @carbrand WHERE C.PlateNumber = @platenumber AND C.Username = @username",
+  function(err, rowCount, rows) {
+    if (err) {
+      console.log(err);
+      connection.release();
+    } else {
+      connection.release();
+    }
+  });
+  request.addParameter('carbrand',TYPES.VarChar,carbrand);
   request.addParameter('username',TYPES.VarChar,username);
+  request.addParameter('platenumber',TYPES.VarChar,platenumber);
   request.on('requestCompleted', function() {
     //connection.close();
     //error here
@@ -296,8 +206,68 @@ exports.setPassword = function(username, password) {
   connection.execSql(request);
 }
 
-exports.setEmail = function(username, email) {
-  var request = new request("UPDATE dbo.Customer C SET C.Email = @email WHERE C.Username = @username",
+exports.setCarModel = function(connection,platenumber, username, carmodel) {
+  var request = new request("UPDATE dbo.Car C SET C.CarModel = @carmodel WHERE C.PlateNumber = @platenumber AND C.Username = @username",
+  function(err, rowCount, rows) {
+    if (err) {
+      console.log(err);
+      connection.release();
+    } else {
+      connection.release();
+    }
+  });
+  request.addParameter('carmodel',TYPES.VarChar,carmodel);
+  request.addParameter('username',TYPES.VarChar,username);
+  request.addParameter('platenumber',TYPES.VarChar,platenumber);
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+}
+
+exports.setCarPicture = function(connection,platenumber, username, carpicture) {
+  var request = new request("UPDATE dbo.Car C SET C.CarPicture = @carpicture WHERE C.PlateNumber = @platenumber AND C.Username = @username",
+  function(err, rowCount, rows) {
+    if (err) {
+      console.log(err);
+      connection.release();
+    } else {
+      connection.release();
+    }
+  });
+  request.addParameter('carpicture',TYPES.VarChar,carpicture);
+  request.addParameter('username',TYPES.VarChar,username);
+  request.addParameter('platenumber',TYPES.VarChar,platenumber);
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+}
+
+exports.setCarColor = function(connection,platenumber, username, carcolor) {
+  var request = new request("UPDATE dbo.Car C SET C.CarColor = @carcolor WHERE C.PlateNumber = @platenumber AND C.Username = @username",
+  function(err, rowCount, rows) {
+    if (err) {
+      console.log(err);
+      connection.release();
+    } else {
+      connection.release();
+    }
+  });
+  request.addParameter('carcolor',TYPES.VarChar,carcolor);
+  request.addParameter('username',TYPES.VarChar,username);
+  request.addParameter('platenumber',TYPES.VarChar,platenumber);
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+}
+
+exports.editCar = function(connection,platenumber,username,edited_info){
+  var request = new request("UPDATE dbo.Car SET CarBrand = @carbrand, CarModel = @carmodel, CarColor = @carcolor, CarPicture = @carpicture WHERE Username = @username AND PlateNumber = @platenumber",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -306,189 +276,21 @@ exports.setEmail = function(username, email) {
         connection.release();
       }
     });
-  request.addParameter('email',TYPES.VarChar,email);
-  request.addParameter('username',TYPES.VarChar,username);
-  request.on('requestCompleted', function() {
-    //connection.close();
-    //error here
-  });
-  connection.execSql(request);
-}
-
-exports.setFirstname = function(username, firstname) {
-  var request = new request("UPDATE dbo.Customer C SET C.FirstName =  @firstname WHERE C.Username = @username",
-    function(err, rowCount, rows) {
-      if (err) {
-        console.log(err);
-        connection.release();
-      } else {
-        connection.release();
-      }
-    });
-  request.addParameter('firstname',TYPES.VarChar,firstname);
-  request.addParameter('username',TYPES.VarChar,username);
-  request.on('requestCompleted', function() {
-    //connection.close();
-    //error here
-  });
-  connection.execSql(request);
-}
-
-exports.setLastname = function(username, lastname) {
-  var request = new request("UPDATE dbo.Customer C SET C.LastName = @lastname WHERE C.Username = @username",
-    function(err, rowCount, rows) {
-      if (err) {
-        console.log(err);
-        connection.release();
-      } else {
-        connection.release();
-      }
-    });
-  request.addParameter('lastname',TYPES.VarChar,lastname);
-  request.addParameter('username',TYPES.VarChar,username);
-  request.on('requestCompleted', function() {
-    //connection.close();
-    //error here
-  });
-  connection.execSql(request);
-}
-
-exports.setCustomerType = function(username, customertype) {
-  var request = new request("UPDATE dbo.Customer C SET C.customerType = @customertype WHERE C.Username =  @username",
-    function(err, rowCount, rows) {
-      if (err) {
-        console.log(err);
-        connection.release();
-      } else {
-        connection.release();
-      }
-    });
-    request.addParameter('customertype',TYPES.VarChar,customertype);
     request.addParameter('username',TYPES.VarChar,username);
+    request.addParameter('platenumber',TYPES.VarChar,platenumber);
+    request.addParameter('carbrand',TYPES.VarChar,edited_info.carbrand);
+    request.addParameter('carmodel',TYPES.VarChar,edited_info.carmodel);
+    request.addParameter('carcolor',TYPES.VarChar,edited_info.carcolor);
+    request.addParameter('carpicture',TYPES.VarChar,edited_info.carpicture);
   request.on('requestCompleted', function() {
     //connection.close();
     //error here
   });
   connection.execSql(request);
 }
-
-exports.setStudentID = function(username, studentid) {
-  var request = new request("UPDATE dbo.Customer C SET C.StudentID =  @studentid WHERE C.Username = @username",
-    function(err, rowCount, rows) {
-      if (err) {
-        console.log(err);
-        connection.release();
-      } else {
-        connection.release();
-      }
-    });
-  request.addParameter('studentid',TYPES.VarChar,studentid);
-  request.addParameter('username',TYPES.VarChar,username);
-  request.on('requestCompleted', function() {
-    //connection.close();
-    //error here
-  });
-  connection.execSql(request);
-}
-
-exports.setProfessorID = function(username, professorid) {
-  var request = new request("UPDATE dbo.Customer C SET C.ProfessorID =  @professorid WHERE C.Username = @username",
-    function(err, rowCount, rows) {
-      if (err) {
-        console.log(err);
-        connection.release();
-      } else {
-        connection.release();
-      }
-    });
-  request.addParameter('professorid',TYPES.VarChar,professorid);
-  request.addParameter('username',TYPES.VarChar,username);
-  request.on('requestCompleted', function() {
-    //connection.close();
-    //error here
-  });
-  connection.execSql(request);
-}
-
-exports.setNationalID = function(username, nationalid) {
-  var request = new request("UPDATE dbo.Customer C SET C.NationalID = @nationalid WHERE C.Username = @username",
-    function(err, rowCount, rows) {
-      if (err) {
-        console.log(err);
-        connection.release();
-      } else {
-        connection.release();
-      }
-    });
-  request.addParameter('nationalid',TYPES.VarChar,nationalid);
-  request.addParameter('username',TYPES.VarChar,username);
-  request.on('requestCompleted', function() {
-    //connection.close();
-    //error here
-  });
-  connection.execSql(request);
-}
-
-exports.setCustomerPicture = function(username, customerpicture) {
-  var request = new request("UPDATE dbo.Customer C SET C.CustomerPicture =  @customerpicture WHERE C.Username = @username",
-    function(err, rowCount, rows) {
-      if (err) {
-        console.log(err);
-        connection.release();
-      } else {
-        connection.release();
-      }
-    });
-  request.addParameter('customerpicture',TYPES.VarChar,customerpicture);
-  request.addParameter('username',TYPES.VarChar,username);
-  request.on('requestCompleted', function() {
-    //connection.close();
-    //error here
-  });
-  connection.execSql(request);
-}
-
-exports.setCancel = function(username, cancel) {
-  var request = new request("UPDATE dbo.Customer C SET C.Cancel =  @cancel WHERE C.Username = @username",
-    function(err, rowCount, rows) {
-      if (err) {
-        console.log(err);
-        connection.release();
-      } else {
-        connection.release();
-      }
-    });
-    request.addParameter('cancel',TYPES.VarChar,cancel);
-    request.addParameter('username',TYPES.VarChar,username);
-  request.on('requestCompleted', function() {
-    //connection.close();
-    //error here
-  });
-  connection.execSql(request);
-}
-
-exports.setReservable = function(username, reservable) {
-  var request = new request("UPDATE dbo.Customer C SET C.Reservable =  @reservable WHERE C.Username = @username",
-    function(err, rowCount, rows) {
-      if (err) {
-        console.log(err);
-        connection.release();
-      } else {
-        connection.release();
-      }
-    });
-    request.addParameter('reservable',TYPES.Bit,reservable);
-    request.addParameter('username',TYPES.VarChar,username);
-  request.on('requestCompleted', function() {
-    //connection.close();
-    //error here
-  });
-  connection.execSql(request);
-}
-
 //*******************************************************Customer's Remover***********************************************
-exports.removeUser = function(username) {
-  var request = new request("DELETE FROM dbo.Customer C WHERE C.Username = @username",
+exports.removeCar = function(connection,username,platenumber) {
+  var request = new request("DELETE FROM dbo.Car C WHERE C.Username = @username AND C.PlateNumber = @platenumber",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -498,9 +300,9 @@ exports.removeUser = function(username) {
       }
     });
     request.addParameter('username',TYPES.VarChar,username);
-  request.on('requestCompleted', function() {
-    //connection.close();
-    //error here
-  });
-  connection.execSql(request);
+    request.addParameter('platenumber',TYPES.VarChar,platenumber);
+    request.on('requestCompleted', function() {
+      //connection.close();
+    });
+    connection.execSql(request);
 }

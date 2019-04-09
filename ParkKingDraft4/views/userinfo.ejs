@@ -42,17 +42,34 @@
             <div class="user-info-div" style="background: #f5f5f5; color: black;">
                 <h2>My Car</h2>
                 <!-- <a href="/carregister"><img src="/img/edit.png" width="10px" height="10px" alt=""></a> -->
-                <div class="car-div">
+                <!-- <div class="car-div">
                   <li><img src="img/car1.png" width="50%"></li>
-                  <li style="padding-bottom: 20px;">ภค 9999</li>
-                  <li><a href="/" class="new-btn black">Edit Car</a></li>
+                  <li style="padding-bottom: 20px;">Plate number :<%=currentPlateNumber[0]%><br>Brand :<%=currentBrand[0]%><br>Model :<%=currentModel[0]%><br>Color :<%=currentColor[0]%></li>
+                  <li><a href="/" class="new-btn black">Delete car</a></li>
                 </div>
 
                 <div class="car-div">
                   <li><img src="img/car1.png" width="50%"></li>
-                  <li style="padding-bottom: 20px;">ภค 9999</li>
-                  <li><a href="/" class="new-btn black">Edit Car</a></li>
-                </div>
+                  <li style="padding-bottom: 20px;">Plate number :<%=currentPlateNumber[1]%><br>Brand :<%=currentBrand[1]%><br>Model :<%=currentModel[1]%><br>Color :<%=currentColor[1]%></li>
+                  <li><a href="/" class="new-btn black">Delete Car</a></li>
+                </div> -->
+
+                <% for(i = 0; i < currentPlateNumber.length; i++){ %>
+                  <div class="car-div">
+                    <li><img src="img/car1.png" width="50%"></li>
+                    <li style="padding-bottom: 20px;">Plate number :<%=currentPlateNumber[i]%><br>
+                                                      Brand :<%=currentBrand[i]%><br>
+                                                      Model :<%=currentModel[i]%><br>
+                                                      Color :<%=currentColor[i]%></li>
+                    <li><a href="/" class="new-btn black" id="deleteCar<%=i%>">Delete Car</a></li>
+
+
+                  </div>
+                <% } %>
+
+
+
+
 
                   <a href="/carregister" class="new-btn black">Add Car</a>
 
@@ -66,7 +83,7 @@
                 </ul> -->
                 <li><h2>History</h2></li>
                 <div id="history-div">
-                  <li><a href="">12/09/2019 Arts 2 hrs 40thb</a></li>
+                  <li><a href="/receipt">12/09/2019 Arts 2 hrs 40thb</a></li>
                   <li><a href="">12/09/2019 Arts 2 hrs 40thb</a></li>
                   <li><a href="">12/09/2019 Arts 2 hrs 40thb</a></li>
                 </div>
