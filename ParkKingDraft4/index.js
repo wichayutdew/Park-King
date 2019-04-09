@@ -82,7 +82,7 @@ app.use(passport.session());
 //for login session
 passport.serializeUser(function(user, done) {
         console.log('serializer');
-        //console.log(user);
+        //console.log(user[0]);
         done(null, user[0]);
     });
 passport.deserializeUser(function(user, done) {
@@ -97,16 +97,16 @@ passport.deserializeUser(function(user, done) {
                 "SELECT * FROM dbo.Customer WHERE Username = @username",
                 function(err,rows){
                     if(err){
-                        //connection.release();
                         connection.release();
                         return done(err);
                     }
+                    //console.log(deserializing);
                     done(err, deserializing);
                     connection.release();
                 }
             );
             //set parameterized query
-            request.addParameter('username',TYPES.VarChar,user[0]);
+            request.addParameter('username',TYPES.VarChar,user);
             var deserializing = [];
             request.on('row', function (columns) {
                 columns.forEach(function(column) {
@@ -140,7 +140,7 @@ passport.use('local-signup', new LocalStrategy({
             //var IMG = base64_encode(req.body.profilePic);
             var img = fs.readFileSync(req.file.path);
             var encode_image = img.toString('base64');
-            console.log(encode_image);
+            //console.log(encode_image);
 
             // var finalImg = {
             //      contentType: req.file.mimetype,
@@ -260,7 +260,6 @@ passport.use('local-login', new LocalStrategy({
                         connection.release();
                         return done(null, login_request);
                     }
-                    connection.release();
             });
             request.addParameter('username',TYPES.VarChar,req.body.username);
             var login_request = [];
@@ -329,11 +328,11 @@ function insert_newCustomer(connection,customer_info,done,newUserMysql){
   });
   connection.execSql(request);
 }
-var Stopwatch = require('statman-stopwatch');
-var stopwatch = new Stopwatch();
-var elaspedInterval = 0;
-var arriveTimeout = 0;
-var leftTimeout = 0;
+// var Stopwatch = require('statman-stopwatch');
+// var stopwatch = new Stopwatch();
+// var elaspedInterval = 0;
+// var arriveTimeout = 0;
+// var leftTimeout = 0;
 // startUserTimer();
 // userCurrentTime();
 // setTimeout(stopUserTimer,5000);
@@ -341,50 +340,50 @@ var leftTimeout = 0;
 //How to start stopwatch for each reserveid or username?????????
 
 //start user's timer
-function startUserTimer(){
-  stopwatch.start();
-}
-
-//show elasped time
-function userCurrentTime() {
-  elaspedInterval = setInterval(function() {
-    var time = parseInt(stopwatch.read()/1000);
-    var hours = ~~(time / 3600);
-    var min = ~~((time % 3600) / 60);
-    var sec = time % 60;
-    console.log(hours+":"+min+":"+sec);
-  },1000);
-}
-
-//stop the stopwatch
-function stopUserTimer(){
-  var totalTime = parseInt(stopwatch.read()/1000);
-  clearInterval(elaspedInterval);
-  stopwatch.stop();
-  return totalTime;
-}
-
-//make countdown timer in seconds if finish return false
-function countdownTimer(seconds){
-  var timeout = false;
-  var countdownInterval =  setInterval(function () {
-        duration --;
-        //console.log(duration);
-        if(duration <= 0){
-          clearInterval(countdownInterval);
-          timeout = true;
-        }
-    }, 1000);
-    return timeout;
-}
-
-//get current time in hr:min:sec format
-function getCurrentTime(){
-  var today = new Date();
-  var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-  return time;
-}
-//check log-in state
+// function startUserTimer(){
+//   stopwatch.start();
+// }
+//
+// //show elasped time
+// function userCurrentTime() {
+//   elaspedInterval = setInterval(function() {
+//     var time = parseInt(stopwatch.read()/1000);
+//     var hours = ~~(time / 3600);
+//     var min = ~~((time % 3600) / 60);
+//     var sec = time % 60;
+//     console.log(hours+":"+min+":"+sec);
+//   },1000);
+// }
+//
+// //stop the stopwatch
+// function stopUserTimer(){
+//   var totalTime = parseInt(stopwatch.read()/1000);
+//   clearInterval(elaspedInterval);
+//   stopwatch.stop();
+//   return totalTime;
+// }
+//
+// //make countdown timer in seconds if finish return false
+// function countdownTimer(seconds){
+//   var timeout = false;
+//   var countdownInterval =  setInterval(function () {
+//         duration --;
+//         //console.log(duration);
+//         if(duration <= 0){
+//           clearInterval(countdownInterval);
+//           timeout = true;
+//         }
+//     }, 1000);
+//     return timeout;
+// }
+//
+// //get current time in hr:min:sec format
+// function getCurrentTime(){
+//   var today = new Date();
+//   var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+//   return time;
+// }
+// //check log-in state
 function loggedInBoolean(req) {
     if (req.user) {
         return true;
@@ -395,6 +394,7 @@ function loggedInBoolean(req) {
 function loggedIn(req, res, next) {
     if (req.user) {
         console.log('user in login state');
+        console.log('name : '+req.user[1] )
         return next();
     } else {
         console.log('user not login');
@@ -841,7 +841,7 @@ app.post('/login',passport.authenticate('local-login', {
     failureRedirect: '/login',
     session: true,
 }));
-app.post('/register', upload.single('profilePic'),autoReap,passport.authenticate('local-signup' ,{
+app.post('/register', upload.single('profilePic'),passport.authenticate('local-signup' ,{
     successRedirect: '/login',
     failureRedirect: '/register',
     session: false,
