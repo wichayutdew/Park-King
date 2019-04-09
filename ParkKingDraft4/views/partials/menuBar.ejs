@@ -61,24 +61,23 @@
             <a class="top-menu-item" href="/home"><img src="img/pklogo2.png"></a>
             <a id="profileBut" class="top-menu-item" href="#"><img src="img/profileeee22.png"></a>
         </section>
-
         <section class="profile-menu">
             <div class="profile-menu-div">
-                <li><img src="data:image/png;base64,<%= currentPicture %>" alt=""></li>
-                <li><h4>Welcome <%= currentUsername %> !</h4></li>
+                <li><img src="data:image/png;base64,<%=currentPicture%>" alt=""></li>
+                <li><h4>Welcome <%=currentUsername%> !</h4></li>
                 <div class="notification">
                     <li>Your car have beeen stolen!!!</li>
                     <li>Click here to learn more about our payment system</li>
                 </div>
                 <li><a href="/userinfo" class="button pink">View Profile</a></li>
-                <li style="margin-top: 30px;"><a href="/login" class="button pink">Logout</a></li>
+                <li style="margin-top: 30px;"><a href="/logout" class="button pink">Logout</a></li>
             </div>
         </section>
 
         <section class="menu">
-            <a class="menu-item green" href="/status">status</a>
-            <a class="menu-item orange" href="/showqr">my QR</a>
-            <a class="menu-item purple" href="/reserve">reserve</a>
+            <a class="menu-item green" href="/status">Status</a>
+            <a class="menu-item orange" href="/showqr">My QR</a>
+            <a class="menu-item purple" href="/reserve">Reserve</a>
         </section>
     </nav>
 
