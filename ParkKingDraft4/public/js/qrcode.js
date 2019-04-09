@@ -1243,7 +1243,16 @@ function showQRCode(text) {
 
        return imgElement;
 
-  }
+}
 
-document.getElementById("qrBack").addEventListener("click", function() {
-	  window.location = 'home.html';	});
+exports.updateQRCode= function(text) {
+
+	var element = document.getElementById("qrcode");
+
+	var bodyElement = document.body;
+	if (element.lastChild)
+		element.replaceChild(showQRCode(text), element.lastChild);
+	else
+		element.appendChild(showQRCode(text));
+
+}

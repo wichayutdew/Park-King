@@ -5,6 +5,8 @@ var customer = require('./Customer.js');
 var currentPlateNumber=[],currentBrand=[],currentModel=[],currentColor=[],currentCarPicture=[];
 var car = require('./Car.js');
 
+var qrCode = require('./public/js/qrcode.js')
+
 //NPM REQUIRE
 var express = require('express');
 const app = express();
@@ -429,7 +431,8 @@ app.get('/reserve',loggedIn, function(req, res){
 
 //ROUTE TO QR CODE PAGE
 app.get('/showqr',loggedIn, function(req, res){
-  res.render('showqr', {currentUsername: req.user[0],currentPicture: currentPicture});
+  var qrCode = 'TEST';
+  res.render('showqr', {qrCode:qrCode,currentUsername: req.user[0],currentPicture: currentPicture});
 });
 
 //ROUTE TO STATUS
