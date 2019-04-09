@@ -773,11 +773,11 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
         carpicture:encode_image,
       };
       car.insert_newCar(connection,car_info,req.user[0]);
-      // currentPlateNumber.push(car_info.platenumber);
-      // currentBrand.push(car_info.carbrand);
-      // currentModel.push(car_info.carmodel);
-      // currentColor.push(car_info.carcolor);
-      // currentCarPicture.push(car_info.carpicture);
+      currentPlateNumber.push(car_info.platenumber);
+      currentBrand.push(car_info.carbrand);
+      currentModel.push(car_info.carmodel);
+      currentColor.push(car_info.carcolor);
+      currentCarPicture.push(car_info.carpicture);
   });
   res.render('userinfo', {currentCarPicture: currentCarPicture,
                          currentBrand:currentBrand,
