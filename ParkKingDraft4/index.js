@@ -415,7 +415,7 @@ storage: storage,
 app.get('/',loggedIn, function(req, res){
     res.redirect('/home');
 });
-app.get('/logout', function(req, res){
+app.get('/logout',loggedIn,function(req, res){
   req.logout();
   res.redirect('/login');
 });
@@ -460,7 +460,7 @@ app.get('/login', function(req, res){
 });
 
 //ROUTE TO CAR REGISTER PAGE
-app.get('/carregister', function(req, res){
+app.get('/carregister',loggedIn, function(req, res){
     res.render('carregister');
 });
 
@@ -797,7 +797,6 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
 
 app.post('/deletecar/:id',loggedIn,function(req,res){
   var id = req.params.id;
-  console.log(id);
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
