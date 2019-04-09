@@ -5,7 +5,6 @@ var customer = require('./Customer.js');
 //NPM REQUIRE
 var express = require('express');
 const app = express();
-// var auth = require('passport-local-authenticate');
 var bodyParser = require('body-parser');
 //create temp storage
 const multer = require('multer');
@@ -42,15 +41,6 @@ var config = {
       rowCollectionOnRequestCompletion: true,
       rowCollectionOnDone: true
     },
-	  // authentication: {
-    //   type: 'azure-active-directory-password',
-    //   options: {
-    //     database: 'Park_King',
-    //     userName: 'Theetouch.J@student.chula.ac.th',
-    //     password: '7ac19pn8',
-    //
-    //   }
-    // }
   };
 
 //var connection = new Connection(config);
@@ -60,31 +50,6 @@ pool.on('error', function(err) {
     console.error(err);
 });
 
-// pool.acquire(function (err, connection) {
-//     if (err) {
-//         console.error(err);
-//         return;
-//     }
-//
-//     //use the connection as normal
-//     var request = new Request('select 42', function(err, rowCount) {
-//         if (err) {
-//             console.error(err);
-//             return;
-//         }
-//
-//         console.log('rowCount: ' + rowCount);
-//
-//         //release the connection back to the pool when finished
-//         connection.release();
-//     });
-//
-//     request.on('row', function(columns) {
-//         console.log('value: ' + columns[0].value);
-//     });
-//
-//     connection.execSql(request);
-// });
 //===================================================================================================================================================
 
 //APP CONFIG
@@ -92,28 +57,22 @@ app.set('view engine', 'ejs');
 app.use(autoReap);
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
+
+app.use(require('express-session')({
+    secret: "Fuck You",
+    resave: false,
+    saveUninitialized: false
+}));
+
 app.use(function(req, res, next){
     res.locals.currentUser = req.user;
     next();
 });
+app.use(passport.initialize());
+app.use(passport.session());
 //===================================================================================================================================================
 // Passport Module
 //===================================================================================================================================================
-// auth.hash('password', function(err, hashed) {
-//   console.log(hashed.hash); // Hashed password
-//   console.log(hashed.salt); // Salt
-// });
-//
-// auth.hash('password', function(err, hashed) {
-//   auth.verify('password', hashed, function(err, verified) {
-//     console.log(verified); // True, passwords match
-//   });
-// });
-// auth.hash('password', function(err, hashed) {
-//   auth.verify('password2', hashed, function(err, verified) {
-//     console.log(verified); // False, passwords don't match
-//   });
-// });
 
 //for login session
 passport.serializeUser(function(user, done) {
@@ -132,6 +91,12 @@ passport.deserializeUser(function(user, done) {
             var request = new Request(
                 "SELECT * FROM dbo.Customer WHERE Username = @username",
                 function(err,rows){
+                    if(err){
+                        //connection.release();
+                        connection.release();
+                        return done(err);
+                    }
+                    done(err, deserializing);
                     connection.release();
                 }
             );
@@ -143,11 +108,6 @@ passport.deserializeUser(function(user, done) {
                     deserializing.push(column.value);
                 });
                 //console.log(deserializing);
-            });
-
-            request.on('requestCompleted', function (err,rows) {
-                // Next SQL statement.
-                done(err, deserializing);
             });
 
             connection.execSql(request);
@@ -222,11 +182,10 @@ passport.use('local-signup', new LocalStrategy({
                         var newUserMysql = new Object();
 
                         newUserMysql.username = username;
-                        newUserMysql.password = password; // use the generateHash function in our user model
+                        newUserMysql.password = password;
 
-                        newUserMysql.id = rows.insertId;
-
-                        customer.insert_newCustomer(connection,customer_info,done,newUserMysql);
+                        insert_newCustomer(connection,customer_info,done,newUserMysql);
+                         // use the generateHash function in our user model
                     }
 
                 }
@@ -263,36 +222,42 @@ passport.use('local-login', new LocalStrategy({
             }
             console.log('log-in requested');
             var request = new Request(
-                'SELECT * FROM dbo.Customer WHERE Username = @username Or Email = @username',
+                'SELECT * FROM dbo.Customer WHERE Username = @username',
                 function(err, rowCount, rows){
                     console.log(username);
                     console.log(rowCount);
                     //console.log(login_request[10]);
 
                     console.log('number of row returned')
-                    connection.release();
+
                     if(err){
                         //connection.release();
+                        connection.release();
                         return done(err);
                     }
                     if(rows == null){
                         console.log('loginMessage', 'No user found.');
+                        connection.release();
                         //connection.release();
                         return done(null, false);
                           // req.flash is the way to set flashdata using connect-flash
                     }else if (!(login_request[1] == password)){
                         console.log('loginMessage', 'Oops! Wrong password.');
+                        connection.release();
                         //connection.release();
                         return done(null, false);
                          // create the loginMessage and save it to session as flashdata
                     }else{
                         console.log('logged in!!!');
+
+                        console.log(login_request[0])
                         // var UserImage = new Image();
                         //  UserImage.src = 'data:image/png;base64,'+imgPhase;
+                        connection.release();
                         return done(null, login_request);
                     }
             });
-            request.addParameter('username',TYPES.VarChar,username);
+            request.addParameter('username',TYPES.VarChar,req.body.username);
             var login_request = [];
             request.on('row', function (columns) {
                 columns.forEach(function(column) {
@@ -318,16 +283,47 @@ passport.use('local-login', new LocalStrategy({
 
     }));
 
-app.use(require('express-session')({
-        secret: "Fuck You",
-        resave: false,
-        saveUninitialized: false
-    }));
-app.use(passport.initialize());
-app.use(passport.session());
 //===================================================================================================================================================
 // Operation
 //===================================================================================================================================================
+
+function insert_newCustomer(connection,customer_info,done,newUserMysql){
+  var request = new Request("INSERT INTO dbo.Customer (FirstName,LastName,Email,Username,Password,customerType,studentID,professorID,NationalID,CustomerPicture,Reserveable) values (@firstName,@lastName,@email,@username,@password,@occupation,@studentID,@professorID,@CitizenID,@profilePic,@reserveAble)",
+  //CustomerPicture,profilePic
+  function (err, rowCount, rows){
+    if(err){
+      connection.release();
+      return done(err);
+    }else{
+        newUserMysql.id = UserMysql.insertId;
+        connection.release();
+        return done(null, newUserMysql);
+    }
+  });
+  request.addParameter('firstName',TYPES.VarChar,customer_info.fname);
+  request.addParameter('lastName',TYPES.VarChar,customer_info.lname);
+  request.addParameter('email',TYPES.VarChar,customer_info.email);
+  request.addParameter('username',TYPES.VarChar,customer_info.username);
+  request.addParameter('password',TYPES.VarChar,customer_info.password);
+  request.addParameter('occupation',TYPES.VarChar,customer_info.occupation);
+  request.addParameter('studentID',TYPES.VarChar,customer_info.studentID);
+  request.addParameter('professorID',TYPES.VarChar,customer_info.professorID);
+  request.addParameter('CitizenID',TYPES.VarChar,customer_info.guestID);
+  request.addParameter('profilePic',TYPES.VarChar,customer_info.CustomerPicture);
+  request.addParameter('reserveAble',TYPES.Bit,customer_info.Reserveable);
+  request.on('requestCompleted', function (){
+    //connection.close();
+    //error here
+  })
+  var UserMysql =[];
+  request.on('row', function (columns) {
+      columns.forEach(function(column) {
+          UserMysql.push(column.value);
+      });
+      //console.log(deserializing);
+  });
+  connection.execSql(request);
+}
 var Stopwatch = require('statman-stopwatch');
 var stopwatch = new Stopwatch();
 var elaspedInterval = 0;
@@ -459,6 +455,8 @@ app.get('/home',loggedIn, function(req, res){
     //     // var output = username.getUserUsername();
     //     console.log(username);
     // res.send({username: req.user[0]});
+    console.log(req.user[0]);
+    //console.log(req.user[10]);
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
@@ -466,7 +464,8 @@ app.get('/home',loggedIn, function(req, res){
       }
       customer.getCustomerPicture(connection,req.user[0],function(data){
         currentPicture = data;
-        console.log(currentPicture);
+        //console.log(currentPicture);
+        //console.log(req.user[0]);
         res.render('home', {currentUsername: req.user[0],currentPicture: currentPicture});
       })
     });
@@ -498,8 +497,8 @@ app.get('/reserve',loggedIn, function(req, res){
     }
     customer.getCustomerPicture(connection,req.user[0],function(data){
       currentPicture = data;
-      res.render('reserve', {currentUsername: req.user[0],currentPicture: currentPicture});
     })
+    res.render('reserve', {currentUsername: req.user[0],currentPicture: currentPicture});
   });
 });
 
@@ -797,11 +796,11 @@ app.post('/login',passport.authenticate('local-login', {
     failureRedirect: '/login',
     session: true,
 }));
-app.post('/register', upload.single('profilePic'),passport.authenticate('local-signup' ,{
+app.post('/register', upload.single('profilePic'),autoReap,passport.authenticate('local-signup' ,{
     successRedirect: '/login',
     failureRedirect: '/register',
-    session: false
-}),autoReap);
+    session: false,
+}));
 
 app.listen(3000, process.env.IP, function(){
     console.log('Park King Server is running on port 3000.....');
