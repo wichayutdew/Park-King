@@ -311,7 +311,7 @@ exports.getReservable = function(connection,username,Callback) {
 
 //*******************************************************Customer's Setter***********************************************
 exports.setUsername = function(connection, username, newUsername) {
-  var request = new request("UPDATE dbo.Customer C SET C.Username = @newUsername WHERE C.Username = @username",
+  var request = new Request("UPDATE dbo.Customer C SET C.Username = @newUsername WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -330,7 +330,7 @@ exports.setUsername = function(connection, username, newUsername) {
 }
 
 exports.setPassword = function(connection, username, password) {
-  var request = new request("UPDATE dbo.Customer C SET C.Password =  @password WHERE C.Username = @username",
+  var request = new Request("UPDATE dbo.Customer C SET C.Password =  @password WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -348,7 +348,7 @@ exports.setPassword = function(connection, username, password) {
 }
 
 exports.setEmail = function(connection, username, email) {
-  var request = new request("UPDATE dbo.Customer C SET C.Email = @email WHERE C.Username = @username",
+  var request = new Request("UPDATE dbo.Customer C SET C.Email = @email WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -367,7 +367,7 @@ exports.setEmail = function(connection, username, email) {
 }
 
 exports.setFirstname = function(connection, username, firstname) {
-  var request = new request("UPDATE dbo.Customer C SET C.FirstName =  @firstname WHERE C.Username = @username",
+  var request = new Request("UPDATE dbo.Customer C SET C.FirstName =  @firstname WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -386,7 +386,7 @@ exports.setFirstname = function(connection, username, firstname) {
 }
 
 exports.setLastname = function(connection, username, lastname) {
-  var request = new request("UPDATE dbo.Customer C SET C.LastName = @lastname WHERE C.Username = @username",
+  var request = new Request("UPDATE dbo.Customer C SET C.LastName = @lastname WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -405,7 +405,7 @@ exports.setLastname = function(connection, username, lastname) {
 }
 
 exports.setCustomerType = function(connection, username, customertype) {
-  var request = new request("UPDATE dbo.Customer C SET C.customerType = @customertype WHERE C.Username =  @username",
+  var request = new Request("UPDATE dbo.Customer C SET C.customerType = @customertype WHERE C.Username =  @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -424,7 +424,7 @@ exports.setCustomerType = function(connection, username, customertype) {
 }
 
 exports.setStudentID = function(connection, username, studentid) {
-  var request = new request("UPDATE dbo.Customer C SET C.StudentID =  @studentid WHERE C.Username = @username",
+  var request = new Request("UPDATE dbo.Customer C SET C.StudentID =  @studentid WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -443,7 +443,7 @@ exports.setStudentID = function(connection, username, studentid) {
 }
 
 exports.setProfessorID = function(connection, username, professorid) {
-  var request = new request("UPDATE dbo.Customer C SET C.ProfessorID =  @professorid WHERE C.Username = @username",
+  var request = new Request("UPDATE dbo.Customer C SET C.ProfessorID =  @professorid WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -462,7 +462,7 @@ exports.setProfessorID = function(connection, username, professorid) {
 }
 
 exports.setNationalID = function(connection, username, nationalid) {
-  var request = new request("UPDATE dbo.Customer C SET C.NationalID = @nationalid WHERE C.Username = @username",
+  var request = new Request("UPDATE dbo.Customer C SET C.NationalID = @nationalid WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -481,7 +481,7 @@ exports.setNationalID = function(connection, username, nationalid) {
 }
 
 exports.setCustomerPicture = function(connection, username, customerpicture) {
-  var request = new request("UPDATE dbo.Customer C SET C.CustomerPicture =  @customerpicture WHERE C.Username = @username",
+  var request = new Request("UPDATE dbo.Customer C SET C.CustomerPicture =  @customerpicture WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -500,7 +500,7 @@ exports.setCustomerPicture = function(connection, username, customerpicture) {
 }
 
 exports.setCancel = function(connection, username, cancel) {
-  var request = new request("UPDATE dbo.Customer C SET C.Cancel =  @cancel WHERE C.Username = @username",
+  var request = new Request("UPDATE dbo.Customer C SET C.Cancel =  @cancel WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -519,7 +519,7 @@ exports.setCancel = function(connection, username, cancel) {
 }
 
 exports.setReservable = function(connection, username, reservable) {
-  var request = new request("UPDATE dbo.Customer C SET C.Reservable =  @reservable WHERE C.Username = @username",
+  var request = new Request("UPDATE dbo.Customer C SET C.Reservable =  @reservable WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -565,7 +565,7 @@ exports.editCustomer = function(connection,username,edited_info){
 
 //*******************************************************Customer's Remover***********************************************
 exports.removeUser = function(connection, username) {
-  var request = new request("DELETE FROM dbo.Customer C WHERE C.Username = @username",
+  var request = new Request("DELETE FROM dbo.Customer C WHERE C.Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
