@@ -145,7 +145,7 @@ exports.getAllCarColor = function(connection,username,Callback) {
 
 //*******************************************************Customer's Setter***********************************************
 exports.setPlateNumber = function(connection,platenumber, username, newPlatenumber) {
-  var request = new request("UPDATE dbo.Car C SET C.PlateNumber = @newPlatenumber WHERE C.PlateNumber = @platenumber AND C.Username = @username",
+  var request = new Request("UPDATE dbo.Car C SET C.PlateNumber = @newPlatenumber WHERE C.PlateNumber = @platenumber AND C.Username = @username",
   function(err, rowCount, rows) {
     if (err) {
       console.log(err);
@@ -165,7 +165,7 @@ exports.setPlateNumber = function(connection,platenumber, username, newPlatenumb
 }
 
 exports.setOwner = function(connection,platenumber, username, newUsername) {
-  var request = new request("UPDATE dbo.Car C SET C.Username = @newUsername WHERE C.PlateNumber = @platenumber AND C.Username = @username",
+  var request = new Request("UPDATE dbo.Car C SET C.Username = @newUsername WHERE C.PlateNumber = @platenumber AND C.Username = @username",
   function(err, rowCount, rows) {
     if (err) {
       console.log(err);
@@ -185,7 +185,7 @@ exports.setOwner = function(connection,platenumber, username, newUsername) {
 }
 
 exports.setCarBrand = function(connection,platenumber, username, carbrand) {
-  var request = new request("UPDATE dbo.Car C SET C.CarBrand = @carbrand WHERE C.PlateNumber = @platenumber AND C.Username = @username",
+  var request = new Request("UPDATE dbo.Car C SET C.CarBrand = @carbrand WHERE C.PlateNumber = @platenumber AND C.Username = @username",
   function(err, rowCount, rows) {
     if (err) {
       console.log(err);
@@ -205,7 +205,7 @@ exports.setCarBrand = function(connection,platenumber, username, carbrand) {
 }
 
 exports.setCarModel = function(connection,platenumber, username, carmodel) {
-  var request = new request("UPDATE dbo.Car C SET C.CarModel = @carmodel WHERE C.PlateNumber = @platenumber AND C.Username = @username",
+  var request = new Request("UPDATE dbo.Car C SET C.CarModel = @carmodel WHERE C.PlateNumber = @platenumber AND C.Username = @username",
   function(err, rowCount, rows) {
     if (err) {
       console.log(err);
@@ -225,7 +225,7 @@ exports.setCarModel = function(connection,platenumber, username, carmodel) {
 }
 
 exports.setCarPicture = function(connection,platenumber, username, carpicture) {
-  var request = new request("UPDATE dbo.Car C SET C.CarPicture = @carpicture WHERE C.PlateNumber = @platenumber AND C.Username = @username",
+  var request = new Request("UPDATE dbo.Car C SET C.CarPicture = @carpicture WHERE C.PlateNumber = @platenumber AND C.Username = @username",
   function(err, rowCount, rows) {
     if (err) {
       console.log(err);
@@ -245,7 +245,7 @@ exports.setCarPicture = function(connection,platenumber, username, carpicture) {
 }
 
 exports.setCarColor = function(connection,platenumber, username, carcolor) {
-  var request = new request("UPDATE dbo.Car C SET C.CarColor = @carcolor WHERE C.PlateNumber = @platenumber AND C.Username = @username",
+  var request = new Request("UPDATE dbo.Car C SET C.CarColor = @carcolor WHERE C.PlateNumber = @platenumber AND C.Username = @username",
   function(err, rowCount, rows) {
     if (err) {
       console.log(err);
@@ -265,7 +265,7 @@ exports.setCarColor = function(connection,platenumber, username, carcolor) {
 }
 
 exports.editCar = function(connection,platenumber,username,edited_info){
-  var request = new request("UPDATE dbo.Car SET CarBrand = @carbrand, CarModel = @carmodel, CarColor = @carcolor, CarPicture = @carpicture WHERE Username = @username AND PlateNumber = @platenumber",
+  var request = new Request("UPDATE dbo.Car SET CarBrand = @carbrand, CarModel = @carmodel, CarColor = @carcolor, CarPicture = @carpicture WHERE Username = @username AND PlateNumber = @platenumber",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -288,7 +288,7 @@ exports.editCar = function(connection,platenumber,username,edited_info){
 }
 //*******************************************************Customer's Remover***********************************************
 exports.removeCar = function(connection,username,platenumber) {
-  var request = new request("DELETE FROM dbo.Car C WHERE C.Username = @username AND C.PlateNumber = @platenumber",
+  var request = new Request("DELETE FROM dbo.Car C WHERE C.Username = @username AND C.PlateNumber = @platenumber",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);

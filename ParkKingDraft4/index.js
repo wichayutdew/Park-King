@@ -749,7 +749,6 @@ app.post('/reserve',function(req,res){
       res.render('reserve');
   // });
 });
-
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
   pool.acquire(function (err, connection) {
@@ -774,12 +773,11 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
         carpicture:encode_image,
       };
       car.insert_newCar(connection,car_info,req.user[0]);
-      currentPlateNumber.push(car_info.platenumber);
-      currentBrand.push(car_info.carbrand);
-      currentModel.push(car_info.carmodel);
-      currentColor.push(car_info.carcolor);
-      currentCarPicture.push(car_info.carpicture);
-      // //_login(req, username, password, done, );
+      // currentPlateNumber.push(car_info.platenumber);
+      // currentBrand.push(car_info.carbrand);
+      // currentModel.push(car_info.carmodel);
+      // currentColor.push(car_info.carcolor);
+      // currentCarPicture.push(car_info.carpicture);
   });
   res.render('userinfo', {currentCarPicture: currentCarPicture,
                          currentBrand:currentBrand,
