@@ -382,6 +382,9 @@ storage: storage,
 // UserImage.src = 'data:image/png;base64,'+imgPhase;
 
 
+
+
+
 //=======================================================
 // ROUTES
 //=======================================================
@@ -719,26 +722,18 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   });
 },autoReap);
 
-// app.post('/editcarinfo',loggedIn,upload.single('carPic'),function(req,res){
-//   console.log('Trying to add car');
+// app.post('/deletecar1',loggedIn,function(req,res){
+//   console.log('Trying to delete car');
 //   pool.acquire(function (err, connection) {
 //       if (err) {
 //           console.error(err);
 //           connection.release();
 //           return;
 //       }
-//       var img = fs.readFileSync(req.file.path);
-//       var encode_image = img.toString('base64');
-//       var car_info = {
-//         carbrand:req.body.carBrand,
-//         carmodel:req.body.carModel,
-//         carcolor:req.bod.carColor,
-//         carpicture:encode_image,
-//       };
-//       car.editCar(connection,platenumber,req.user[0],car_info);
+//       car.removeCar(connection,req.user[0],platenumber[0]);
 //   });
 // },autoReap);
-
+const path = require('path');
 app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
   console.log('Trying to edit profile');
   pool.acquire(function (err, connection) {
@@ -746,7 +741,8 @@ app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
       console.error(err);
       connection.release();
     }
-    var img = fs.readFileSync(req.file.path);
+    var pathName = path.join(__dirname,req.file.path);
+    var img = fs.readFileSync(pathName);
     var encode_image = img.toString('base64');
     var edited_info = {
       email : req.body.email,
