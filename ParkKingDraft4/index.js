@@ -140,8 +140,14 @@ passport.use('local-signup', new LocalStrategy({
             }
             console.log('Sign-up requested')
             //var IMG = base64_encode(req.body.profilePic);
-            var img = fs.readFileSync(req.file.path);
-            var encode_image = img.toString('base64');
+            var encode_image;
+            if(!req.file || !req.file.path){
+              var encode_image = null;
+            }else{
+              var pathName = path.join(__dirname,req.file.path);
+              var img = fs.readFileSync(pathName);
+              encode_image = img.toString('base64');
+            }
             //console.log(encode_image);
 
             // var finalImg = {
@@ -192,7 +198,7 @@ passport.use('local-signup', new LocalStrategy({
                         newUserMysql.username = username;
                         newUserMysql.password = password;
 
-                        insert_newCustomer(connection,customer_info,done,newUserMysql);
+                        customer.insert_newCustomer(connection,customer_info,done,newUserMysql);
                          // use the generateHash function in our user model
                     }
 
@@ -292,44 +298,6 @@ passport.use('local-login', new LocalStrategy({
 //===================================================================================================================================================
 // Operation
 //===================================================================================================================================================
-
-function insert_newCustomer(connection,customer_info,done,newUserMysql){
-  var request = new Request("INSERT INTO dbo.Customer (FirstName,LastName,Email,Username,Password,customerType,studentID,professorID,NationalID,CustomerPicture,Reserveable) values (@firstName,@lastName,@email,@username,@password,@occupation,@studentID,@professorID,@CitizenID,@profilePic,@reserveAble)",
-  //CustomerPicture,profilePic
-  function (err, rowCount, rows){
-    if(err){
-      connection.release();
-      return done(err);
-    }else{
-        newUserMysql.id = UserMysql.insertId;
-        connection.release();
-        return done(null, newUserMysql);
-    }
-  });
-  request.addParameter('firstName',TYPES.VarChar,customer_info.fname);
-  request.addParameter('lastName',TYPES.VarChar,customer_info.lname);
-  request.addParameter('email',TYPES.VarChar,customer_info.email);
-  request.addParameter('username',TYPES.VarChar,customer_info.username);
-  request.addParameter('password',TYPES.VarChar,customer_info.password);
-  request.addParameter('occupation',TYPES.VarChar,customer_info.occupation);
-  request.addParameter('studentID',TYPES.VarChar,customer_info.studentID);
-  request.addParameter('professorID',TYPES.VarChar,customer_info.professorID);
-  request.addParameter('CitizenID',TYPES.VarChar,customer_info.guestID);
-  request.addParameter('profilePic',TYPES.VarChar,customer_info.CustomerPicture);
-  request.addParameter('reserveAble',TYPES.Bit,customer_info.Reserveable);
-  request.on('requestCompleted', function (){
-    //connection.close();
-    //error here
-  })
-  var UserMysql =[];
-  request.on('row', function (columns) {
-      columns.forEach(function(column) {
-          UserMysql.push(column.value);
-      });
-      //console.log(deserializing);
-  });
-  connection.execSql(request);
-}
 // var Stopwatch = require('statman-stopwatch');
 // var stopwatch = new Stopwatch();
 // var elaspedInterval = 0;
@@ -727,7 +695,7 @@ app.post('/reserve',function(req,res){
   //     arriveTimeout = countdownTimer(60*30);
   //   }
   // }
-<<<<<<< HEAD
+
   // var car=['5555','x'];
   // var parkingSpot=['01','0001','buildingPoli'];
   //
@@ -780,57 +748,6 @@ app.post('/reserve',function(req,res){
       //_login(req, username, password, done, );
       res.render('reserve');
   // });
-=======
-  var car=['5555','x'];
-  var parkingSpot=['01','0001','buildingPoli'];
-
-  pool.acquire(function (err, connection) {
-      if (err) {
-          console.error(err);
-          connection.release();
-          return;
-      }
-      if(req.user[11]=0){
-          console.log('your accout is decline to reserve')
-          connection.release();
-          res.redirect('/home');
-      }else{
-        var request = new Request(
-          "SELECT Floor,MIN(Slot) as MinSlot,Slot,BuildingName,PlateNumber,Username FROM dbo.ParkingSpot,dbo.Car GROUP BY Slot,Username WHERE dbo.ParkingSpot.isfull=0 AND dbo.ParkingSpot.Sensor=0 OR dbo.Car.PlateNumber = @PlateNumber AND dbo.Car.Username = @Username",
-          function(err, rowCount, rows){
-
-              if(err){
-                  console.log(err);
-                  connection.release();
-                  res.redirect('/reserve');
-              }else{
-                  var reserveId = generateTokenID();
-                  console.log('Spot available : '+ buildingState);
-                  Reserve(buildingState[0], buildingState[1], buildingState[3], buildingState[4], buildingState[5], null, null, null, null, reserveId, 0,connection);
-                  UpdateReserve(buildingState[0],buildingState[1],buildingState[3],buildingState[5],connection);
-                  arriveTimeout = countdownTimer(60*30);
-                  res.redirect('/userinfo');
-              }
-          });
-      request.addParameter('PlateNumber',TYPES.VarChar,car[0]);
-      request.addParameter('Username',TYPES.VarChar,car[1]);
-      request.addParameter('Building',TYPES.VarChar,parkingSpot[3]);
-
-      var buildingState =[];
-      request.on('row', function (columns) {
-          columns.forEach(function(column) {
-              buildingState.push(column.value);
-          });
-          //console.log(login_request + 'info');
-      });
-
-      request.on('Done',function(err, rowCount, rows){
-      });
-
-      connection.execSql(request);
-    }
-  });
->>>>>>> 78a177cb6c05a724a923e30df7c91f6697a619b0
 });
 
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
@@ -851,13 +768,12 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
       }
       var car_info = {
         platenumber:req.body.plateNumber,
-        username :req.user[0],
         carbrand:req.body.carBrand,
         carmodel:req.body.carModel,
         carcolor:req.body.carColor,
         carpicture:encode_image,
       };
-      car.insert_newCar(connection,car_info);
+      car.insert_newCar(connection,car_info,req.user[0]);
       currentPlateNumber.push(car_info.platenumber);
       currentBrand.push(car_info.carbrand);
       currentModel.push(car_info.carmodel);
