@@ -531,7 +531,7 @@ exports.setReservable = function(connection, username, reservable) {
 }
 
 exports.editCustomer = function(connection,username,edited_info){
-  var request = new request("UPDATE dbo.Customer SET Email = @email, FirstName = @firstname, LastName = @lastname, customerType = @customertype, StudentID = @studentid, ProfessorID = @professorid, NationalID = @nationalid, CustomerPicture = @customerpicture WHERE Username = @username",
+  var request = new Request("UPDATE dbo.Customer SET Email = @email, FirstName = @firstname, LastName = @lastname, customerType = @customertype, StudentID = @studentid, ProfessorID = @professorid, NationalID = @nationalid, CustomerPicture = @customerpicture WHERE Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -547,7 +547,7 @@ exports.editCustomer = function(connection,username,edited_info){
     request.addParameter('customertype',TYPES.VarChar,edited_info.customertype);
     request.addParameter('studentid',TYPES.VarChar,edited_info.studentID);
     request.addParameter('professorid',TYPES.VarChar,edited_info.professorID);
-    request.addParameter('Citizenid',TYPES.VarChar,edited_info.nationalID);
+    request.addParameter('nationalid',TYPES.VarChar,edited_info.nationalID);
     request.addParameter('customerpicture',TYPES.VarChar,edited_info.CustomerPicture);
   request.on('requestCompleted', function() {
     //connection.close();

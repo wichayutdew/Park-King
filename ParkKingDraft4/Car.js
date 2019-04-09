@@ -9,11 +9,9 @@ exports.insert_newCar= function(connection,car_info){
       function(err, rowCount, rows){
           if(err){
               connection.release();
-              res.redirect('/carregister');
           }else{
               console.log('Car added!!!');
               connection.release();
-              res.redirect('/home')
           }
   });
   request.addParameter('PlateNumber',TYPES.VarChar,car_info.platenumber);
