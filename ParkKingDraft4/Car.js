@@ -4,10 +4,11 @@ var Request = require('tedious').Request;
 var TYPES =require('tedious').TYPES;
 
 //*******************************************************Inserting new car into database***********************************************
-exports.insert_newCar= function(connection,car_info,username){
-  var request = new Request('INSERT INTO dbo.Car(PlateNumber,Username,CarBrand,CarModel,CarPicture,CarColor) VALUES (@PlateNumber,@Username,@CarBrand,@CarModel,@CarPicture,@CarColor)',
+exports.insert_newCar = function(connection,car_info,username){
+  var request = new Request('INSERT INTO dbo.Car (PlateNumber,Username,CarBrand,CarModel,CarColor,CarPicture) VALUES (@PlateNumber,@Username,@CarBrand,@CarModel,@CarColor,@CarPicture)',
       function(err, rowCount, rows){
           if(err){
+              console.log(err);
               connection.release();
           }else{
               console.log('Car added!!!');
