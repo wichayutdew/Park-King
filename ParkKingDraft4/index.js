@@ -810,18 +810,20 @@ app.post('/deletecar/:id',loggedIn,function(req,res){
       delete currentColor[id];
       delete currentCarPicture[id];
   });
-  res.render('userinfo', {currentCarPicture: currentCarPicture,
-                         currentBrand:currentBrand,
-                         currentColor:currentColor,
-                         currentModel:currentModel,
-                         currentPlateNumber: currentPlateNumber,
-                         currentUsername: req.user[0],
-                         currentEmail:currentEmail,
-                         currentFirstname:currentFirstname,
-                         currentLastname:currentLastname,
-                         currentCustomerType:currentCustomerType,
-                         currentID:customer.getID(req.user),
-                         currentPicture:currentPicture});
+  // res.render('userinfo', {currentCarPicture: currentCarPicture,
+  //                        currentBrand:currentBrand,
+  //                        currentColor:currentColor,
+  //                        currentModel:currentModel,
+  //                        currentPlateNumber: currentPlateNumber,
+  //                        currentUsername: req.user[0],
+  //                        currentEmail:currentEmail,
+  //                        currentFirstname:currentFirstname,
+  //                        currentLastname:currentLastname,
+  //                        currentCustomerType:currentCustomerType,
+  //                        currentID:customer.getID(req.user),
+  //                        currentPicture:currentPicture
+  //                      });
+  res.redirect('/userinfo');
 },autoReap);
 
 app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
