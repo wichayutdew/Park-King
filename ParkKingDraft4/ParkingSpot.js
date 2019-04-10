@@ -77,6 +77,50 @@ exports.getSensor = function(connection,buildingname,floor,slot,Callback) {
     connection.execSql(request);
 }
 
+exports.getLowestSpot = function(connection,buildingname,Callback){
+  var returnedValue  = [][];
+  var request = new Request("SELECT Floor, Spot FROM dbo.ParkingSpot WHERE BuildingName @buildingname AND isFull = '0' ORDER BY Floor ASC, Spot ASC",
+  function(err, rowCount, rows) {
+    if (err) {
+      console.log(err);
+      connection.release();
+      returnedValue = null;
+    } else {
+      connection.release();
+      return Callback(returnedValue[0][0]);
+    }
+  });
+  request.addParameter('buildingname',TYPES.VarChar,buidlingname);
+  request.on('row', function (columns) {
+      columns.forEach(function(column) {
+          returnedValue.push(column.value);
+      });
+  });
+}
+
+exports.getTotalFreeSpot = function(connection,buildingname,Callback) {
+  var returnedValue;
+  var request = new Request(
+    'SELECT COUNT(Spot) FROM dbo.ParkingSpot WHERE BuildingName = @buildingname AND isFull = '0'',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue);
+      }
+    });
+    request.addParameter('buildingname',TYPES.VarChar,buidlingname);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
 //*******************************************************ParkingSpot's Setter***********************************************
 exports.setIsFull = function(connection,buildingname,floor,slot,isfull) {
   var request = new Request("UPDATE dbo.ParkingSpot SET isFUll = @isfull WHERE Buildingname = @buildingname AND Floor = @floor AND Slot = @slot",
