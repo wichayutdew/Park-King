@@ -415,7 +415,7 @@ storage: storage,
 app.get('/',loggedIn, function(req, res){
     res.redirect('/home');
 });
-app.get('/logout', function(req, res){
+app.get('/logout',loggedIn,function(req, res){
   req.logout();
   res.redirect('/login');
 });
@@ -460,7 +460,7 @@ app.get('/login', function(req, res){
 });
 
 //ROUTE TO CAR REGISTER PAGE
-app.get('/carregister', function(req, res){
+app.get('/carregister',loggedIn, function(req, res){
     res.render('carregister');
 });
 
@@ -620,6 +620,7 @@ app.get('/userinfo2', function(req, res){
 app.get('/temp', function(req, res){
     res.render('temp');
 });
+
 app.get('/statustemp', function(req, res){
     res.render('statusTemp');
 });
@@ -773,6 +774,7 @@ app.post('/reserve',function(req,res){
       connection.execSql(request);
   });
 });
+
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
   pool.acquire(function (err, connection) {
@@ -796,13 +798,16 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
         carcolor:req.body.carColor,
         carpicture:encode_image,
       };
+<<<<<<< HEAD
       //console.log(car_info);
+=======
+>>>>>>> 3779aec2b8202145272e2ad64ae6f6319e62c527
       car.insert_newCar(connection,car_info,req.user[0]);
-      // currentPlateNumber.push(car_info.platenumber);
-      // currentBrand.push(car_info.carbrand);
-      // currentModel.push(car_info.carmodel);
-      // currentColor.push(car_info.carcolor);
-      // currentCarPicture.push(car_info.carpicture);
+      currentPlateNumber.push(car_info.platenumber);
+      currentBrand.push(car_info.carbrand);
+      currentModel.push(car_info.carmodel);
+      currentColor.push(car_info.carcolor);
+      currentCarPicture.push(car_info.carpicture);
   });
   res.render('userinfo', {currentCarPicture: currentCarPicture,
                          currentBrand:currentBrand,
@@ -818,6 +823,36 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
                          currentPicture:currentPicture});
 },autoReap);
 
+app.post('/deletecar/:id',loggedIn,function(req,res){
+  var id = req.params.id;
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+          return;
+      }
+      car.removeCar(connection,req.user[0],currentPlateNumber[id]);
+      delete currentPlateNumber[id];
+      delete currentBrand[id];
+      delete currentModel[id];
+      delete currentColor[id];
+      delete currentCarPicture[id];
+  });
+  res.render('userinfo', {currentCarPicture: currentCarPicture,
+                         currentBrand:currentBrand,
+                         currentColor:currentColor,
+                         currentModel:currentModel,
+                         currentPlateNumber: currentPlateNumber,
+                         currentUsername: req.user[0],
+                         currentEmail:currentEmail,
+                         currentFirstname:currentFirstname,
+                         currentLastname:currentLastname,
+                         currentCustomerType:currentCustomerType,
+                         currentID:customer.getID(req.user),
+                         currentPicture:currentPicture});
+},autoReap);
+
+<<<<<<< HEAD
 // app.post('/deletecar1',loggedIn,function(req,res){
 //   console.log('Trying to delete car');
 //   pool.acquire(function (err, connection) {
@@ -829,6 +864,8 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
 //       car.removeCar(connection,req.user[0],platenumber[0]);
 //   });
 // });
+=======
+>>>>>>> 3779aec2b8202145272e2ad64ae6f6319e62c527
 app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
   console.log('Trying to edit profile');
   pool.acquire(function (err, connection) {
@@ -890,6 +927,7 @@ app.post('/login',passport.authenticate('local-login', {
     failureRedirect: '/login',
     session: true,
 }));
+
 app.post('/register', upload.single('profilePic'),passport.authenticate('local-signup' ,{
     successRedirect: '/login',
     failureRedirect: '/register',
