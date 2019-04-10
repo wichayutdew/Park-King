@@ -5,7 +5,7 @@ var TYPES =require('tedious').TYPES;
 
 //*******************************************************Inserting new customer into database***********************************************
 exports.insert_newCustomer = function(connection,customer_info,done,newUserMysql){
-  var request = new Request("INSERT INTO dbo.Customer (FirstName,LastName,Email,Username,Password,customerType,studentID,professorID,NationalID,CustomerPicture,Reserveable) values (@firstName,@lastName,@email,@username,@password,@occupation,@studentID,@professorID,@CitizenID,@profilePic,@reserveAble)",
+  var request = new Request("INSERT INTO dbo.Customer (FirstName,LastName,Email,Username,Password,customerType,studentID,professorID,NationalID,CustomerPicture,Cancel,Reserveable) values (@firstName,@lastName,@email,@username,@password,@occupation,@studentID,@professorID,@CitizenID,@profilePic,@cancel,@reserveAble)",
   //CustomerPicture,profilePic
   function (err, rowCount, rows){
     if(err){
@@ -27,6 +27,7 @@ exports.insert_newCustomer = function(connection,customer_info,done,newUserMysql
   request.addParameter('professorID',TYPES.VarChar,customer_info.professorID);
   request.addParameter('CitizenID',TYPES.VarChar,customer_info.guestID);
   request.addParameter('profilePic',TYPES.VarChar,customer_info.CustomerPicture);
+  request.addParameter('cancel',TYPES.VarChar,customer_info.Cancel);
   request.addParameter('reserveAble',TYPES.Bit,customer_info.Reserveable);
   request.on('requestCompleted', function (){
     //connection.close();
@@ -311,7 +312,7 @@ exports.getReservable = function(connection,username,Callback) {
 
 //*******************************************************Customer's Setter***********************************************
 exports.setUsername = function(connection, username, newUsername) {
-  var request = new Request("UPDATE dbo.Customer C SET C.Username = @newUsername WHERE C.Username = @username",
+  var request = new Request("UPDATE dbo.Customer SET Username = @newUsername WHERE Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -330,7 +331,7 @@ exports.setUsername = function(connection, username, newUsername) {
 }
 
 exports.setPassword = function(connection, username, password) {
-  var request = new Request("UPDATE dbo.Customer C SET C.Password =  @password WHERE C.Username = @username",
+  var request = new Request("UPDATE dbo.Customer SET Password =  @password WHERE Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         done(err);
@@ -348,7 +349,7 @@ exports.setPassword = function(connection, username, password) {
 }
 
 exports.setEmail = function(connection, username, email) {
-  var request = new Request("UPDATE dbo.Customer C SET C.Email = @email WHERE C.Username = @username",
+  var request = new Request("UPDATE dbo.Customer SET Email = @email WHERE Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -367,7 +368,7 @@ exports.setEmail = function(connection, username, email) {
 }
 
 exports.setFirstname = function(connection, username, firstname) {
-  var request = new Request("UPDATE dbo.Customer C SET C.FirstName =  @firstname WHERE C.Username = @username",
+  var request = new Request("UPDATE dbo.Customer SET FirstName =  @firstname WHERE Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -386,7 +387,7 @@ exports.setFirstname = function(connection, username, firstname) {
 }
 
 exports.setLastname = function(connection, username, lastname) {
-  var request = new Request("UPDATE dbo.Customer C SET C.LastName = @lastname WHERE C.Username = @username",
+  var request = new Request("UPDATE dbo.Customer SET LastName = @lastname WHERE Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -405,7 +406,7 @@ exports.setLastname = function(connection, username, lastname) {
 }
 
 exports.setCustomerType = function(connection, username, customertype) {
-  var request = new Request("UPDATE dbo.Customer C SET C.customerType = @customertype WHERE C.Username =  @username",
+  var request = new Request("UPDATE dbo.Customer SET customerType = @customertype WHERE Username =  @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -424,7 +425,7 @@ exports.setCustomerType = function(connection, username, customertype) {
 }
 
 exports.setStudentID = function(connection, username, studentid) {
-  var request = new Request("UPDATE dbo.Customer C SET C.StudentID =  @studentid WHERE C.Username = @username",
+  var request = new Request("UPDATE dbo.Customer SET StudentID =  @studentid WHERE Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -443,7 +444,7 @@ exports.setStudentID = function(connection, username, studentid) {
 }
 
 exports.setProfessorID = function(connection, username, professorid) {
-  var request = new Request("UPDATE dbo.Customer C SET C.ProfessorID =  @professorid WHERE C.Username = @username",
+  var request = new Request("UPDATE dbo.Customer SET ProfessorID =  @professorid WHERE Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -462,7 +463,7 @@ exports.setProfessorID = function(connection, username, professorid) {
 }
 
 exports.setNationalID = function(connection, username, nationalid) {
-  var request = new Request("UPDATE dbo.Customer C SET C.NationalID = @nationalid WHERE C.Username = @username",
+  var request = new Request("UPDATE dbo.Customer SET NationalID = @nationalid WHERE Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -481,7 +482,7 @@ exports.setNationalID = function(connection, username, nationalid) {
 }
 
 exports.setCustomerPicture = function(connection, username, customerpicture) {
-  var request = new Request("UPDATE dbo.Customer C SET C.CustomerPicture =  @customerpicture WHERE C.Username = @username",
+  var request = new Request("UPDATE dbo.Customer SET CustomerPicture =  @customerpicture WHERE Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -500,7 +501,7 @@ exports.setCustomerPicture = function(connection, username, customerpicture) {
 }
 
 exports.setCancel = function(connection, username, cancel) {
-  var request = new Request("UPDATE dbo.Customer C SET C.Cancel =  @cancel WHERE C.Username = @username",
+  var request = new Request("UPDATE dbo.Customer SET Cancel =  @cancel WHERE Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -519,7 +520,7 @@ exports.setCancel = function(connection, username, cancel) {
 }
 
 exports.setReservable = function(connection, username, reservable) {
-  var request = new Request("UPDATE dbo.Customer C SET C.Reservable =  @reservable WHERE C.Username = @username",
+  var request = new Request("UPDATE dbo.Customer SET Reservable =  @reservable WHERE Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -565,7 +566,7 @@ exports.editCustomer = function(connection,username,edited_info){
 
 //*******************************************************Customer's Remover***********************************************
 exports.removeUser = function(connection, username) {
-  var request = new Request("DELETE FROM dbo.Customer C WHERE C.Username = @username",
+  var request = new Request("DELETE FROM dbo.Customer WHERE Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
