@@ -28,7 +28,7 @@ exports.insert_newBuilding = function(connection,buildingname,capacity){
 exports.getBuildingCapacity = function(connection,buildingname,Callback) {
   var returnedValue  = [];
   var request = new Request(
-    'SELECT Capacity FROM dbo.Buildingname WHERE BuildingName = @buildingname',
+    'SELECT Capacity FROM dbo.Building WHERE BuildingName = @buildingname',
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -36,7 +36,7 @@ exports.getBuildingCapacity = function(connection,buildingname,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue);
+        return Callback(returnedValue[0]);
       }
     });
     request.addParameter('buildingname',TYPES.VarChar,buildingname);
