@@ -5,11 +5,11 @@ var stopwatch = new Stopwatch();
 var elaspedInterval = 0;
 var arriveTimeout = 0;
 var leftTimeout = 0;
-// startUserTimer();
-// userCurrentTime();
-// setTimeout(stopUserTimer,5000);
 
-//How to start stopwatch for each reserveid or username?????????
+
+function getCurrentDate(){
+  return new Date().getDate() + '/' +new Date().getMonth() + '/' + new Date().getFullYear();
+}
 
 //start user's timer
 function startUserTimer(){
@@ -35,19 +35,15 @@ function stopUserTimer(){
   return totalTime;
 }
 
-//make countdown timer in seconds if finish return false
-function countdownTimer(seconds){
-  var timeout = false;
-  var countdownInterval =  setInterval(function () {
-        duration --;
-        //console.log(duration);
-        if(duration <= 0){
-          clearInterval(countdownInterval);
-          timeout = true;
-        }
-    }, 1000);
-    return timeout;
-}
+//time out function
+const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
+var check = false;
+console.log(check);
+sleep(1000).then(() => {
+  check = true;
+  console.log(check);
+});
+
 
 //get current time in hr:min:sec format
 function getCurrentTime(){
@@ -100,31 +96,6 @@ function closeFlap(spot){
 
 
 //****************************************************Reserve, cancel, and  checkout field*****************************************
-//return {floor,slot} of nearest free parking spot.
-function checkAvailabiliy(buildingname){
-  var request = new request("SELECT P.Floor, P.Spot FROM dbo.ParkingSpot P WHERE P.BuildingName = ' " + buildingname + " ' AND P.isfull = 0 ORDER BY Floor ASC, Spot ASC",
-    function(err, rowCount, rows) {
-      if (err) {
-        done(err);
-      } else {
-
-      }
-    });
-  var returnedValue = {};
-  request.on('row', function(columns) {
-    columns.forEach(function(column) {
-      returnedValue.push(column.value);
-    });
-    //console.log(returnedValue);
-  });
-  request.on('requestCompleted', function() {
-    //connection.close();
-    //error here
-  });
-  connection.execSql(request);
-  return returnedValue[0];
-}
-
 //click reserve, generate reserve
 function reserveSpot(platenumber, username, floor, slot, buildingname){
   if(getUserReservable(username) == 1 && (getParkingSpotOccupied(floor, slot, buildingname) == 0 || getParkingSpotSensor(floor, slot, buildingname) == 0)){
@@ -194,12 +165,3 @@ function checkOut(platenumber,username, floor, slot, buidlingname){
     StartUserTimer();
   }
 }
-
-
-//call in front end dee kwa
-// function makeReceipt(transactionID){
-//   var usernam = getTransactionUsername(transactionid, username);
-//   var transactionid = getTransactionID(transactionid, username);
-//   var parkingfee = getTransactionFee(transactionid, username);
-//   var paymentmethod = getTransactionPaymentMethod(transactionid, username);
-// }

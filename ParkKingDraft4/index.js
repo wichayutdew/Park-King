@@ -1,17 +1,16 @@
-//require customer.js file
+//require Customer.js file
 var currentUsername,currentEmail,currentFirstname,currentLastname,currentCustomerType,currentID,currentPicture;
 var customer = require('./Customer.js');
-//require car.js file
+//require Car.js file
 var currentPlateNumber=[],currentBrand=[],currentModel=[],currentColor=[],currentCarPicture=[];
 var car = require('./Car.js');
-
+//require ParkingSpot.js file
 var totalArtsFreeSpot,totalPoliFreeSpot,lowestFloorArts,lowestSlotArts,lowestFloorPoli,lowestSlotPoli;
 var parkingspot = require('./ParkingSpot.js');
-
+//require Building.js file
 var artsCapacity, poliCapacity;
 var building = require('./Building.js');
 
-var qrCode = require('./public/js/qrcode.js')
 
 //NPM REQUIRE
 var express = require('express');
@@ -358,6 +357,7 @@ passport.use('local-login', new LocalStrategy({
 //   var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 //   return time;
 // }
+
 // //check log-in state
 function loggedInBoolean(req) {
     if (req.user) {
@@ -468,7 +468,6 @@ app.get('/home',loggedIn, function(req, res){
       }
       parkingspot.getTotalFreeSpot(connection,'buildingPoli',async function(data){
         totalPoliFreeSpot = data;
-        // res.render('home', {totalArtsFreeSpot:totalArtsFreeSpot,totalPoliFreeSpot:totalPoliFreeSpot,currentUsername: req.user[0],currentPicture: currentPicture});
       })
     });
     pool.acquire(function (err, connection) {
@@ -505,6 +504,51 @@ app.get('/home',loggedIn, function(req, res){
       }
       parkingspot.getLowestSlot(connection,'buildingPoli',async function(data){
         lowestSlotPoli = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      car.getAllPlateNumber(connection,req.user[0],function(data){
+        currentPlateNumber = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      car.getAllCarBrand(connection,req.user[0],function(data){
+        currentBrand = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      car.getAllCarModel(connection,req.user[0],function(data){
+        currentModel = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      car.getAllCarColor(connection,req.user[0],function(data){
+        currentColor = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      car.getAllCarPicture(connection,req.user[0],function(data){
+        currentCarPicture = data;
         res.render('home', {lowestFloorArts:lowestFloorArts,
                             lowestSlotArts:lowestSlotArts,
                             artsCapacity:artsCapacity,
@@ -515,7 +559,7 @@ app.get('/home',loggedIn, function(req, res){
                             totalPoliFreeSpot:totalPoliFreeSpot,
                             currentUsername: req.user[0],
                             currentPicture: currentPicture});
-      })
+      });
     });
 
 });
@@ -596,60 +640,6 @@ app.get('/userinfo', loggedIn, function(req, res){
      }
      customer.getCustomerType(connection,req.user[0],function(data){
        currentCustomerType = data;
-     })
-   });
-   pool.acquire(function (err, connection) {
-     if (err) {
-       console.error(err);
-       connection.release();
-     }
-     customer.getCustomerPicture(connection,req.user[0],function(data){
-       currentPicture = data;
-     })
-   });
-   pool.acquire(function (err, connection) {
-     if (err) {
-       console.error(err);
-       connection.release();
-     }
-     car.getAllPlateNumber(connection,req.user[0],function(data){
-       currentPlateNumber = data;
-     })
-   });
-   pool.acquire(function (err, connection) {
-     if (err) {
-       console.error(err);
-       connection.release();
-     }
-     car.getAllCarBrand(connection,req.user[0],function(data){
-       currentBrand = data;
-     })
-   });
-   pool.acquire(function (err, connection) {
-     if (err) {
-       console.error(err);
-       connection.release();
-     }
-     car.getAllCarModel(connection,req.user[0],function(data){
-       currentModel = data;
-     })
-   });
-   pool.acquire(function (err, connection) {
-     if (err) {
-       console.error(err);
-       connection.release();
-     }
-     car.getAllCarColor(connection,req.user[0],function(data){
-       currentColor = data;
-     })
-   });
-   pool.acquire(function (err, connection) {
-     if (err) {
-       console.error(err);
-       connection.release();
-     }
-     car.getAllCarPicture(connection,req.user[0],function(data){
-       currentCarPicture = data;
        res.render('userinfo', {currentCarPicture: currentCarPicture,
                               currentBrand:currentBrand,
                               currentColor:currentColor,
@@ -662,8 +652,7 @@ app.get('/userinfo', loggedIn, function(req, res){
                               currentCustomerType:currentCustomerType,
                               currentID:customer.getID(req.user),
                               currentPicture:currentPicture});
-
-     });
+     })
    });
 });
 
@@ -874,12 +863,12 @@ app.post('/deletecar/:id',loggedIn,function(req,res){
           connection.release();
           return;
       }
-      car.removeCar(connection,req.user[0],currentPlateNumber[id]);
       delete currentPlateNumber[id];
       delete currentBrand[id];
       delete currentModel[id];
       delete currentColor[id];
       delete currentCarPicture[id];
+      car.removeCar(connection,req.user[0],currentPlateNumber[id]);
   });
   res.redirect('/userinfo');
 },autoReap);
