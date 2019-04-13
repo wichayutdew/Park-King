@@ -1,33 +1,37 @@
 //require Customer.js file
-var currentUsername,currentEmail,currentFirstname,currentLastname,currentCustomerType,currentID,currentPicture;
-var customer = require('./Customer.js');
+var currentUsername,currentEmail,currentFirstname,currentLastname,currentCustomerType,currentID,currentPicture,cancelTime;
+const customer = require('./Customer.js');
 //require Car.js file
 var currentPlateNumber=[],currentBrand=[],currentModel=[],currentColor=[],currentCarPicture=[];
-var car = require('./Car.js');
+const car = require('./Car.js');
 //require ParkingSpot.js file
 var totalArtsFreeSpot,totalPoliFreeSpot,lowestFloorArts,lowestSlotArts,lowestFloorPoli,lowestSlotPoli;
-var parkingspot = require('./ParkingSpot.js');
+const parkingspot = require('./ParkingSpot.js');
 //require Building.js file
 var artsCapacity, poliCapacity;
-var building = require('./Building.js');
+const building = require('./Building.js');
 
+var exceedReservetime = false;
+const reserve = require('./Reserve.js');
+
+const transaction = require('./TransactionReceipt.js');
 
 //NPM REQUIRE
-var express = require('express');
+const express = require('express');
 const app = express();
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 //create temp storage
 const multer = require('multer');
 //auto delete image after upload
 const autoReap  = require('multer-autoreap');
-var fs = require('fs');
+const fs = require('fs');
 const path = require('path');
 
 //tedious section
-var Connection = require('tedious').Connection;
-var ConnectionPool = require('tedious-connection-pool');
-var Request = require('tedious').Request;
-var TYPES =require('tedious').TYPES;
+const Connection = require('tedious').Connection;
+const ConnectionPool = require('tedious-connection-pool');
+const Request = require('tedious').Request;
+const TYPES =require('tedious').TYPES;
 
 //authentication section
 passport = require('passport');
@@ -808,6 +812,89 @@ app.post('/reserve',function(req,res){
       connection.execSql(request);
       _login(req, username, password, done, );
      res.render('reserve');
+  });
+});
+
+app.post('/cancel',function(req,res){
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    customer.getCancel(connection,req.user[0],function(data){
+      cancelTime = data;
+    })
+  });
+  if(exceedReservetime == true){
+      console.log('You cannot cancel the reserve')
+      connection.release();
+      res.redirect('/home');
+  }else{
+    pool.acquire(function (err, connection) {
+        if (err) {
+            console.error(err);
+            connection.release();
+            return;
+        }
+        //find reserveid
+        reserve.removeReserve(connection,reserveid);
+    });
+    pool.acquire(function (err, connection) {
+        if (err) {
+            console.error(err);
+            connection.release();
+            return;
+        }
+        customer.setCancel(connection,req.user[0],cancelTime+1);
+    });
+    pool.acquire(function (err, connection) {
+        if (err) {
+            console.error(err);
+            connection.release();
+            return;
+        }
+        //find reserveid,buildingname,floor,slot
+        parkingspot.setIsFull(connection,buildingname,floor,slot,'0');
+    });
+    pool.acquire(function (err, connection) {
+        if (err) {
+            console.error(err);
+            connection.release();
+            return;
+        }
+        if(cancelTime > 5){
+            console.log('Too much cancel, you are banned')
+            connection.release();
+            customer.setResevable(connection,req.user[0],'0');
+            res.redirect('/home');
+        }
+        res.render('/home')
+    });
+  }
+});
+
+app.post('/pay',function(req,res){
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+          return;
+      }
+      var transactionid = generateTokenID();
+      var totaltime = 100;
+      var parkingFee = 20;
+      var paymentmethod = 'Kbank';
+      var date = transaction.getCurrentDate();
+      transaction.Transaction(connection,platenumber,req.user[0],floor,slot,buildingname,transactionid,parkingFee,paymentmethod,totaltime,date);
+  });
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+          return;
+      }
+      reserve.setHasPaid(connection,reserveid,'1');
+      res.render('/showqr')
   });
 });
 

@@ -4,7 +4,7 @@ var Request = require('tedious').Request;
 var TYPES =require('tedious').TYPES;
 
 //*******************************************************Inserting new Reserve into database***********************************************
-exports.Reserve = function(platenumber, username, floor, slot, buildingname, reserveid){
+exports.Reserve = function(connection,platenumber, username, floor, slot, buildingname, reserveid){
   var request = new Request('INSERT INTO dbo.Reserve (PlateNumber,Username,Floor,Slot,BuildingName,QRCodeIn,QRCodeOut,Time_In,Time_Out,reserveID,hasPaid) VALUES (@platenumber,@username,@floor,@slot,@buildingname,@qrcodein,@qrcodeout,@time_in,@time_out,@reserveid,@haspaid)',
       function(err, rowCount, rows){
           if(err){

@@ -4,7 +4,7 @@ var Request = require('tedious').Request;
 var TYPES =require('tedious').TYPES;
 
 //*******************************************************Transaction's Adder***********************************************
-exports.Transaction = function(platenumber,username,floor,slot,buildingname,transactionid,fee,paymentmethod,totaltime,date){
+exports.Transaction = function(connection,platenumber,username,floor,slot,buildingname,transactionid,fee,paymentmethod,totaltime,date){
   var request = new Request('INSERT INTO dbo.TransactionReceipt (PlateNumber,Username,Floor,Slot,BuildingName,TransactionID,Fee,PaymentMethod,TotalTime,Date) VALUES (@platenumber,@username,@floor,@slot,@buildingname,@transactionid,@fee,@paymentmethod,@totaltime,@date)',
       function(err, rowCount, rows){
           if(err){
@@ -218,4 +218,9 @@ exports.removeReserve = function(connection,reserveid) {
       //connection.close();
     });
     connection.execSql(request);
+}
+
+
+exports.getCurrentDate = function(){
+  return new Date().getDate() + '/' +new Date().getMonth() + '/' + new Date().getFullYear();
 }
