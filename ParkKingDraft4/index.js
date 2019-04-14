@@ -14,7 +14,7 @@ const building = require('./Building.js');
 var exceedReservetime = false;
 const reserve = require('./Reserve.js');
 
-const transaction = require('./TransactionReceipt.js');
+//const transaction = require('./TransactionReceipt.js');
 
 //NPM REQUIRE
 const express = require('express');
@@ -705,7 +705,7 @@ function Reserve(floor,slot,buildingName,plateNumber,username,QRin,QRout,Timein,
           }else{
               console.log('!!!Parking spot reserved!!!');
               connection.release();
-              return;
+              return ;
           }
   });
   request.addParameter('PlateNumber',TYPES.VarChar,plateNumber);
@@ -779,26 +779,18 @@ function sleep(ms){
     })
 }
 app.post('/reserve',async function(req,res){
+  console.log('---Reserve process begin---');
 
-  // function reserveSpot(platenumber, username, floor, slot, buildingname){
-  //   if(getUserReservable(username) == 1 && (getParkingSpotOccupied(floor, slot, buildingname) == 0 || getParkingSpotSensor(floor, slot, buildingname) == 0)){
-  //     //create reserve ID
-  //     var reserveid = generateTokenID();
-  //     //insert reserve
-  //     Reserve(platenumber, username, floor, slot, buildingname, null, null, null, null, reserveid, 0);
-  //     setUserReservable(username,0);
-  //     setParkingSpotOccupied(floor, slot, buidlingname, 1);
-  //     arriveTimeout = countdownTimer(60*30);
-  //   }
-  // }
-  //PlateNumber,Username ,dbo.Car
+  //---------testing dataset------------
+  //need to replace with req.body.parameter!!!
   var car=['5555','x'];
-  var parkingSpot=['01','0001','buildingPoli'];
+  var buildingSlected='buildingPoli';
+  //------------------------------------
 
   var reserve_info = [];
   var reserve_status = false;
 
-
+  //Check validity and reserve parking spot
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
@@ -810,6 +802,7 @@ app.post('/reserve',async function(req,res){
           connection.release();
           res.redirect('/home');
       }
+
       var request = new Request(
         "SELECT p.Floor,p.slot,p.BuildingName,c.PlateNumber,c.Username FROM (SELECT MIN( Slot ) slot,Floor,BuildingName FROM dbo.ParkingSpot WHERE dbo.ParkingSpot.BuildingName=@Building AND dbo.ParkingSpot.isfull= @bit0 AND dbo.ParkingSpot.Sensor=@bit1 GROUP BY Floor,BuildingName) p,(SELECT PlateNumber,Username FROM dbo.Car WHERE dbo.Car.PlateNumber = @PlateNumber AND dbo.Car.Username = @Username) c",
           //"SELECT Floor,MIN(Slot),BuildingName,isFull,Sensor,PlateNumber,Username FROM dbo.ParkingSpot,dbo.Car WHERE (dbo.ParkingSpot.BuildingName=@Building AND dbo.ParkingSpot.isfull= @bit0 AND dbo.ParkingSpot.Sensor=@bit1) OR (dbo.Car.PlateNumber = @PlateNumber AND dbo.Car.Username = @Username) GROUP BY Floor,BuildingName,isFull,Sensor,PlateNumber,Username",
@@ -820,24 +813,25 @@ app.post('/reserve',async function(req,res){
                   console.log(err);
                   connection.release();
                   res.redirect('/reserve');
+              }
+              if (buildingState == null){
+                  console.log('No parking spot in this building...');
+                  connection.release();
+                  res.redirect('/reserve');
               }else{
                   //console.log('Spot available : '+ buildingState);
                   var reserveId = generateTokenID();
                   reserve_info = buildingState;
                   reserve_status = true;
-                  console.log('reserved');
-                  //console.log(reserve_info);
-                  //console.log(reserve_status);
+
                   Reserve(buildingState[0], buildingState[1], buildingState[2], buildingState[3], buildingState[4], null, null, null, null, reserveId, 0,connection);
-                  //UpdateParkingspot(reserve_info[0], reserve_info[1], reserve_info[2],connection);
-                  //UpdateCustomer(reserve_info[4],connection);
-                  //connection.release();
+                  console.log('reserved');
               }
 
       });
       request.addParameter('PlateNumber',TYPES.VarChar,car[0]);
       request.addParameter('Username',TYPES.VarChar,car[1]);
-      request.addParameter('Building',TYPES.VarChar,parkingSpot[2]);
+      request.addParameter('Building',TYPES.VarChar,buildingSlected);
       request.addParameter('bit0',TYPES.Bit,false);
       request.addParameter('bit1',TYPES.Bit,true);
 
@@ -854,10 +848,12 @@ app.post('/reserve',async function(req,res){
 
       connection.execSql(request);
   });
+  //wait for insert request
   await sleep(3000);
   console.log('reserve status');
   console.log(reserve_info);
   console.log(reserve_status);
+  //update parking spot
   pool.acquire(function (err, connection) {
     if (err) {
         console.error(err);
@@ -873,6 +869,7 @@ app.post('/reserve',async function(req,res){
       return;
     }
   });
+  //update customer
   pool.acquire(function (err, connection) {
     if (err) {
         console.error(err);
@@ -887,9 +884,10 @@ app.post('/reserve',async function(req,res){
       return;
     }
   });
+  //wait for update request
   await sleep(1000);
   console.log('!!!Reserve process completed!!!');
-  res.render('home');
+  res.redirect('home');
 });
 
 app.post('/cancel',function(req,res){
