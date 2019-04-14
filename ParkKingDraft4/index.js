@@ -411,7 +411,91 @@ storage: storage,
 //
 // var UserImage = new Image();
 // UserImage.src = 'data:image/png;base64,'+imgPhase;
+function Reserve(floor,slot,buildingName,plateNumber,username,QRin,QRout,Timein,Timeout,reserveid,haspaid,connection){
+  var request = new Request(
+      "INSERT INTO dbo.Reserve(PlateNumber,Username,Floor,Slot,BuildingName,QRCodeIn,QRCodeOut,Time_In,Time_Out,reserveID,hasPaid) VALUES (@PlateNumber,@Username,@Floor,@Slot,@BuildingName,@QRCodeIn,@QRCodeOut,@Time_In,@Time_Out,@reserveID,@hasPaid)",
+      function(err, rowCount, rows){
 
+          if(err){
+              console.log(err);
+              connection.release();
+              return;
+          }else{
+              console.log('!!!Parking spot reserved!!!');
+              connection.release();
+              return ;
+          }
+  });
+  request.addParameter('PlateNumber',TYPES.VarChar,plateNumber);
+  request.addParameter('Username',TYPES.VarChar,username);
+  request.addParameter('Floor',TYPES.VarChar,floor);
+  request.addParameter('Slot',TYPES.VarChar,slot);
+  request.addParameter('BuildingName',TYPES.VarChar,buildingName);
+  request.addParameter('QRCodeIn',TYPES.VarChar,QRin);
+  request.addParameter('QRCodeOut',TYPES.VarChar,QRout);
+  request.addParameter('Time_In',TYPES.VarChar,Timein);
+  request.addParameter('Time_Out',TYPES.VarChar,Timeout);
+  request.addParameter('reserveID',TYPES.VarChar,reserveid);
+  request.addParameter('hasPaid',TYPES.Bit,haspaid);
+
+  request.on('Done',function(err, rowCount, rows){
+  });
+
+  connection.execSql(request);
+}
+function UpdateParkingspot(floor,slot,buildingName,connection){
+  var request = new Request(
+      "UPDATE dbo.ParkingSpot SET isFull=1 WHERE dbo.ParkingSpot.Floor=@Floor AND dbo.ParkingSpot.Slot=@Slot AND dbo.ParkingSpot.BuildingName=@BuildingName" ,
+      function(err, rowCount, rows){
+
+          if(err){
+              console.log(err);
+              connection.release();
+              return;
+          }else{
+              //connection.release();
+              console.log('!!!Parking spot updated!!!');
+              connection.release();
+              return;
+          }
+  });
+  request.addParameter('Floor',TYPES.VarChar,floor);
+  request.addParameter('Slot',TYPES.VarChar,slot);
+  request.addParameter('BuildingName',TYPES.VarChar,buildingName);
+
+
+  request.on('Done',function(err, rowCount, rows){
+  });
+
+  connection.execSql(request);
+}
+function UpdateCustomer(username,connection){
+  var request = new Request(
+      "UPDATE dbo.Customer SET Reserveable=0 WHERE dbo.Customer.Username = @Username" ,
+      function(err, rowCount, rows){
+
+          if(err){
+              console.log(err);
+              connection.release();
+              return;
+          }else{
+              console.log('!!!Customer updated!!!');
+              connection.release();
+              return;
+          }
+  });
+  request.addParameter('Username',TYPES.VarChar,username);
+
+  request.on('Done',function(err, rowCount, rows){
+  });
+
+  connection.execSql(request);
+}
+function sleep(ms){
+    return new Promise(resolve=>{
+        setTimeout(resolve,ms)
+    })
+}
 
 
 
@@ -693,91 +777,6 @@ app.get('/receipt',loggedIn, function(req, res){
     res.render('receipt');
 });
 
-function Reserve(floor,slot,buildingName,plateNumber,username,QRin,QRout,Timein,Timeout,reserveid,haspaid,connection){
-  var request = new Request(
-      "INSERT INTO dbo.Reserve(PlateNumber,Username,Floor,Slot,BuildingName,QRCodeIn,QRCodeOut,Time_In,Time_Out,reserveID,hasPaid) VALUES (@PlateNumber,@Username,@Floor,@Slot,@BuildingName,@QRCodeIn,@QRCodeOut,@Time_In,@Time_Out,@reserveID,@hasPaid)",
-      function(err, rowCount, rows){
-
-          if(err){
-              console.log(err);
-              connection.release();
-              return;
-          }else{
-              console.log('!!!Parking spot reserved!!!');
-              connection.release();
-              return ;
-          }
-  });
-  request.addParameter('PlateNumber',TYPES.VarChar,plateNumber);
-  request.addParameter('Username',TYPES.VarChar,username);
-  request.addParameter('Floor',TYPES.VarChar,floor);
-  request.addParameter('Slot',TYPES.VarChar,slot);
-  request.addParameter('BuildingName',TYPES.VarChar,buildingName);
-  request.addParameter('QRCodeIn',TYPES.VarChar,QRin);
-  request.addParameter('QRCodeOut',TYPES.VarChar,QRout);
-  request.addParameter('Time_In',TYPES.VarChar,Timein);
-  request.addParameter('Time_Out',TYPES.VarChar,Timeout);
-  request.addParameter('reserveID',TYPES.VarChar,reserveid);
-  request.addParameter('hasPaid',TYPES.Bit,haspaid);
-
-  request.on('Done',function(err, rowCount, rows){
-  });
-
-  connection.execSql(request);
-}
-function UpdateParkingspot(floor,slot,buildingName,connection){
-  var request = new Request(
-      "UPDATE dbo.ParkingSpot SET isFull=1 WHERE dbo.ParkingSpot.Floor=@Floor AND dbo.ParkingSpot.Slot=@Slot AND dbo.ParkingSpot.BuildingName=@BuildingName" ,
-      function(err, rowCount, rows){
-
-          if(err){
-              console.log(err);
-              connection.release();
-              return;
-          }else{
-              //connection.release();
-              console.log('!!!Parking spot updated!!!');
-              connection.release();
-              return;
-          }
-  });
-  request.addParameter('Floor',TYPES.VarChar,floor);
-  request.addParameter('Slot',TYPES.VarChar,slot);
-  request.addParameter('BuildingName',TYPES.VarChar,buildingName);
-
-
-  request.on('Done',function(err, rowCount, rows){
-  });
-
-  connection.execSql(request);
-}
-function UpdateCustomer(username,connection){
-  var request = new Request(
-      "UPDATE dbo.Customer SET Reserveable=0 WHERE dbo.Customer.Username = @Username" ,
-      function(err, rowCount, rows){
-
-          if(err){
-              console.log(err);
-              connection.release();
-              return;
-          }else{
-              console.log('!!!Customer updated!!!');
-              connection.release();
-              return;
-          }
-  });
-  request.addParameter('Username',TYPES.VarChar,username);
-
-  request.on('Done',function(err, rowCount, rows){
-  });
-
-  connection.execSql(request);
-}
-function sleep(ms){
-    return new Promise(resolve=>{
-        setTimeout(resolve,ms)
-    })
-}
 app.post('/reserve',async function(req,res){
   console.log('---Reserve process begin---');
 
