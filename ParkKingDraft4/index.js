@@ -640,6 +640,8 @@ function Reserve(floor,slot,buildingName,plateNumber,username,QRin,QRout,Timein,
               return;
           }else{
               console.log('!!!Parking spot reserved!!!');
+              connection.release();
+              return;
           }
   });
   request.addParameter('PlateNumber',TYPES.VarChar,plateNumber);
@@ -661,7 +663,7 @@ function Reserve(floor,slot,buildingName,plateNumber,username,QRin,QRout,Timein,
 }
 function UpdateParkingspot(floor,slot,buildingName,connection){
   var request = new Request(
-      "UPDATE dbo.ParkingSpot SET dbo.parkingSpot.isFull=1 WHERE dbo.ParkingSpot.Floor = @Floor AND dbo.ParkingSpot.Slot = @Slot AND dbo.ParkingSpot.BuildingName =@BuildingName" ,
+      "UPDATE dbo.ParkingSpot SET isFull=1 WHERE dbo.ParkingSpot.Floor=@Floor AND dbo.ParkingSpot.Slot=@Slot AND dbo.ParkingSpot.BuildingName=@BuildingName" ,
       function(err, rowCount, rows){
 
           if(err){
@@ -671,6 +673,8 @@ function UpdateParkingspot(floor,slot,buildingName,connection){
           }else{
               //connection.release();
               console.log('!!!Parking spot updated!!!');
+              connection.release();
+              return;
           }
   });
   request.addParameter('Floor',TYPES.VarChar,floor);
@@ -685,7 +689,7 @@ function UpdateParkingspot(floor,slot,buildingName,connection){
 }
 function UpdateCustomer(username,connection){
   var request = new Request(
-      "UPDATE dbo.Customer SET dbo.Customer.Reserveable=0 WHERE dbo.Customer.Username = @Username" ,
+      "UPDATE dbo.Customer SET Reserveable=0 WHERE dbo.Customer.Username = @Username" ,
       function(err, rowCount, rows){
 
           if(err){
@@ -693,8 +697,9 @@ function UpdateCustomer(username,connection){
               connection.release();
               return;
           }else{
-              connection.release();
               console.log('!!!Customer updated!!!');
+              connection.release();
+              return;
           }
   });
   request.addParameter('Username',TYPES.VarChar,username);
@@ -704,7 +709,12 @@ function UpdateCustomer(username,connection){
 
   connection.execSql(request);
 }
-app.post('/reserve',function(req,res){
+function sleep(ms){
+    return new Promise(resolve=>{
+        setTimeout(resolve,ms)
+    })
+}
+app.post('/reserve',async function(req,res){
 
   // function reserveSpot(platenumber, username, floor, slot, buildingname){
   //   if(getUserReservable(username) == 1 && (getParkingSpotOccupied(floor, slot, buildingname) == 0 || getParkingSpotSensor(floor, slot, buildingname) == 0)){
@@ -721,6 +731,10 @@ app.post('/reserve',function(req,res){
   var car=['5555','x'];
   var parkingSpot=['01','0001','buildingPoli'];
 
+  var reserve_info = [];
+  var reserve_status = false;
+
+
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
@@ -733,7 +747,8 @@ app.post('/reserve',function(req,res){
           res.redirect('/home');
       }
       var request = new Request(
-          "SELECT Floor,MIN(Slot),BuildingName,isFull,Sensor,PlateNumber,Username FROM dbo.ParkingSpot,dbo.Car WHERE dbo.ParkingSpot.isfull= @bit0 AND dbo.ParkingSpot.Sensor=@bit1 AND dbo.ParkingSpot.BuildingName=@Building OR dbo.Car.PlateNumber = @PlateNumber AND dbo.Car.Username = @Username GROUP BY Floor,BuildingName,isFull,Sensor,PlateNumber,Username",
+        "SELECT p.Floor,p.slot,p.BuildingName,c.PlateNumber,c.Username FROM (SELECT MIN( Slot ) slot,Floor,BuildingName FROM dbo.ParkingSpot WHERE dbo.ParkingSpot.BuildingName=@Building AND dbo.ParkingSpot.isfull= @bit0 AND dbo.ParkingSpot.Sensor=@bit1 GROUP BY Floor,BuildingName) p,(SELECT PlateNumber,Username FROM dbo.Car WHERE dbo.Car.PlateNumber = @PlateNumber AND dbo.Car.Username = @Username) c",
+          //"SELECT Floor,MIN(Slot),BuildingName,isFull,Sensor,PlateNumber,Username FROM dbo.ParkingSpot,dbo.Car WHERE (dbo.ParkingSpot.BuildingName=@Building AND dbo.ParkingSpot.isfull= @bit0 AND dbo.ParkingSpot.Sensor=@bit1) OR (dbo.Car.PlateNumber = @PlateNumber AND dbo.Car.Username = @Username) GROUP BY Floor,BuildingName,isFull,Sensor,PlateNumber,Username",
           //"SELECT Floor,MIN(Slot),BuildingName,isFull,Sensor FROM dbo.ParkingSpot WHERE dbo.ParkingSpot.isfull= @bit0 AND dbo.ParkingSpot.Sensor=@bit1 GROUP BY Floor,BuildingName,isFull,Sensor UNION ALL SELECT PlateNumber,Username,CarBrand,CarModel,CarColor FROM dbo.Car WHERE dbo.Car.PlateNumber = @PlateNumber AND dbo.Car.Username = @Username",
           function(err, rowCount, rows){
 
@@ -742,21 +757,23 @@ app.post('/reserve',function(req,res){
                   connection.release();
                   res.redirect('/reserve');
               }else{
+                  //console.log('Spot available : '+ buildingState);
                   var reserveId = generateTokenID();
-                  console.log('Spot available : '+ buildingState);
-                  Reserve(buildingState[0], buildingState[1], buildingState[2], buildingState[5], buildingState[6], null, null, null, null, reserveId, 0,connection);
-                  UpdateParkingspot(buildingState[0], buildingState[1], buildingState[2],connection);
-                  UpdateCustomer(buildingState[6],connection);
-                  //setUserReservable(username,0);
-                  //setParkingSpotOccupied(floor, slot, buidlingname, 1);
-                  //arriveTimeout = countdownTimer(60*30);
-                  res.redirect('/home')
+                  reserve_info = buildingState;
+                  reserve_status = true;
+                  console.log('reserved');
+                  //console.log(reserve_info);
+                  //console.log(reserve_status);
+                  Reserve(buildingState[0], buildingState[1], buildingState[2], buildingState[3], buildingState[4], null, null, null, null, reserveId, 0,connection);
+                  //UpdateParkingspot(reserve_info[0], reserve_info[1], reserve_info[2],connection);
+                  //UpdateCustomer(reserve_info[4],connection);
+                  //connection.release();
               }
-              
+
       });
       request.addParameter('PlateNumber',TYPES.VarChar,car[0]);
       request.addParameter('Username',TYPES.VarChar,car[1]);
-      request.addParameter('Building',TYPES.VarChar,parkingSpot[3]);
+      request.addParameter('Building',TYPES.VarChar,parkingSpot[2]);
       request.addParameter('bit0',TYPES.Bit,false);
       request.addParameter('bit1',TYPES.Bit,true);
 
@@ -773,6 +790,42 @@ app.post('/reserve',function(req,res){
 
       connection.execSql(request);
   });
+  await sleep(3000);
+  console.log('reserve status');
+  console.log(reserve_info);
+  console.log(reserve_status);
+  pool.acquire(function (err, connection) {
+    if (err) {
+        console.error(err);
+        connection.release();
+        return;
+    }
+    if(reserve_status){
+       UpdateParkingspot(reserve_info[0], reserve_info[1], reserve_info[2],connection);
+
+    }else{
+      connection.release();
+      console.log('update parking spot failed');
+      return;
+    }
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+        console.error(err);
+        connection.release();
+        return;
+    }
+    if(reserve_status){
+       UpdateCustomer(reserve_info[4],connection);
+    }else{
+      connection.release();
+      console.log('update customer spot failed');
+      return;
+    }
+  });
+  await sleep(1000);
+  console.log('!!!Reserve process completed!!!');
+  res.render('home');
 });
 
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
@@ -798,10 +851,7 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
         carcolor:req.body.carColor,
         carpicture:encode_image,
       };
-<<<<<<< HEAD
       //console.log(car_info);
-=======
->>>>>>> 3779aec2b8202145272e2ad64ae6f6319e62c527
       car.insert_newCar(connection,car_info,req.user[0]);
       currentPlateNumber.push(car_info.platenumber);
       currentBrand.push(car_info.carbrand);
@@ -852,7 +902,6 @@ app.post('/deletecar/:id',loggedIn,function(req,res){
                          currentPicture:currentPicture});
 },autoReap);
 
-<<<<<<< HEAD
 // app.post('/deletecar1',loggedIn,function(req,res){
 //   console.log('Trying to delete car');
 //   pool.acquire(function (err, connection) {
@@ -864,8 +913,6 @@ app.post('/deletecar/:id',loggedIn,function(req,res){
 //       car.removeCar(connection,req.user[0],platenumber[0]);
 //   });
 // });
-=======
->>>>>>> 3779aec2b8202145272e2ad64ae6f6319e62c527
 app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
   console.log('Trying to edit profile');
   pool.acquire(function (err, connection) {
