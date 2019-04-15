@@ -669,15 +669,63 @@ app.get('/carregister',loggedIn, function(req, res){
 
 //ROUTE TO RESERVE PAGE
 app.get('/reserve',loggedIn, function(req, res){
+  // pool.acquire(function (err, connection) {
+  //   if (err) {
+  //     console.error(err);
+  //     connection.release();
+  //   }
+  //   customer.getCustomerPicture(connection,req.user[0],function(data){
+  //     currentPicture = data;
+  //   })
+  //   res.render('reserve', {currentUsername: req.user[0],currentPicture: currentPicture});
+  // });
   pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
       connection.release();
     }
-    customer.getCustomerPicture(connection,req.user[0],function(data){
-      currentPicture = data;
+    customer.getEmail(connection,req.user[0],function(data){
+      currentEmail = data;
     })
-    res.render('reserve', {currentUsername: req.user[0],currentPicture: currentPicture});
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    customer.getFirstname(connection,req.user[0],function(data){
+      currentFirstname = data;
+    })
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    customer.getLastname(connection,req.user[0],function(data){
+      currentLastname = data;
+    })
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    customer.getCustomerType(connection,req.user[0],function(data){
+      currentCustomerType = data;
+      res.render('reserve', {currentCarPicture: currentCarPicture,
+                             currentBrand:currentBrand,
+                             currentColor:currentColor,
+                             currentModel:currentModel,
+                             currentPlateNumber: currentPlateNumber,
+                             currentUsername: req.user[0],
+                             currentEmail:currentEmail,
+                             currentFirstname:currentFirstname,
+                             currentLastname:currentLastname,
+                             currentCustomerType:currentCustomerType,
+                             currentID:customer.getID(req.user),
+                             currentPicture:currentPicture});
+    })
   });
 });
 
@@ -760,13 +808,58 @@ app.get('/edituserinfo', loggedIn, function(req, res){
 });
 
 
-app.get('/userinfo2', function(req, res){
-   res.render('userinfo2');
-});
+
 
 //ROUTE TO TEMPORARY PAGE
-app.get('/temp', function(req, res){
-    res.render('temp');
+app.get('/temp', loggedIn, function(req, res){
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    customer.getEmail(connection,req.user[0],function(data){
+      currentEmail = data;
+    })
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    customer.getFirstname(connection,req.user[0],function(data){
+      currentFirstname = data;
+    })
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    customer.getLastname(connection,req.user[0],function(data){
+      currentLastname = data;
+    })
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    customer.getCustomerType(connection,req.user[0],function(data){
+      currentCustomerType = data;
+      res.render('temp', {currentCarPicture: currentCarPicture,
+                             currentBrand:currentBrand,
+                             currentColor:currentColor,
+                             currentModel:currentModel,
+                             currentPlateNumber: currentPlateNumber,
+                             currentUsername: req.user[0],
+                             currentEmail:currentEmail,
+                             currentFirstname:currentFirstname,
+                             currentLastname:currentLastname,
+                             currentCustomerType:currentCustomerType,
+                             currentID:customer.getID(req.user),
+                             currentPicture:currentPicture});
+    })
+  });
 });
 
 app.get('/statustemp', function(req, res){

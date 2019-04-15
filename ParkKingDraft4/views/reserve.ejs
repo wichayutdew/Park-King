@@ -35,14 +35,17 @@
                         <div class="card-body">
                           <div class="carSelect">
                             <div class="btn-group carBtnGroup d-flex justify-content-around" data-toggle="buttons">
-                              <label class="btn carChoice">
-                                <div class="method" style="background-image: url(img/car1.png)">9999</div>
-                                <input type="radio" name="options">
-                              </label>
-                              <label class="btn carChoice">
-                                <div class="method" style="background-image: url(img/car1.png)">8888</div>
-                                <input type="radio" name="options">
-                              </label>
+                              <% for(i=0; i < currentPlateNumber.length; i++){ %>
+                                <label class="btn carChoice">
+                                  <div class="method" style="background-image: url(data:image/png;base64,<%= currentCarPicture[i] %>)"><%=currentPlateNumber[i]%></div>
+                                  <input type="radio" name="options">
+                                </label>
+                                <% } %>
+                                <!-- <label class="btn carChoice">
+                                  <div class="method" style="background-image: url(data:image/png;base64,<%= currentCarPicture[i] %>)"><%=currentPlateNumber[i]%></div>
+                                  <input type="radio" name="options">
+                                </label> -->
+
                             </div>
                           </div>
                         </div>
