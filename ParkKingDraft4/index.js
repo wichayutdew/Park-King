@@ -26,6 +26,7 @@ const multer = require('multer');
 const autoReap  = require('multer-autoreap');
 const fs = require('fs');
 const path = require('path');
+var flash = require('connect-flash');
 
 //tedious section
 const Connection = require('tedious').Connection;
@@ -70,6 +71,7 @@ pool.on('error', function(err) {
 //APP CONFIG
 app.set('view engine', 'ejs');
 app.use(autoReap);
+app.use(flash());
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -81,6 +83,8 @@ app.use(require('express-session')({
 
 app.use(function(req, res, next){
     res.locals.currentUser = req.user;
+    res.locals.error = req.flash('error');
+    res.locals.success = req.flash('success');
     next();
 });
 app.use(passport.initialize());
@@ -1196,6 +1200,7 @@ app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
 
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
+    req.flash('error', 'Flash is back!');
     successRedirect: '/home',
     failureRedirect: '/login',
     failureFlash: true,
