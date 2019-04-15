@@ -1198,7 +1198,8 @@ app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',
     failureRedirect: '/login',
-    session: true,
+    failureFlash: true,
+    session: true
 }));
 
 app.post('/register', upload.single('profilePic'),passport.authenticate('local-signup' ,{
