@@ -73,6 +73,7 @@ body {
     z-index: -10 !important;
 }
 
+
 /* ============================================================
 Set background color using class
 ============================================================ */
@@ -230,6 +231,31 @@ nav .menu a.menu-item {
   padding: 10px 20px;
   border-radius: 10px;
 }
+
+/* ============================================================
+Flash message
+============================================================ */
+p.flash-message {
+  margin: 2px 20%;
+  text-align: center;
+  color: white !important;
+  font-size: 15px !important;
+  padding: 3px 2px;
+  border-radius: 10px;
+}
+
+p.error {
+  background-color: rgb(255, 51, 51, 0.6);
+}
+
+p.success {
+  background-color: rgb(64, 255, 0, 0.6);
+}
+
+p.gone {
+  display: none;
+}
+
 
 /* ============================================================
 Home Page

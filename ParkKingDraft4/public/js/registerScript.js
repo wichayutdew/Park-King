@@ -1,4 +1,4 @@
-alert('welcome to register page');
+
 
 
 $('form').submit(function(event){
@@ -30,6 +30,8 @@ $('form').submit(function(event){
     alert('Your passwords are not match.');
     return false;
   }
+
+
 
 
 

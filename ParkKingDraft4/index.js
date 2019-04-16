@@ -25,13 +25,14 @@ const transaction = require('./TransactionReceipt.js');
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+var session = require('express-session');
 //create temp storage
 const multer = require('multer');
 //auto delete image after upload
 const autoReap  = require('multer-autoreap');
 const fs = require('fs');
 const path = require('path');
-var flash = require('connect-flash');
+var flash = require('connect-flash-plus');
 
 //tedious section
 const Connection = require('tedious').Connection;
@@ -76,22 +77,25 @@ pool.on('error', function(err) {
 //APP CONFIG
 app.set('view engine', 'ejs');
 app.use(autoReap);
-app.use(flash());
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.use(require('express-session')({
+app.use(session({
     secret: "Fuck You",
-    resave: false,
-    saveUninitialized: false
+    resave: true,
+    saveUninitialized: true
 }));
 
+app.use(flash());
+
+//Send shits to all pages
 app.use(function(req, res, next){
-    res.locals.currentUser = req.user;
-    res.locals.error = req.flash('error');
     res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    // res.locals.failure = req.flash('failure');
     next();
 });
+
 app.use(passport.initialize());
 app.use(passport.session());
 //===================================================================================================================================================
@@ -1254,18 +1258,24 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
       currentColor.push(car_info.carcolor);
       currentCarPicture.push(car_info.carpicture);
   });
-  res.render('userinfo', {currentCarPicture: currentCarPicture,
-                         currentBrand:currentBrand,
-                         currentColor:currentColor,
-                         currentModel:currentModel,
-                         currentPlateNumber: currentPlateNumber,
-                         currentUsername: req.user[0],
-                         currentEmail:currentEmail,
-                         currentFirstname:currentFirstname,
-                         currentLastname:currentLastname,
-                         currentCustomerType:currentCustomerType,
-                         currentID:customer.getID(req.user),
-                         currentPicture:currentPicture});
+  // if (confirm("Press a button!")) {
+  //   res.redirect('/userinfo');
+  // }
+  req.flash('success', 'Your car has been added.')
+  res.redirect('/userinfo');
+  // res.render('userinfo', {currentCarPicture: currentCarPicture,
+  //                        currentBrand:currentBrand,
+  //                        currentColor:currentColor,
+  //                        currentModel:currentModel,
+  //                        currentPlateNumber: currentPlateNumber,
+  //                        currentUsername: req.user[0],
+  //                        currentEmail:currentEmail,
+  //                        currentFirstname:currentFirstname,
+  //                        currentLastname:currentLastname,
+  //                        currentCustomerType:currentCustomerType,
+  //                        currentID:customer.getID(req.user),
+  //                        currentPicture:currentPicture
+  //                      });
 },autoReap);
 
 app.post('/deletecar/:id',loggedIn,function(req,res){
@@ -1327,33 +1337,38 @@ app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
       currentPicture = data;
     })
   });
-  res.render('userinfo', {currentCarPicture: currentCarPicture,
-                         currentBrand:currentBrand,
-                         currentColor:currentColor,
-                         currentModel:currentModel,
-                         currentPlateNumber: currentPlateNumber,
-                         currentUsername: req.user[0],
-                         currentEmail:currentEmail,
-                         currentFirstname:currentFirstname,
-                         currentLastname:currentLastname,
-                         currentCustomerType:currentCustomerType,
-                         currentID:customer.getID(req.user),
-                         currentPicture:currentPicture});
+
+  req.flash('success', 'Your information has been changed.');
+  res.redirect('/userinfo');
+  // res.render('userinfo', {currentCarPicture: currentCarPicture,
+  //                        currentBrand:currentBrand,
+  //                        currentColor:currentColor,
+  //                        currentModel:currentModel,
+  //                        currentPlateNumber: currentPlateNumber,
+  //                        currentUsername: req.user[0],
+  //                        currentEmail:currentEmail,
+  //                        currentFirstname:currentFirstname,
+  //                        currentLastname:currentLastname,
+  //                        currentCustomerType:currentCustomerType,
+  //                        currentID:customer.getID(req.user),
+  //                        currentPicture:currentPicture});
 },autoReap);
 
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
-    // req.flash('error', 'Flash is back!');
     successRedirect: '/home',
+    successFlash: 'Successfully logged in',
     failureRedirect: '/login',
-    failureFlash: true,
+    failureFlash: 'Invalid username or password',
     session: true
 }));
 
 app.post('/register', upload.single('profilePic'),passport.authenticate('local-signup' ,{
     successRedirect: '/login',
+    // successFlash: 'You are registered! Please login.',
     failureRedirect: '/register',
-    session: false,
+    failureFlash: true,
+    session: false
 }));
 
 app.listen(3000, process.env.IP, function(){
