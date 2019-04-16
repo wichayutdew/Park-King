@@ -1122,6 +1122,7 @@ app.post('/reserve',async function(req, res){
         }
         customer.setReservable(connection, req.user[0], 0);
         console.log('set user reservable');
+        // alert('sucess');
         req.flash('success', 'You have made a reservation. Use this QR Code to enter the parking lot.');
         res.render('showqr', {qrCode:reserveId,currentUsername: req.user[0],currentPicture: currentPicture});
     });
