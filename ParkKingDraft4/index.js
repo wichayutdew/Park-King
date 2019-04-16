@@ -10,17 +10,14 @@ const parkingspot = require('./ParkingSpot.js');
 //require Building.js file
 var artsCapacity, poliCapacity;
 const building = require('./Building.js');
-
-
-
+//require Reserve.js file
 var exceedReservetime = false;
 var reservePlatenumber,reserveBrand,reserveModel,reserveColor,reserveCarPicture,reserveBuildingname,reserveFloor,reserveSlot,reserveReservable,reserveId,reserveIsfull;
 const reserve = require('./Reserve.js');
-
+//require TransactionReceipt.js file
 var exceedCheckoutTime = false;
 var transactionId,totaltime,parkingFee,paymentmethod,date;
 const transaction = require('./TransactionReceipt.js');
-
 //NPM REQUIRE
 const express = require('express');
 const app = express();
@@ -230,7 +227,6 @@ passport.use('local-signup', new LocalStrategy({
             request.addParameter('password',TYPES.VarChar,customer_info.password);
 
             request.on('requestCompleted', function () {
-
             });
 
             connection.execSql(request);
@@ -393,18 +389,11 @@ function loggedIn(req, res, next) {
         res.redirect('/login');
     }
 }
-
-function generateTokenID(){
-  const uuidv4 = require('uuid/v4');
-  var tokenID = uuidv4();
-  return tokenID;
-}
 // loggedIn using example
 // app.get('/orders', loggedIn, function(req, res, next) {
 //     // req.user - will exist
 //     // load user orders and render them
 // });
-
 // SET STORAGE
 const storage = multer.diskStorage({
 destination: function (req, file, cb) {
@@ -503,6 +492,11 @@ function UpdateCustomer(username,connection){
   });
 
   connection.execSql(request);
+}
+function generateTokenID(){
+  const uuidv4 = require('uuid/v4');
+  var tokenID = uuidv4();
+  return tokenID;
 }
 function sleep(ms){
     return new Promise(resolve=>{
@@ -1126,10 +1120,64 @@ app.post('/reserve',async function(req, res){
         }
         customer.setReservable(connection, req.user[0], 0);
         console.log('set user reservable');
-        sleep(1000*60*30).then(() => {
-          exceedReservetime = true;
-        });
+
         res.render('showqr', {qrCode:reserveId,currentUsername: req.user[0],currentPicture: currentPicture});
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      customer.getCancel(connection,req.user[0],function(data){
+        cancelTime = data;
+      })
+    });
+    sleep(1000*60*30).then(() => {
+      exceedReservetime = true;
+      pool.acquire(function (err, connection) {
+          if (err) {
+              console.error(err);
+              connection.release();
+              return;
+          }
+          reserve.removeReserve(connection,reserveId);
+      });
+      pool.acquire(function (err, connection) {
+          if (err) {
+              console.error(err);
+              connection.release();
+              return;
+          }
+          customer.setReservable(connection,req.user[0],1);
+      });
+      pool.acquire(function (err, connection) {
+          if (err) {
+              console.error(err);
+              connection.release();
+              return;
+          }
+          cancelTime++;
+          customer.setCancel(connection,req.user[0],cancelTime);
+      });
+      pool.acquire(function (err, connection) {
+          if (err) {
+              console.error(err);
+              connection.release();
+              return;
+          }
+          parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,0);
+      });
+      pool.acquire(function (err, connection) {
+          if (err) {
+              console.error(err);
+              connection.release();
+              return;
+          }
+          if(cancelTime > 5){
+              console.log('Too much cancel, you are banned')
+              customer.setReservable(connection,req.user[0],0);
+          }
+      });
     });
   }
 });
@@ -1180,7 +1228,6 @@ app.post('/cancel',async function(req,res){
             connection.release();
             return;
         }
-        //find reserveid,buildingname,floor,slot
         parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,0);
     });
     pool.acquire(function (err, connection) {
@@ -1199,6 +1246,7 @@ app.post('/cancel',async function(req,res){
   }
 });
 
+//not finished wait for check in/out
 app.post('/pay',function(req,res){
   pool.acquire(function (err, connection) {
       if (err) {
