@@ -14,7 +14,7 @@ const building = require('./Building.js');
 
 // const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
 var exceedReservetime = false;
-var reservePlatenumber,reserveBuildingname,reserveFloor,reserveSlot,reserveReservable,reserveId,reserveIsfull;
+var reservePlatenumber,reserveBrand,reserveModel,reserveColor,reserveCarPicture,reserveBuildingname,reserveFloor,reserveSlot,reserveReservable,reserveId,reserveIsfull;
 const reserve = require('./Reserve.js');
 
 var exceedCheckoutTime = false;
@@ -746,7 +746,53 @@ app.get('/showqr',loggedIn, function(req, res){
 
 //ROUTE TO STATUS
 app.get('/status',loggedIn, function(req, res){
-  res.render('status', {currentUsername: req.user[0],currentPicture: currentPicture});
+
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    car.getCarBrand(connection,req.user[0],reservePlatenumber,function(data){
+      reserveBrand = data;
+    })
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    car.getCarModel(connection,req.user[0],reservePlatenumber,function(data){
+      reserveModel = data;
+    })
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    car.getCarColor(connection,req.user[0],reservePlatenumber,function(data){
+      reserveColor = data;
+    })
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    car.getCarPicture(connection,req.user[0],reservePlatenumber,function(data){
+      reserveCarPicture = data;
+      res.render('status', {reservePlatenumber:reservePlatenumber,
+                          reserveBuildingname:reserveBuildingname,
+                          reserveFloor:reserveFloor,
+                          reserveSlot:reserveSlot,
+                          reserveBrand:reserveBrand,
+                          reserveModel:reserveModel,
+                          reserveColor:reserveColor,
+                          reserveCarPicture:reserveCarPicture,
+                          currentUsername: req.user[0],
+                          currentPicture: currentPicture});
+    });
+  });
 });
 
 //ROUTE TO USER INFO
