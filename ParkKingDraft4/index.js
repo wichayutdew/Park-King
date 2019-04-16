@@ -1291,6 +1291,21 @@ app.post('/deletecar/:id',loggedIn,function(req,res){
       delete currentModel[id];
       delete currentColor[id];
       delete currentCarPicture[id];
+      currentPlateNumber = currentPlateNumber.filter(function( element ) {
+        return element !== undefined;
+      });
+      currentBrand = currentBrand.filter(function( element ) {
+        return element !== undefined;
+      });
+      currentModel = currentModel.filter(function( element ) {
+        return element !== undefined;
+      });
+      currentColor = currentColor.filter(function( element ) {
+        return element !== undefined;
+      });
+      currentCarPicture = currentCarPicture.filter(function( element ) {
+        return element !== undefined;
+      });
       res.redirect('/userinfo');
   });
 
