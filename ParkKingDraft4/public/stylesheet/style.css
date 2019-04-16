@@ -240,7 +240,7 @@ p.flash-message {
   text-align: center;
   color: white !important;
   font-size: 15px !important;
-  padding: 3px 0;
+  padding: 3px 2px;
   border-radius: 10px;
 }
 

@@ -1260,6 +1260,9 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
       currentColor.push(car_info.carcolor);
       currentCarPicture.push(car_info.carpicture);
   });
+  // if (confirm("Press a button!")) {
+  //   res.redirect('/userinfo');
+  // }
   res.render('userinfo', {currentCarPicture: currentCarPicture,
                          currentBrand:currentBrand,
                          currentColor:currentColor,
@@ -1271,7 +1274,8 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
                          currentLastname:currentLastname,
                          currentCustomerType:currentCustomerType,
                          currentID:customer.getID(req.user),
-                         currentPicture:currentPicture});
+                         currentPicture:currentPicture
+                       });
 },autoReap);
 
 app.post('/deletecar/:id',loggedIn,function(req,res){
@@ -1344,18 +1348,21 @@ app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
       currentPicture = data;
     })
   });
-  res.render('userinfo', {currentCarPicture: currentCarPicture,
-                         currentBrand:currentBrand,
-                         currentColor:currentColor,
-                         currentModel:currentModel,
-                         currentPlateNumber: currentPlateNumber,
-                         currentUsername: req.user[0],
-                         currentEmail:currentEmail,
-                         currentFirstname:currentFirstname,
-                         currentLastname:currentLastname,
-                         currentCustomerType:currentCustomerType,
-                         currentID:customer.getID(req.user),
-                         currentPicture:currentPicture});
+
+  req.flash('success', 'Your information has been changed.');
+  res.redirect('/userinfo');
+  // res.render('userinfo', {currentCarPicture: currentCarPicture,
+  //                        currentBrand:currentBrand,
+  //                        currentColor:currentColor,
+  //                        currentModel:currentModel,
+  //                        currentPlateNumber: currentPlateNumber,
+  //                        currentUsername: req.user[0],
+  //                        currentEmail:currentEmail,
+  //                        currentFirstname:currentFirstname,
+  //                        currentLastname:currentLastname,
+  //                        currentCustomerType:currentCustomerType,
+  //                        currentID:customer.getID(req.user),
+  //                        currentPicture:currentPicture});
 },autoReap);
 
 //when login button click
@@ -1369,8 +1376,10 @@ app.post('/login',passport.authenticate('local-login', {
 
 app.post('/register', upload.single('profilePic'),passport.authenticate('local-signup' ,{
     successRedirect: '/login',
+    // successFlash: 'You are registered! Please login.',
     failureRedirect: '/register',
-    session: false,
+    failureFlash: true,
+    session: false
 }));
 
 app.listen(3000, process.env.IP, function(){

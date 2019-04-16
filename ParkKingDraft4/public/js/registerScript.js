@@ -1,4 +1,4 @@
-alert('welcome to register page');
+
 
 
 $('form').submit(function(event){
