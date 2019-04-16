@@ -516,6 +516,7 @@ app.get('/',loggedIn, function(req, res){
 });
 app.get('/logout',loggedIn,function(req, res){
   req.logout();
+  req.flash('success', 'You are logged out.');
   res.redirect('/login');
 });
 app.get('/home',loggedIn, function(req, res){
@@ -1089,7 +1090,8 @@ app.post('/reserve',async function(req, res){
       });
   });
   if(reserveReservable == 0 || reserveIsfull == 1){
-    console.log('your accout is decline to reserve')
+    console.log('your accout is decline to reserve');
+    req.flash('error', 'Your account cannot reserve.');
     res.redirect('/home');
   }
   else{
@@ -1120,7 +1122,7 @@ app.post('/reserve',async function(req, res){
         }
         customer.setReservable(connection, req.user[0], 0);
         console.log('set user reservable');
-
+        req.flash('success', 'You have made a reservation. Use this QR Code to enter the parking lot.');
         res.render('showqr', {qrCode:reserveId,currentUsername: req.user[0],currentPicture: currentPicture});
     });
     pool.acquire(function (err, connection) {
@@ -1354,6 +1356,7 @@ app.post('/deletecar/:id',loggedIn,function(req,res){
       currentCarPicture = currentCarPicture.filter(function( element ) {
         return element !== undefined;
       });
+      req.flash('success', 'Your car has been deleted');
       res.redirect('/userinfo');
   });
 
