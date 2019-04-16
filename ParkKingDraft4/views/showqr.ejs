@@ -41,9 +41,19 @@
     </div>
     <div class="col">
         <a class="btn btn-lg btn-dark btn-block btn mt-1" id="parkingFlap">Open Parking Flap</a>
-    <form action="/cancel" method="POST">
+    <form action="/cancel"  class="cancel" method="POST">
       <button class="btn btn-lg btn-dark btn-block mt-1" type="submit" id="cancel">Cancel</button>
     </form>
+    <script>
+    $('form.cancel').submit(function(event){
+            var r = confirm("Do you want to cancel the reservation?");
+            if (r == true) {
+              return;
+            } else {
+              return false;
+          }
+          });
+    </script>
     </div>
 
   </div>
