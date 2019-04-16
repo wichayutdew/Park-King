@@ -1306,6 +1306,7 @@ app.post('/deletecar/:id',loggedIn,function(req,res){
       currentCarPicture = currentCarPicture.filter(function( element ) {
         return element !== undefined;
       });
+      req.flash('success', 'Your car has been deleted');
       res.redirect('/userinfo');
   });
 

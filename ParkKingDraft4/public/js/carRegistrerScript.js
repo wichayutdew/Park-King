@@ -1,4 +1,4 @@
-alert('sdfdsfdsf');
+// alert('sdfdsfdsf');
 
 $('form').submit(function(event){
 
