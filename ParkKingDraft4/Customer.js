@@ -27,7 +27,7 @@ exports.insert_newCustomer = function(connection,customer_info,done,newUserMysql
   request.addParameter('professorID',TYPES.VarChar,customer_info.professorID);
   request.addParameter('CitizenID',TYPES.VarChar,customer_info.guestID);
   request.addParameter('profilePic',TYPES.VarChar,customer_info.CustomerPicture);
-  request.addParameter('cancel',TYPES.VarChar,customer_info.Cancel);
+  request.addParameter('cancel',TYPES.Int,customer_info.Cancel);
   request.addParameter('reserveAble',TYPES.Bit,customer_info.Reserveable);
   request.on('requestCompleted', function (){
     //connection.close();
@@ -290,7 +290,7 @@ exports.getCancel = function(connection,username,Callback) {
 exports.getReservable = function(connection,username,Callback) {
   var returnedValue  = [];
   var request = new Request(
-    'SELECT Reservable FROM dbo.Customer WHERE Username = @username',
+    'SELECT Reserveable FROM dbo.Customer WHERE Username = @username',
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -510,7 +510,7 @@ exports.setCancel = function(connection, username, cancel) {
         connection.release();
       }
     });
-    request.addParameter('cancel',TYPES.VarChar,cancel);
+    request.addParameter('cancel',TYPES.Int,cancel);
     request.addParameter('username',TYPES.VarChar,username);
   request.on('requestCompleted', function() {
     //connection.close();
@@ -520,7 +520,7 @@ exports.setCancel = function(connection, username, cancel) {
 }
 
 exports.setReservable = function(connection, username, reservable) {
-  var request = new Request("UPDATE dbo.Customer SET Reservable =  @reservable WHERE Username = @username",
+  var request = new Request("UPDATE dbo.Customer SET Reserveable =  @reservable WHERE Username = @username",
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);

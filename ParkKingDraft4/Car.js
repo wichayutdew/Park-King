@@ -144,6 +144,125 @@ exports.getAllCarColor = function(connection,username,Callback) {
     connection.execSql(request);
 }
 
+exports.getAllPlateNumber = function(connection,username,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT PlateNumber FROM dbo.Car WHERE Username = @username',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue);
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getCarBrand = function(connection,username,platenumber,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT CarBrand FROM dbo.Car WHERE Username = @username AND PlateNumber = @platenumber',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.addParameter('platenumber',TYPES.VarChar,platenumber);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getCarModel = function(connection,username,platenumber,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT CarModel FROM dbo.Car WHERE Username = @username AND PlateNumber = @platenumber',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.addParameter('platenumber',TYPES.VarChar,platenumber);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getCarColor = function(connection,username,platenumber,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT CarColor FROM dbo.Car WHERE Username = @username AND PlateNumber = @platenumber',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.addParameter('platenumber',TYPES.VarChar,platenumber);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getCarPicture = function(connection,username,platenumber,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT CarPicture FROM dbo.Car WHERE Username = @username AND PlateNumber = @platenumber',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.addParameter('platenumber',TYPES.VarChar,platenumber);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
 //*******************************************************Car's Setter***********************************************
 exports.setPlateNumber = function(connection,platenumber, username, newPlatenumber) {
   var request = new Request("UPDATE dbo.Car SET PlateNumber = @newPlatenumber WHERE PlateNumber = @platenumber AND Username = @username",

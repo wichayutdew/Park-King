@@ -17,20 +17,29 @@
     <body>
 
       <% include partials/menuBar %>
-
       <div id="main">
+        <div class="statusDiv white" style="color: black;">
+              <h3><strong>Building Info</strong></h3>
+              <p>Building name: <%= reserveBuildingname %>
+                <br>
+                Floor: <%= reserveFloor %>
+                <br>
+                Slot: <%= reserveSlot %>
+              </p>
+        </div>
         <div style="margin-bottom: 20px; margin-top: 40px; z-index: -10;" class="container-fluid">
-          <img src="/img/car1.png" class="img-fluid" alt="">
+          <img src="data:image/png;base64,<%= reserveCarPicture %>" class="img-fluid" alt="">
         </div>
         <div class="statusDiv white" style="color: black;">
-          <h3><strong>Info</strong></h3>
-          <a href="#"><img src="/img/edit.png" width="10px" height="10px"></a>
+          <h3><strong>Car Info</strong></h3>
           <p>
-            Plate Number: 1234
+            Plate Number: <%= reservePlatenumber %>
             <br>
-            Brand: Tuk-tuk
+            Brand: <%= reserveBrand %>
             <br>
-            Info: -
+            Model: <%= reserveModel %>
+            <br>
+            Color: <%= reserveColor %>
           </p>
         </div>
         <div class="statusDiv white" style="color: black;">

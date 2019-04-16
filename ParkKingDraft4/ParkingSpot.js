@@ -38,7 +38,7 @@ exports.getIsFull = function(connection,buildingname,floor,slot,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue);
+        return Callback(returnedValue[0]);
       }
     });
     request.addParameter('buildingname',TYPES.VarChar,buildingname);
@@ -63,7 +63,7 @@ exports.getSensor = function(connection,buildingname,floor,slot,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue);
+        return Callback(returnedValue[0]);
       }
     });
     request.addParameter('buildingname',TYPES.VarChar,buildingname);
@@ -135,11 +135,33 @@ exports.getTotalFreeSpot = function(connection,buildingname,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue);
+        return Callback(returnedValue[0]);
       }
     });
     request.addParameter('buildingname',TYPES.VarChar,buildingname);
     request.addParameter('isfull',TYPES.Bit,0);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+          returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getTotalSpot = function(connection,buildingname,Callback) {
+  var returnedValue =[];
+  var request = new Request('SELECT COUNT(Slot) FROM dbo.ParkingSpot WHERE BuildingName = @buildingname',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('buildingname',TYPES.VarChar,buildingname);
     request.on('row', function (columns) {
         columns.forEach(function(column) {
           returnedValue.push(column.value);

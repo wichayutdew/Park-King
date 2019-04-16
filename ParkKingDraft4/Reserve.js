@@ -19,7 +19,7 @@ exports.Reserve = function(connection,platenumber, username, floor, slot, buildi
   request.addParameter('username',TYPES.VarChar,username);
   request.addParameter('floor',TYPES.VarChar,floor);
   request.addParameter('slot',TYPES.VarChar,slot);
-  request.addParameter('buildingname',TYPES.VarChar,buidlingname);
+  request.addParameter('buildingname',TYPES.VarChar,buildingname);
   request.addParameter('qrcodein',TYPES.VarChar,null);
   request.addParameter('qrcodeout',TYPES.VarChar,null);
   request.addParameter('time_in',TYPES.VarChar,null);

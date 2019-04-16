@@ -15,16 +15,20 @@
     <body>
 
       <% include partials/menuBar %>
-      <div id="info1Div" class="infoDiv text-center">
+      
 
-        <h3><Strong>Free Spot</Strong></h3>
+      <div class="main-user-info">
+        <div class="infoDiv purple">
 
-        <p>Arts Building: <%= totalArtsFreeSpot %> of <%= artsCapacity %>
-          <br>lowest Free Spot: Floor: <%= lowestFloorArts %> Slot: <%= lowestSlotArts %>
-          <br>
-          Political science Building: <%= totalPoliFreeSpot %> of <%= poliCapacity %>
-          <br>lowest Free Spot: Floor: <%= lowestFloorPoli %> Slot: <%= lowestSlotPoli %>
-        </p>
+          <h3><Strong>Free Spot</Strong></h3>
+
+          <p>Arts Building: <%= totalArtsFreeSpot %> of <%= artsCapacity %>
+            <br>lowest Free Spot: Floor: <%= lowestFloorArts %> Slot: <%= lowestSlotArts %>
+            <br>
+            Political science Building: <%= totalPoliFreeSpot %> of <%= poliCapacity %>
+            <br>lowest Free Spot: Floor: <%= lowestFloorPoli %> Slot: <%= lowestSlotPoli %>
+          </p>
+        </div>
       </div>
       <!-- <div id="main" style="margin-top: 20px !important;">
 
