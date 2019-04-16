@@ -37,8 +37,8 @@
                             <div class="btn-group carBtnGroup d-flex justify-content-around" data-toggle="buttons">
                               <% for(i=0; i < currentPlateNumber.length; i++){ %>
                                 <label class="btn carChoice">
-                                  <div class="method" name="plateNumber" value="<%=currentPlateNumber[i]%>" style="background-image: url(data:image/png;base64,<%= currentCarPicture[i] %>)"><%=currentPlateNumber[i]%></div>
-                                  <input type="radio" name="options">
+                                  <div class="method" style="background-image: url(data:image/png;base64,<%= currentCarPicture[i] %>)"><%=currentPlateNumber[i]%></div>
+                                  <input type="radio" name="plateNumber" value="<%=currentPlateNumber[i]%>" >
                                 </label>
                                 <% } %>
                                 <!-- <label class="btn carChoice">
@@ -58,12 +58,12 @@
                           <div class="buildingSelect">
                             <div class="btn-group buildingBtnGroup d-flex justify-content-around " data-toggle="buttons">
                               <label class="btn buildingChoice">
-                                <div class="building arts" name = "buildingName" value="buildingArts"></div>
-                                <input type="radio" name="options">
+                                <div class="building arts" ></div>
+                                <input type="radio" name = "buildingName" value="buildingArts">
                               </label>
                               <label class="btn buildingChoice">
-                                <div class="building poli" name = "buildingName" value="buildingPoli"></div>
-                                <input type="radio" name="options">
+                                <div class="building poli" ></div>
+                                <input type="radio" name = "buildingName" value="buildingPoli">
                               </label>
                             </div>
                           </div>

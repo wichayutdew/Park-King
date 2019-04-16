@@ -38,7 +38,7 @@ exports.getIsFull = function(connection,buildingname,floor,slot,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue);
+        return Callback(returnedValue[0]);
       }
     });
     request.addParameter('buildingname',TYPES.VarChar,buildingname);
@@ -63,7 +63,7 @@ exports.getSensor = function(connection,buildingname,floor,slot,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue);
+        return Callback(returnedValue[0]);
       }
     });
     request.addParameter('buildingname',TYPES.VarChar,buildingname);
@@ -135,7 +135,7 @@ exports.getTotalFreeSpot = function(connection,buildingname,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue);
+        return Callback(returnedValue[0]);
       }
     });
     request.addParameter('buildingname',TYPES.VarChar,buildingname);
@@ -158,7 +158,7 @@ exports.getTotalSpot = function(connection,buildingname,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue);
+        return Callback(returnedValue[0]);
       }
     });
     request.addParameter('buildingname',TYPES.VarChar,buildingname);

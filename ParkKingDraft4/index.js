@@ -880,201 +880,212 @@ app.get('/receipt',loggedIn, function(req, res){
 });
 
 //tee's version
-app.post('/reserve',async function(req,res){
-  console.log('---Reserve process begin---');
+// app.post('/reserve',async function(req,res){
+//   console.log('---Reserve process begin---');
+//
+//   //---------testing dataset------------
+//   //need to replace with req.body.parameter!!!
+//   var car=['5555','x'];
+//   var buildingSlected='buildingPoli';
+//   //------------------------------------
+//
+//   var reserve_info = [];
+//   var reserve_status = false;
+//
+//   //Check validity and reserve parking spot
+//   pool.acquire(function (err, connection) {
+//       if (err) {
+//           console.error(err);
+//           connection.release();
+//           return;
+//       }
+//       if(req.user[11]=0){
+//           console.log('your accout is decline to reserve')
+//           connection.release();
+//           res.redirect('/home');
+//       }
+//       var request = new Request(
+//         "SELECT p.Floor,p.slot,p.BuildingName,c.PlateNumber,c.Username FROM (SELECT MIN( Slot ) slot,Floor,BuildingName FROM dbo.ParkingSpot WHERE dbo.ParkingSpot.BuildingName=@Building AND dbo.ParkingSpot.isfull= @bit0 AND dbo.ParkingSpot.Sensor=@bit1 GROUP BY Floor,BuildingName) p,(SELECT PlateNumber,Username FROM dbo.Car WHERE dbo.Car.PlateNumber = @PlateNumber AND dbo.Car.Username = @Username) c",
+//           //"SELECT Floor,MIN(Slot),BuildingName,isFull,Sensor,PlateNumber,Username FROM dbo.ParkingSpot,dbo.Car WHERE (dbo.ParkingSpot.BuildingName=@Building AND dbo.ParkingSpot.isfull= @bit0 AND dbo.ParkingSpot.Sensor=@bit1) OR (dbo.Car.PlateNumber = @PlateNumber AND dbo.Car.Username = @Username) GROUP BY Floor,BuildingName,isFull,Sensor,PlateNumber,Username",
+//           //"SELECT Floor,MIN(Slot),BuildingName,isFull,Sensor FROM dbo.ParkingSpot WHERE dbo.ParkingSpot.isfull= @bit0 AND dbo.ParkingSpot.Sensor=@bit1 GROUP BY Floor,BuildingName,isFull,Sensor UNION ALL SELECT PlateNumber,Username,CarBrand,CarModel,CarColor FROM dbo.Car WHERE dbo.Car.PlateNumber = @PlateNumber AND dbo.Car.Username = @Username",
+//           function(err, rowCount, rows){
+//               if(err){
+//                   console.log(err);
+//                   connection.release();
+//                   res.redirect('/reserve');
+//               }
+//               if (buildingState == null){
+//                   console.log('No parking spot in this building...');
+//                   connection.release();
+//                   res.redirect('/reserve');
+//               }else{
+//                   //console.log('Spot available : '+ buildingState);
+//                   reserveId = generateTokenID();
+//                   reserve_info = buildingState;
+//                   reserve_status = true;
+//                   Reserve(buildingState[0], buildingState[1], buildingState[2], buildingState[3], buildingState[4], null, null, null, null, reserveId, 0,connection);
+//                   console.log('reserved');
+//               }
+//
+//       });
+//       request.addParameter('PlateNumber',TYPES.VarChar,car[0]);
+//       request.addParameter('Username',TYPES.VarChar,car[1]);
+//       request.addParameter('Building',TYPES.VarChar,buildingSlected);
+//       request.addParameter('bit0',TYPES.Bit,false);
+//       request.addParameter('bit1',TYPES.Bit,true);
+//
+//       var buildingState =[];
+//       request.on('row', function (columns) {
+//           columns.forEach(function(column) {
+//               buildingState.push(column.value);
+//           });
+//           //console.log(login_request + 'info');
+//       });
+//
+//       request.on('Done',function(err, rowCount, rows){
+//       });
+//
+//       connection.execSql(request);
+//   });
+//   //wait for insert request
+//   await sleep(3000);
+//   console.log('reserve status');
+//   console.log(reserve_info);
+//   console.log(reserve_status);
+//   //update parking spot
+//   pool.acquire(function (err, connection) {
+//     if (err) {
+//         console.error(err);
+//         connection.release();
+//         return;
+//     }
+//     if(reserve_status){
+//        UpdateParkingspot(reserve_info[0], reserve_info[1], reserve_info[2],connection);
+//
+//     }else{
+//       connection.release();
+//       console.log('update parking spot failed');
+//       return;
+//     }
+//   });
+//   //update customer
+//   pool.acquire(function (err, connection) {
+//     if (err) {
+//         console.error(err);
+//         connection.release();
+//         return;
+//     }
+//     if(reserve_status){
+//        UpdateCustomer(reserve_info[4],connection);
+//     }else{
+//       connection.release();
+//       console.log('update customer spot failed');
+//       return;
+//     }
+//   });
+//   //wait for update request
+//   await sleep(1000);
+//   console.log('!!!Reserve process completed!!!');
+//   //start 30 minutes timeout
+//   sleep(1000*60*30).then(() => {
+//     exceedReservetime = true;
+//   });
+//   res.redirect('home');
+// });
 
-  //---------testing dataset------------
-  //need to replace with req.body.parameter!!!
-  var car=['5555','x'];
-  var buildingSlected='buildingPoli';
-  //------------------------------------
 
-  var reserve_info = [];
-  var reserve_status = false;
+// dew's version
+app.post('/reserve',async function(req, res){
+  reservePlatenumber = req.body.plateNumber;
+  reserveBuildingname = req.body.buildingName;
+  console.log(reservePlatenumber);
+  console.log(reserveBuildingname);
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+      }
+      customer.getReservable(connection,req.user[0],function(data){
+        reserveReservable = data;
+        console.log(reserveReservable);
+      });
 
-  //Check validity and reserve parking spot
+  });
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
           connection.release();
           return;
       }
-      if(req.user[11]=0){
-          console.log('your accout is decline to reserve')
+      parkingspot.getLowestFloor(connection,reserveBuildingname,function(data){
+        reserveFloor = data;
+        console.log(reserveFloor);
+      });
+  });
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
           connection.release();
-          res.redirect('/home');
+          return;
       }
-      var request = new Request(
-        "SELECT p.Floor,p.slot,p.BuildingName,c.PlateNumber,c.Username FROM (SELECT MIN( Slot ) slot,Floor,BuildingName FROM dbo.ParkingSpot WHERE dbo.ParkingSpot.BuildingName=@Building AND dbo.ParkingSpot.isfull= @bit0 AND dbo.ParkingSpot.Sensor=@bit1 GROUP BY Floor,BuildingName) p,(SELECT PlateNumber,Username FROM dbo.Car WHERE dbo.Car.PlateNumber = @PlateNumber AND dbo.Car.Username = @Username) c",
-          //"SELECT Floor,MIN(Slot),BuildingName,isFull,Sensor,PlateNumber,Username FROM dbo.ParkingSpot,dbo.Car WHERE (dbo.ParkingSpot.BuildingName=@Building AND dbo.ParkingSpot.isfull= @bit0 AND dbo.ParkingSpot.Sensor=@bit1) OR (dbo.Car.PlateNumber = @PlateNumber AND dbo.Car.Username = @Username) GROUP BY Floor,BuildingName,isFull,Sensor,PlateNumber,Username",
-          //"SELECT Floor,MIN(Slot),BuildingName,isFull,Sensor FROM dbo.ParkingSpot WHERE dbo.ParkingSpot.isfull= @bit0 AND dbo.ParkingSpot.Sensor=@bit1 GROUP BY Floor,BuildingName,isFull,Sensor UNION ALL SELECT PlateNumber,Username,CarBrand,CarModel,CarColor FROM dbo.Car WHERE dbo.Car.PlateNumber = @PlateNumber AND dbo.Car.Username = @Username",
-          function(err, rowCount, rows){
-              if(err){
-                  console.log(err);
-                  connection.release();
-                  res.redirect('/reserve');
-              }
-              if (buildingState == null){
-                  console.log('No parking spot in this building...');
-                  connection.release();
-                  res.redirect('/reserve');
-              }else{
-                  //console.log('Spot available : '+ buildingState);
-                  reserveId = generateTokenID();
-                  reserve_info = buildingState;
-                  reserve_status = true;
-                  Reserve(buildingState[0], buildingState[1], buildingState[2], buildingState[3], buildingState[4], null, null, null, null, reserveId, 0,connection);
-                  console.log('reserved');
-              }
-
+      parkingspot.getLowestSlot(connection,reserveBuildingname,function(data){
+        reserveSlot = data;
+        console.log(reserveSlot);
       });
-      request.addParameter('PlateNumber',TYPES.VarChar,car[0]);
-      request.addParameter('Username',TYPES.VarChar,car[1]);
-      request.addParameter('Building',TYPES.VarChar,buildingSlected);
-      request.addParameter('bit0',TYPES.Bit,false);
-      request.addParameter('bit1',TYPES.Bit,true);
-
-      var buildingState =[];
-      request.on('row', function (columns) {
-          columns.forEach(function(column) {
-              buildingState.push(column.value);
-          });
-          //console.log(login_request + 'info');
-      });
-
-      request.on('Done',function(err, rowCount, rows){
-      });
-
-      connection.execSql(request);
   });
-  //wait for insert request
-  await sleep(3000);
-  console.log('reserve status');
-  console.log(reserve_info);
-  console.log(reserve_status);
-  //update parking spot
-  pool.acquire(function (err, connection) {
-    if (err) {
-        console.error(err);
-        connection.release();
-        return;
-    }
-    if(reserve_status){
-       UpdateParkingspot(reserve_info[0], reserve_info[1], reserve_info[2],connection);
-
-    }else{
-      connection.release();
-      console.log('update parking spot failed');
-      return;
-    }
-  });
-  //update customer
-  pool.acquire(function (err, connection) {
-    if (err) {
-        console.error(err);
-        connection.release();
-        return;
-    }
-    if(reserve_status){
-       UpdateCustomer(reserve_info[4],connection);
-    }else{
-      connection.release();
-      console.log('update customer spot failed');
-      return;
-    }
-  });
-  //wait for update request
   await sleep(1000);
-  console.log('!!!Reserve process completed!!!');
-  //start 30 minutes timeout
-  sleep(1000*60*30).then(() => {
-    exceedReservetime = true;
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+          return;
+      }
+      parkingspot.getIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,function(data){
+        reserveIsfull = data;
+        console.log(reserveIsfull);
+      });
   });
-  res.redirect('home');
+  if(reserveReservable == 0 || reserveIsfull == 1){
+    console.log('your accout is decline to reserve')
+    res.redirect('/home');
+  }
+  else{
+    pool.acquire(function (err, connection) {
+        if (err) {
+            console.error(err);
+            connection.release();
+            return;
+        }
+        reserveId = generateTokenID();
+        reserve.Reserve(connection,reservePlatenumber,req.user[0], reserveFloor, reserveSlot,reserveBuildingname, reserveId);
+        console.log('Reserve finished');
+    });
+    pool.acquire(function (err, connection) {
+        if (err) {
+            console.error(err);
+            connection.release();
+            return;
+        }
+        parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,1);
+        console.log('set parking spot occupied');
+    });
+    pool.acquire(function (err, connection) {
+        if (err) {
+            console.error(err);
+            connection.release();
+            return;
+        }
+        customer.setReservable(connection, req.user[0], 0);
+        console.log('set user reservable');
+        sleep(1000*60*30).then(() => {
+          exceedReservetime = true;
+        });
+        res.render('showqr', {qrCode:reserveId,currentUsername: req.user[0],currentPicture: currentPicture});
+    });
+  }
 });
 
-// dew's version
-// app.post('/reserve',async function(req, res){
-//   reservePlatenumber = req.body.plateNumber;
-//   reserveBuildingname = req.body.buildingName;
-//   pool.acquire(function (err, connection) {
-//       if (err) {
-//           console.error(err);
-//           connection.release();
-//           return;
-//       }
-//       customer.getReservable(connection,req.user[0],function(data){
-//         reserveReservable = data;
-//       });
-//   });
-//   pool.acquire(function (err, connection) {
-//       if (err) {
-//           console.error(err);
-//           connection.release();
-//           return;
-//       }
-//       parkingspot.getLowestFloor(connection,reserveBuildingname,function(data){
-//         reserveFloor = data;
-//       });
-//   });
-//   pool.acquire(function (err, connection) {
-//       if (err) {
-//           console.error(err);
-//           connection.release();
-//           return;
-//       }
-//       parkingspot.getLowestSlot(connection,reserveBuildingname,function(data){
-//         reserveSlot = data;
-//       });
-//   });
-//   pool.acquire(function (err, connection) {
-//       if (err) {
-//           console.error(err);
-//           connection.release();
-//           return;
-//       }
-//       parkingspot.getIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,function(data){
-//         reserveIsfull = data;
-//       });
-//   });
-//   if(reserveReserveble == 0 && reserveIsfull == 1){
-//     console.log('your accout is decline to reserve')
-//     res.redirect('/home');
-//   }
-//   else{
-//     pool.acquire(function (err, connection) {
-//         if (err) {
-//             console.error(err);
-//             connection.release();
-//             return;
-//         }
-//         reserveId = generateTokenID();
-//         reserve.Reserve(connection,reservePlatenumber,req.user[0], reserveFloor, reserveSlot, reserveBuildingname, reserveId);
-//     });
-//     pool.acquire(function (err, connection) {
-//         if (err) {
-//             console.error(err);
-//             connection.release();
-//             return;
-//         }
-//         parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,1);
-//     });
-//     pool.acquire(function (err, connection) {
-//         if (err) {
-//             console.error(err);
-//             connection.release();
-//             return;
-//         }
-//         customer.setReservable(connection, req.user[0], 0);
-//         sleep(1000*60*30).then(() => {
-//           exceedReservetime = true;
-//         });
-//         res.render('showqr', {qrCode:reserveId,currentUsername: req.user[0],currentPicture: currentPicture});
-//     });
-//   }
-// });
-
-app.post('/cancel',function(req,res){
+app.post('/cancel',async function(req,res){
   pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
@@ -1084,9 +1095,9 @@ app.post('/cancel',function(req,res){
       cancelTime = data;
     })
   });
+  await sleep(1000);
   if(exceedReservetime == true){
-      console.log('You cannot cancel the reserve')
-      connection.release();
+      console.log('You cannot cancel the reserve');
       res.redirect('/home');
   }else{
     pool.acquire(function (err, connection) {
@@ -1095,7 +1106,6 @@ app.post('/cancel',function(req,res){
             connection.release();
             return;
         }
-        //find reserveid
         reserve.removeReserve(connection,reserveId);
     });
     pool.acquire(function (err, connection) {
@@ -1104,7 +1114,16 @@ app.post('/cancel',function(req,res){
             connection.release();
             return;
         }
-        customer.setCancel(connection,req.user[0],cancelTime+1);
+        customer.setReservable(connection,req.user[0],1);
+    });
+    pool.acquire(function (err, connection) {
+        if (err) {
+            console.error(err);
+            connection.release();
+            return;
+        }
+        cancelTime++;
+        customer.setCancel(connection,req.user[0],cancelTime);
     });
     pool.acquire(function (err, connection) {
         if (err) {
@@ -1123,11 +1142,10 @@ app.post('/cancel',function(req,res){
         }
         if(cancelTime > 5){
             console.log('Too much cancel, you are banned')
-            connection.release();
-            customer.setResevable(connection,req.user[0],0);
-            res.redirect('/home');
+            customer.setReservable(connection,req.user[0],0);
+            res.redirect('home');
         }
-        res.render('/home')
+        res.redirect('home')
     });
   }
 });

@@ -24,7 +24,7 @@ exports.Transaction = function(connection,platenumber,username,floor,slot,buildi
   request.addParameter('fee',TYPES.VarChar,fee);
   request.addParameter('paymentmethod',TYPES.VarChar,paymentmethod);
   request.addParameter('totaltime',TYPES.VarChar,totaltime);
-  request.addParameter('date',TYPES.Date,date);
+  request.addParameter('date',TYPES.VarChar,date);
 
   request.on('Done',function(err, rowCount, rows){
   });
