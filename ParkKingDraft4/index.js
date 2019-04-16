@@ -25,13 +25,14 @@ const transaction = require('./TransactionReceipt.js');
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+var session = require('express-session');
 //create temp storage
 const multer = require('multer');
 //auto delete image after upload
 const autoReap  = require('multer-autoreap');
 const fs = require('fs');
 const path = require('path');
-var flash = require('connect-flash');
+var flash = require('connect-flash-plus');
 
 //tedious section
 const Connection = require('tedious').Connection;
@@ -76,22 +77,25 @@ pool.on('error', function(err) {
 //APP CONFIG
 app.set('view engine', 'ejs');
 app.use(autoReap);
-app.use(flash());
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.use(require('express-session')({
+app.use(session({
     secret: "Fuck You",
-    resave: false,
-    saveUninitialized: false
+    resave: true,
+    saveUninitialized: true
 }));
 
+app.use(flash());
+
+//Send shits to all pages
 app.use(function(req, res, next){
-    res.locals.currentUser = req.user;
-    res.locals.error = req.flash('error');
     res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    // res.locals.failure = req.flash('failure');
     next();
 });
+
 app.use(passport.initialize());
 app.use(passport.session());
 //===================================================================================================================================================
@@ -1356,10 +1360,10 @@ app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
 
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
-    // req.flash('error', 'Flash is back!');
     successRedirect: '/home',
+    successFlash: 'Welcome!!!',
     failureRedirect: '/login',
-    failureFlash: true,
+    failureFlash: 'Invalid username or password',
     session: true
 }));
 
