@@ -38,7 +38,7 @@
                               <% for(i=0; i < currentPlateNumber.length; i++){ %>
                                 <label class="btn carChoice">
                                   <div class="method" style="background-image: url(data:image/png;base64,<%= currentCarPicture[i] %>)"><%=currentPlateNumber[i]%></div>
-                                  <input type="radio" name="plateNumber" value="<%=currentPlateNumber[i]%>" >
+                                  <input type="radio" name="plateNumber" value="<%=currentPlateNumber[i]%>" required>
                                 </label>
                                 <% } %>
                                 <!-- <label class="btn carChoice">
@@ -59,11 +59,11 @@
                             <div class="btn-group buildingBtnGroup d-flex justify-content-around " data-toggle="buttons">
                               <label class="btn buildingChoice">
                                 <div class="building arts" ></div>
-                                <input type="radio" name = "buildingName" value="buildingArts">
+                                <input type="radio" name = "buildingName" value="buildingArts" required>
                               </label>
                               <label class="btn buildingChoice">
                                 <div class="building poli" ></div>
-                                <input type="radio" name = "buildingName" value="buildingPoli">
+                                <input type="radio" name = "buildingName" value="buildingPoli" required>
                               </label>
                             </div>
                           </div>
