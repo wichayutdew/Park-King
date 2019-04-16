@@ -1176,7 +1176,7 @@ app.post('/reserve',async function(req, res){
               return;
           }
           if(cancelTime > 5){
-              console.log('Too much cancel, you are banned')
+              console.log('Too much cancellation, you are banned');
               customer.setReservable(connection,req.user[0],0);
           }
       });
@@ -1196,7 +1196,8 @@ app.post('/cancel',async function(req,res){
   });
   await sleep(1000);
   if(exceedReservetime == true){
-      console.log('You cannot cancel the reserve');
+      console.log('You cannot cancel the reservation');
+      req.flash('error', 'You cannot cancel the reservation');
       res.redirect('/home');
   }else{
     pool.acquire(function (err, connection) {
@@ -1239,11 +1240,13 @@ app.post('/cancel',async function(req,res){
             return;
         }
         if(cancelTime > 5){
-            console.log('Too much cancel, you are banned')
+            console.log('Too much cancel, you are banned');
             customer.setReservable(connection,req.user[0],0);
+            req.flash('error', 'You are banned from resserving because you cancel more than 5 times.');
             res.redirect('home');
         }
-        res.redirect('home')
+        req.flash('success', 'Your reservation is cancelled.');
+        res.redirect('home');
     });
   }
 });

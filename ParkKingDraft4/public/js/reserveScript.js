@@ -1,5 +1,5 @@
 
-alert('This is a reserve page.');
+// alert('This is a reserve page.');
 
 $('form.reserveForm').submit(function(event){
 
