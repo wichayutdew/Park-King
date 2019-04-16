@@ -3,7 +3,7 @@ var currentUsername,currentEmail,currentFirstname,currentLastname,currentCustome
 const customer = require('./Customer.js');
 //require Car.js file
 var currentPlateNumber=[],currentBrand=[],currentModel=[],currentColor=[],currentCarPicture=[];
-const car = require('./Car.js');
+var car = require('./Car.js');
 //require ParkingSpot.js file
 var totalArtsFreeSpot,totalPoliFreeSpot,lowestFloorArts,lowestSlotArts,lowestFloorPoli,lowestSlotPoli;
 const parkingspot = require('./ParkingSpot.js');
@@ -12,7 +12,7 @@ var artsCapacity, poliCapacity;
 const building = require('./Building.js');
 
 
-const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
+// const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
 var exceedReservetime = false;
 var reservePlatenumber,reserveBuildingname,reserveFloor,reserveSlot,reserveReservable,reserveId,reserveIsfull;
 const reserve = require('./Reserve.js');
@@ -1212,16 +1212,16 @@ app.post('/deletecar/:id',loggedIn,function(req,res){
       if (err) {
           console.error(err);
           connection.release();
-          return;
       }
+      car.removeCar(connection,req.user[0],currentPlateNumber[id]);
       delete currentPlateNumber[id];
       delete currentBrand[id];
       delete currentModel[id];
       delete currentColor[id];
       delete currentCarPicture[id];
-      car.removeCar(connection,req.user[0],currentPlateNumber[id]);
+      res.redirect('/userinfo');
   });
-  res.redirect('/userinfo');
+
 },autoReap);
 
 // app.post('/deletecar1',loggedIn,function(req,res){
@@ -1292,7 +1292,7 @@ app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
 
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
-    req.flash('error', 'Flash is back!');
+    // req.flash('error', 'Flash is back!');
     successRedirect: '/home',
     failureRedirect: '/login',
     failureFlash: true,
