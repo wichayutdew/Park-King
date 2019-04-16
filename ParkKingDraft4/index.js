@@ -12,7 +12,7 @@ var artsCapacity, poliCapacity;
 const building = require('./Building.js');
 
 
-// const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
+
 var exceedReservetime = false;
 var reservePlatenumber,reserveBrand,reserveModel,reserveColor,reserveCarPicture,reserveBuildingname,reserveFloor,reserveSlot,reserveReservable,reserveId,reserveIsfull;
 const reserve = require('./Reserve.js');
@@ -509,7 +509,6 @@ function sleep(ms){
         setTimeout(resolve,ms)
     })
 }
-
 
 
 
@@ -1228,7 +1227,6 @@ app.post('/pay',function(req,res){
   });
 });
 
-
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
   pool.acquire(function (err, connection) {
@@ -1293,22 +1291,26 @@ app.post('/deletecar/:id',loggedIn,function(req,res){
       delete currentModel[id];
       delete currentColor[id];
       delete currentCarPicture[id];
+      currentPlateNumber = currentPlateNumber.filter(function( element ) {
+        return element !== undefined;
+      });
+      currentBrand = currentBrand.filter(function( element ) {
+        return element !== undefined;
+      });
+      currentModel = currentModel.filter(function( element ) {
+        return element !== undefined;
+      });
+      currentColor = currentColor.filter(function( element ) {
+        return element !== undefined;
+      });
+      currentCarPicture = currentCarPicture.filter(function( element ) {
+        return element !== undefined;
+      });
       res.redirect('/userinfo');
   });
 
 },autoReap);
 
-// app.post('/deletecar1',loggedIn,function(req,res){
-//   console.log('Trying to delete car');
-//   pool.acquire(function (err, connection) {
-//       if (err) {
-//           console.error(err);
-//           connection.release();
-//           return;
-//       }
-//       car.removeCar(connection,req.user[0],platenumber[0]);
-//   });
-// });
 app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
   console.log('Trying to edit profile');
   pool.acquire(function (err, connection) {
