@@ -148,6 +148,28 @@ exports.getTotalFreeSpot = function(connection,buildingname,Callback) {
     connection.execSql(request);
 }
 
+exports.getTotalSpot = function(connection,buildingname,Callback) {
+  var returnedValue =[];
+  var request = new Request('SELECT COUNT(Slot) FROM dbo.ParkingSpot WHERE BuildingName = @buildingname',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue);
+      }
+    });
+    request.addParameter('buildingname',TYPES.VarChar,buildingname);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+          returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
 //*******************************************************ParkingSpot's Setter***********************************************
 exports.setIsFull = function(connection,buildingname,floor,slot,isfull) {
   var request = new Request("UPDATE dbo.ParkingSpot SET isFUll = @isfull WHERE Buildingname = @buildingname AND Floor = @floor AND Slot = @slot",

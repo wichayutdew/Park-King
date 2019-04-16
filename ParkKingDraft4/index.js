@@ -536,7 +536,7 @@ app.get('/home',loggedIn, function(req, res){
         console.error(err);
         connection.release();
       }
-      building.getBuildingCapacity(connection,'buildingArts',async function(data){
+      parkingspot.getTotalSpot(connection,'buildingArts',async function(data){
         artsCapacity = data;
       })
     });
@@ -545,7 +545,7 @@ app.get('/home',loggedIn, function(req, res){
         console.error(err);
         connection.release();
       }
-      building.getBuildingCapacity(connection,'buildingPoli',async function(data){
+      parkingspot.getTotalSpot(connection,'buildingPoli',async function(data){
         poliCapacity = data;
       })
     });
