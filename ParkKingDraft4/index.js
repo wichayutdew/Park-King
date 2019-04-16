@@ -847,6 +847,7 @@ app.post('/reserve',async function(req,res){
 
       connection.execSql(request);
   });
+
   //wait for insert request
   await sleep(3000);
   console.log('reserve status');
@@ -883,6 +884,7 @@ app.post('/reserve',async function(req,res){
       return;
     }
   });
+
   //wait for update request
   await sleep(1000);
   console.log('!!!Reserve process completed!!!');
