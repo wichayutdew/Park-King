@@ -1,5 +1,5 @@
 
-alert('editCar');
+alert('sada');
 
 $('form').submit(function(event){
 

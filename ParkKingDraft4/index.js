@@ -1263,19 +1263,21 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   // if (confirm("Press a button!")) {
   //   res.redirect('/userinfo');
   // }
-  res.render('userinfo', {currentCarPicture: currentCarPicture,
-                         currentBrand:currentBrand,
-                         currentColor:currentColor,
-                         currentModel:currentModel,
-                         currentPlateNumber: currentPlateNumber,
-                         currentUsername: req.user[0],
-                         currentEmail:currentEmail,
-                         currentFirstname:currentFirstname,
-                         currentLastname:currentLastname,
-                         currentCustomerType:currentCustomerType,
-                         currentID:customer.getID(req.user),
-                         currentPicture:currentPicture
-                       });
+  req.flash('success', 'Your car has been added.')
+  res.redirect('/userinfo');
+  // res.render('userinfo', {currentCarPicture: currentCarPicture,
+  //                        currentBrand:currentBrand,
+  //                        currentColor:currentColor,
+  //                        currentModel:currentModel,
+  //                        currentPlateNumber: currentPlateNumber,
+  //                        currentUsername: req.user[0],
+  //                        currentEmail:currentEmail,
+  //                        currentFirstname:currentFirstname,
+  //                        currentLastname:currentLastname,
+  //                        currentCustomerType:currentCustomerType,
+  //                        currentID:customer.getID(req.user),
+  //                        currentPicture:currentPicture
+  //                      });
 },autoReap);
 
 app.post('/deletecar/:id',loggedIn,function(req,res){
