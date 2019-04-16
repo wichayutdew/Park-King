@@ -1361,7 +1361,7 @@ app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',
-    successFlash: 'Welcome!!!',
+    successFlash: 'Successfully logged in',
     failureRedirect: '/login',
     failureFlash: 'Invalid username or password',
     session: true
