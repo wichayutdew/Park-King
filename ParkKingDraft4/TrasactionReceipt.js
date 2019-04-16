@@ -222,5 +222,7 @@ exports.removeReserve = function(connection,reserveid) {
 
 
 exports.getCurrentDate = function(){
-  return new Date().getDate() + '/' +new Date().getMonth() + '/' + new Date().getFullYear();
+  var today = new Date();
+  var date = today.getDate() + "/" + today.getMonth() + "/" + today.getFullYear();
+  return date;
 }

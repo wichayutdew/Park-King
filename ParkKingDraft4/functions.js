@@ -7,9 +7,7 @@ var arriveTimeout = 0;
 var leftTimeout = 0;
 
 
-function getCurrentDate(){
-  return new Date().getDate() + '/' +new Date().getMonth() + '/' + new Date().getFullYear();
-}
+
 
 //start user's timer
 function startUserTimer(){
@@ -45,21 +43,23 @@ sleep(1000).then(() => {
 });
 
 
+
 //get current time in hr:min:sec format
-function getCurrentTime(){
+exports.getCurrentDate = function(){
+  var today = new Date();
+  var date = today.getDate() + "/" + today.getMonth() + "/" + today.getFullYear();
+  return date;
+}
+exports.getCurrentTime = function(){
   var today = new Date();
   var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
   return time;
 }
 
 
-
-
-
-
 //****************************************************ID Check field*****************************************
 //generate random unique id (npm install uuid)
-function generateTokenID(){
+exports.generateTokenID = function(){
   const uuidv4 = require('uuid/v4');
   var tokenID = uuidv4();
   return tokenID;
