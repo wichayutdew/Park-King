@@ -96,48 +96,12 @@ function closeFlap(spot){
 
 
 //****************************************************Reserve, cancel, and  checkout field*****************************************
-//click reserve, generate reserve
-function reserveSpot(platenumber, username, floor, slot, buildingname){
-  if(getUserReservable(username) == 1 && (getParkingSpotOccupied(floor, slot, buildingname) == 0 || getParkingSpotSensor(floor, slot, buildingname) == 0)){
-    //create reserve ID
-    var reserveid = generateTokenID();
-    //insert reserve
-    Reserve(platenumber, username, floor, slot, buildingname, null, null, null, null, reserveid, 0);
-    setUserReservable(username,0);
-    setParkingSpotOccupied(floor, slot, buidlingname, 1);
-    arriveTimeout = countdownTimer(60*30);
-  }
-}
-
 //scan qrcode and start timer
 function checkIn(platenumber, username, floor, slot, buildingname){
   var check = isQREqual(getReserveID(platenumber, username, floor, slot, buildingname),getReserveQRCodeIn(platenumber, username, floor, slot, buildingname));
   if(check == true && arriveTimeout == false){
     setReserveTimeIn(platenumber,username, floor, slot, buidlingname, getCurrentTime());
     startUserTimer();
-  }else{
-    removeReserve(username, floor, slot, buidlingname);
-    setParkingSpotOccupied(floor, slot, buidlingname, 0);
-    setUserReservable(username,1);
-  }
-  //openFlap(reserve.getReserveID);
-  //timer(30).start;
-  //if(isParked){
-  //  closeFlap(spot);
-  //}
-}
-
-//click cancel button, delete reserve
-function cancel(username, floor, slot, buildingname){
-  if(arriveTimeout == false){
-    removeReserve(username, floor, slot, buidlingname);
-    var cancel = getUserCancel(username);
-    setUserCancel(username, cancel+1);
-    setParkingSpotOccupied(floor, slot, buidlingname, 0);
-    setUserReservable(username,1);
-    if(cancel >= 5){
-      setUserReservable(username,0);
-    }
   }
 }
 
@@ -159,9 +123,5 @@ function checkOut(platenumber,username, floor, slot, buidlingname){
   if(check == true && (getParkingSpotOccupied(floor, slot, buildingname) == 0 || getParkingSpotSensor(floor, slot, buildingname) == 0) && leftTimeout == false){
     setParkingSpotOccupied(floor, slot, buidlingname, 0);
     setUserReservable(username,1);
-  }else{
-    setParkingSpotOccupied(floor, slot, buidlingname, 1);
-    setUserReservable(username,0);
-    StartUserTimer();
   }
 }

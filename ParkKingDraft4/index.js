@@ -12,8 +12,11 @@ var artsCapacity, poliCapacity;
 const building = require('./Building.js');
 //require Reserve.js file
 var exceedReservetime = false;
-var reservePlatenumber,reserveBrand,reserveModel,reserveColor,reserveCarPicture,reserveBuildingname,reserveFloor,reserveSlot,reserveReservable,reserveId,reserveIsfull;
+var reservePlatenumber,reserveBrand,reserveModel,reserveColor,reserveCarPicture,reserveBuildingname,reserveFloor,reserveSlot,reserveMap,reserveReservable,reserveId,reserveIsfull;
 const reserve = require('./Reserve.js');
+var reserveTimein == 1;
+var reserveTimeout == 1;
+
 //require TransactionReceipt.js file
 var exceedCheckoutTime = false;
 var transactionId,totaltime,parkingFee,paymentmethod,date;
@@ -407,6 +410,16 @@ function hasReserved(req, res, next) {
     return next();
   }
 }
+var feeRate;
+function feeRate(customerType){
+  if(customerType = 'Student'){
+    rate = 10;
+  }else if(customerType = 'Professor'){
+    rate = 5;
+  }else{
+    rate = 15;
+  }
+}
 // loggedIn using example
 // app.get('/orders', loggedIn, function(req, res, next) {
 //     // req.user - will exist
@@ -516,9 +529,10 @@ function generateTokenID(){
   var tokenID = uuidv4();
   return tokenID;
 }
+
 function sleep(ms){
     return new Promise(resolve=>{
-        setTimeout(resolve,ms)
+        setTimeout(resolve,ms);
     })
 }
 
@@ -759,12 +773,22 @@ app.get('/status',hasReserved, function(req, res){
       console.error(err);
       connection.release();
     }
+    parkingspot.getMapLocation(connection,reserveBuildingname,reserveFloor,reserveSlot,function(data){
+      reserveMap = data;
+    })
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
     car.getCarPicture(connection,req.user[0],reservePlatenumber,function(data){
       reserveCarPicture = data;
       res.render('status', {reservePlatenumber:reservePlatenumber,
                           reserveBuildingname:reserveBuildingname,
                           reserveFloor:reserveFloor,
                           reserveSlot:reserveSlot,
+                          reserveMap:reserveMap,
                           reserveBrand:reserveBrand,
                           reserveModel:reserveModel,
                           reserveColor:reserveColor,
@@ -841,9 +865,6 @@ app.get('/edituserinfo', loggedIn, function(req, res){
                            });
 
 });
-
-
-
 
 //ROUTE TO TEMPORARY PAGE
 app.get('/temp', loggedIn, function(req, res){
@@ -1119,7 +1140,8 @@ app.post('/reserve',async function(req, res){
     });
     sleep(1000*60*30).then(() => {
       exceedReservetime = true;
-      pool.acquire(function (err, connection) {
+      if(reserveTimein == null){
+        pool.acquire(function (err, connection) {
           if (err) {
               console.error(err);
               connection.release();
@@ -1127,7 +1149,7 @@ app.post('/reserve',async function(req, res){
           }
           reserve.removeReserve(connection,reserveId);
       });
-      pool.acquire(function (err, connection) {
+        pool.acquire(function (err, connection) {
           if (err) {
               console.error(err);
               connection.release();
@@ -1135,7 +1157,7 @@ app.post('/reserve',async function(req, res){
           }
           customer.setReservable(connection,req.user[0],1);
       });
-      pool.acquire(function (err, connection) {
+        pool.acquire(function (err, connection) {
           if (err) {
               console.error(err);
               connection.release();
@@ -1144,7 +1166,7 @@ app.post('/reserve',async function(req, res){
           cancelTime++;
           customer.setCancel(connection,req.user[0],cancelTime);
       });
-      pool.acquire(function (err, connection) {
+        pool.acquire(function (err, connection) {
           if (err) {
               console.error(err);
               connection.release();
@@ -1152,7 +1174,7 @@ app.post('/reserve',async function(req, res){
           }
           parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,0);
       });
-      pool.acquire(function (err, connection) {
+        pool.acquire(function (err, connection) {
           if (err) {
               console.error(err);
               connection.release();
@@ -1163,6 +1185,7 @@ app.post('/reserve',async function(req, res){
               customer.setReservable(connection,req.user[0],0);
           }
       });
+      }
     });
   }
 });
@@ -1244,7 +1267,8 @@ app.post('/pay',function(req,res){
       }
       transactionId = generateTokenID();
       totaltime = 100;
-      parkingFee = 20;
+      feeRate(customerType);
+      parkingFee = totaltime * feeRate;
       paymentmethod = 'Kbank';
       date = transaction.getCurrentDate();
       transaction.Transaction(connection,reservePlatenumber,req.user[0],reserveFloor,reserveSlot,reserveBuildingname,transactionId,parkingFee,paymentmethod,totaltime,date);
@@ -1256,10 +1280,34 @@ app.post('/pay',function(req,res){
           return;
       }
       reserve.setHasPaid(connection,reserveId,1);
-      sleep(1000*60*15).then(() => {
-        exceedCheckoutTime = true;
-      });
       res.render('showqr', {qrCode:transactionId,currentUsername: req.user[0],currentPicture: currentPicture});
+  });
+  sleep(1000*60*15).then(() => {
+    exceedCheckoutTime = true;
+    if(reserveTimeout == null){
+      pool.acquire(function (err, connection) {
+          if (err) {
+              console.error(err);
+              connection.release();
+              return;
+          }
+          reserveId = generateTokenID();
+          reserve.Reserve(connection,reservePlatenumber,req.user[0], reserveFloor, reserveSlot,reserveBuildingname, reserveId);
+          console.log('re reserved');
+      });
+      pool.acquire(function (err, connection) {
+          if (err) {
+              console.error(err);
+              connection.release();
+              return;
+          }
+          reserveId = generateTokenID();
+          reserveTimein = functions.getCurrentTime();
+          reserve.setTimeIn(connection,reserveId,reserveTimein);
+          console.log('set timein');
+      });
+      //startTimer + 15 minutes
+    }
   });
 });
 
