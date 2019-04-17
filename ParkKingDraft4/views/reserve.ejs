@@ -28,7 +28,10 @@
 
               <form class="reserveForm" action="/reserve" method="POST">
                     <div class="container pt-2">
-
+                      <div class="cancel-div" style="background: #f5f5f5; color: black;">
+                          <li><h1>Cancel Times: <%= cancelTime %></h1></li>
+                          <li><h2 style="color:red;">If you cancel more than 5 times, you will be banned</h2></li>
+                      </div>
 
 
                       <div class="card mt-2 mx-1">

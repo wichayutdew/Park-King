@@ -149,6 +149,28 @@ exports.getHasPaid = function(connection,reserveid,Callback) {
     connection.execSql(request);
 }
 
+exports.reserved = function(connection,username,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT COUNT(*) FROM dbo.Reserve WHERE Username = @username',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
 //*******************************************************Reserve's Setter***********************************************
 exports.setQRCodeIn = function(connection,reserveid,qrcodein) {
   var request = new Request("UPDATE dbo.Reserve SET QRCodeIn = @qrcodein WHERE ReserveID = @reserveid",
