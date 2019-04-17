@@ -10,8 +10,7 @@ $('form.reserveForm').submit(function(event){
   console.log(plateNumber);
   console.log(buildingName);
 
-  alert('Reservation accepted for plate number '+plateNumber);
-
+  alert('Reservation in progress');
 
   return;
 });

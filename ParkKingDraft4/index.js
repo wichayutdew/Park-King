@@ -1037,7 +1037,7 @@ app.get('/receipt',loggedIn, function(req, res){
 //   res.redirect('home');
 // });
 
-
+var alertMessage;
 // dew's version
 app.post('/reserve',async function(req, res){
   reservePlatenumber = req.body.plateNumber;
@@ -1125,6 +1125,7 @@ app.post('/reserve',async function(req, res){
         req.flash('success', 'You have made a reservation. Use this QR Code to enter the parking lot.');
         res.render('showqr', {qrCode:reserveId,currentUsername: req.user[0],currentPicture: currentPicture});
     });
+    // auto cancel
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
