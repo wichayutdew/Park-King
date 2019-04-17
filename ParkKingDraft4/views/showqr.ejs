@@ -32,6 +32,7 @@
 
   <% include partials/menuBar %>
   <% include partials/flash %>
+
   <div id="main">
 
 
@@ -55,12 +56,10 @@
           });
     </script>
     </div>
-
   </div>
 
   <script type="text/javascript">
     function updateQRCode(text) {
-
       var element = document.getElementById("qrcode");
 
       var bodyElement = document.body;
@@ -68,10 +67,8 @@
         element.replaceChild(showQRCode(text), element.lastChild);
       else
         element.appendChild(showQRCode(text));
-
     }
-
-    updateQRCode('<%=qrCode%>');
+    updateQRCode('<%= qrCode %>');
   </script>
 
 

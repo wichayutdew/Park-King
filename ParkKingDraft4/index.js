@@ -1037,7 +1037,6 @@ app.get('/receipt',loggedIn, function(req, res){
 //   res.redirect('home');
 // });
 
-var alertMessage;
 // dew's version
 app.post('/reserve',async function(req, res){
   reservePlatenumber = req.body.plateNumber;
@@ -1103,6 +1102,7 @@ app.post('/reserve',async function(req, res){
         }
         reserveId = generateTokenID();
         reserve.Reserve(connection,reservePlatenumber,req.user[0], reserveFloor, reserveSlot,reserveBuildingname, reserveId);
+        req.flash('success', 'You have made a reservation. Use this QR Code to enter the parking lot.');
         console.log('Reserve finished');
     });
     pool.acquire(function (err, connection) {
@@ -1123,7 +1123,6 @@ app.post('/reserve',async function(req, res){
         customer.setReservable(connection, req.user[0], 0);
         console.log('set user reservable');
         // alert('sucess');
-        req.flash('success', 'You have made a reservation. Use this QR Code to enter the parking lot.');
         res.render('showqr', {qrCode:reserveId,currentUsername: req.user[0],currentPicture: currentPicture});
     });
     // auto cancel
