@@ -16,6 +16,7 @@
     <body>
 
         <% include partials/menuBar %>
+        <% include partials/flash %>
 
         <div class="main-user-info">
 
@@ -63,6 +64,16 @@
                   <form action="/deletecar/<%= i %>" class="deletecar" enctype="multipart/form-data" method="POST">
                     <li><button type="submit" class="new-btn black" id="deleteCar<%=i%>">Delete Car</button></li>
                   </form>
+                  <script>
+                  $('form.deletecar').submit(function(event){
+                          var r = confirm("Delete this car?");
+                          if (r == true) {
+                            return;
+                          } else {
+                            return false;
+                        }
+                        });
+                  </script>
                   </div>
                 <% } %>
 

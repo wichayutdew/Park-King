@@ -10,28 +10,26 @@ const parkingspot = require('./ParkingSpot.js');
 //require Building.js file
 var artsCapacity, poliCapacity;
 const building = require('./Building.js');
-
-
-// const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
+//require Reserve.js file
 var exceedReservetime = false;
 var reservePlatenumber,reserveBrand,reserveModel,reserveColor,reserveCarPicture,reserveBuildingname,reserveFloor,reserveSlot,reserveReservable,reserveId,reserveIsfull;
 const reserve = require('./Reserve.js');
-
+//require TransactionReceipt.js file
 var exceedCheckoutTime = false;
 var transactionId,totaltime,parkingFee,paymentmethod,date;
 const transaction = require('./TransactionReceipt.js');
-
 //NPM REQUIRE
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+var session = require('express-session');
 //create temp storage
 const multer = require('multer');
 //auto delete image after upload
 const autoReap  = require('multer-autoreap');
 const fs = require('fs');
 const path = require('path');
-var flash = require('connect-flash');
+var flash = require('connect-flash-plus');
 
 //tedious section
 const Connection = require('tedious').Connection;
@@ -76,22 +74,25 @@ pool.on('error', function(err) {
 //APP CONFIG
 app.set('view engine', 'ejs');
 app.use(autoReap);
-app.use(flash());
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.use(require('express-session')({
+app.use(session({
     secret: "Fuck You",
-    resave: false,
-    saveUninitialized: false
+    resave: true,
+    saveUninitialized: true
 }));
 
+app.use(flash());
+
+//Send shits to all pages
 app.use(function(req, res, next){
-    res.locals.currentUser = req.user;
-    res.locals.error = req.flash('error');
     res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    // res.locals.failure = req.flash('failure');
     next();
 });
+
 app.use(passport.initialize());
 app.use(passport.session());
 //===================================================================================================================================================
@@ -226,7 +227,6 @@ passport.use('local-signup', new LocalStrategy({
             request.addParameter('password',TYPES.VarChar,customer_info.password);
 
             request.on('requestCompleted', function () {
-
             });
 
             connection.execSql(request);
@@ -334,18 +334,11 @@ function loggedIn(req, res, next) {
         res.redirect('/login');
     }
 }
-
-function generateTokenID(){
-  const uuidv4 = require('uuid/v4');
-  var tokenID = uuidv4();
-  return tokenID;
-}
 // loggedIn using example
 // app.get('/orders', loggedIn, function(req, res, next) {
 //     // req.user - will exist
 //     // load user orders and render them
 // });
-
 // SET STORAGE
 const storage = multer.diskStorage({
 destination: function (req, file, cb) {
@@ -365,93 +358,17 @@ storage: storage,
 //
 // var UserImage = new Image();
 
-// UserImage.src = 'data:image/png;base64,'+imgPhase;
-// function Reserve(floor,slot,buildingName,plateNumber,username,QRin,QRout,Timein,Timeout,reserveid,haspaid,connection){
-//   var request = new Request(
-//       "INSERT INTO dbo.Reserve(PlateNumber,Username,Floor,Slot,BuildingName,QRCodeIn,QRCodeOut,Time_In,Time_Out,reserveID,hasPaid) VALUES (@PlateNumber,@Username,@Floor,@Slot,@BuildingName,@QRCodeIn,@QRCodeOut,@Time_In,@Time_Out,@reserveID,@hasPaid)",
-//       function(err, rowCount, rows){
-//
-//           if(err){
-//               console.log(err);
-//               connection.release();
-//               return;
-//           }else{
-//               console.log('!!!Parking spot reserved!!!');
-//               connection.release();
-//               return ;
-//           }
-//   });
-//   request.addParameter('PlateNumber',TYPES.VarChar,plateNumber);
-//   request.addParameter('Username',TYPES.VarChar,username);
-//   request.addParameter('Floor',TYPES.VarChar,floor);
-//   request.addParameter('Slot',TYPES.VarChar,slot);
-//   request.addParameter('BuildingName',TYPES.VarChar,buildingName);
-//   request.addParameter('QRCodeIn',TYPES.VarChar,QRin);
-//   request.addParameter('QRCodeOut',TYPES.VarChar,QRout);
-//   request.addParameter('Time_In',TYPES.VarChar,Timein);
-//   request.addParameter('Time_Out',TYPES.VarChar,Timeout);
-//   request.addParameter('reserveID',TYPES.VarChar,reserveid);
-//   request.addParameter('hasPaid',TYPES.Bit,haspaid);
-//
-//   request.on('Done',function(err, rowCount, rows){
-//   });
-//
-//   connection.execSql(request);
-// }
-// function UpdateParkingspot(floor,slot,buildingName,connection){
-//   var request = new Request(
-//       "UPDATE dbo.ParkingSpot SET isFull=1 WHERE dbo.ParkingSpot.Floor=@Floor AND dbo.ParkingSpot.Slot=@Slot AND dbo.ParkingSpot.BuildingName=@BuildingName" ,
-//       function(err, rowCount, rows){
-//
-//           if(err){
-//               console.log(err);
-//               connection.release();
-//               return;
-//           }else{
-//               //connection.release();
-//               console.log('!!!Parking spot updated!!!');
-//               connection.release();
-//               return;
-//           }
-//   });
-//   request.addParameter('Floor',TYPES.VarChar,floor);
-//   request.addParameter('Slot',TYPES.VarChar,slot);
-//   request.addParameter('BuildingName',TYPES.VarChar,buildingName);
-//
-//
-//   request.on('Done',function(err, rowCount, rows){
-//   });
-//
-//   connection.execSql(request);
-// }
-// function UpdateCustomer(username,connection){
-//   var request = new Request(
-//       "UPDATE dbo.Customer SET Reserveable=0 WHERE dbo.Customer.Username = @Username" ,
-//       function(err, rowCount, rows){
-//
-//           if(err){
-//               console.log(err);
-//               connection.release();
-//               return;
-//           }else{
-//               console.log('!!!Customer updated!!!');
-//               connection.release();
-//               return;
-//           }
-//   });
-//   request.addParameter('Username',TYPES.VarChar,username);
-//
-//   request.on('Done',function(err, rowCount, rows){
-//   });
-//
-//   connection.execSql(request);
-// }
+
+function generateTokenID(){
+  const uuidv4 = require('uuid/v4');
+  var tokenID = uuidv4();
+  return tokenID;
+}
 function sleep(ms){
     return new Promise(resolve=>{
         setTimeout(resolve,ms)
     })
 }
-
 
 
 
@@ -465,6 +382,7 @@ app.get('/',loggedIn, function(req, res){
 });
 app.get('/logout',loggedIn,function(req, res){
   req.logout();
+  req.flash('success', 'You are logged out.');
   res.redirect('/login');
 });
 app.get('/home',loggedIn, function(req, res){
@@ -1041,7 +959,8 @@ app.post('/reserve',async function(req, res){
       });
   });
   if(reserveReservable == 0 || reserveIsfull == 1){
-    console.log('your accout is decline to reserve')
+    console.log('your accout is decline to reserve');
+    req.flash('error', 'Your account cannot reserve.');
     res.redirect('/home');
   }
   else{
@@ -1072,10 +991,65 @@ app.post('/reserve',async function(req, res){
         }
         customer.setReservable(connection, req.user[0], 0);
         console.log('set user reservable');
-        sleep(1000*60*30).then(() => {
-          exceedReservetime = true;
-        });
+        // alert('sucess');
+        req.flash('success', 'You have made a reservation. Use this QR Code to enter the parking lot.');
         res.render('showqr', {qrCode:reserveId,currentUsername: req.user[0],currentPicture: currentPicture});
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      customer.getCancel(connection,req.user[0],function(data){
+        cancelTime = data;
+      })
+    });
+    sleep(1000*60*30).then(() => {
+      exceedReservetime = true;
+      pool.acquire(function (err, connection) {
+          if (err) {
+              console.error(err);
+              connection.release();
+              return;
+          }
+          reserve.removeReserve(connection,reserveId);
+      });
+      pool.acquire(function (err, connection) {
+          if (err) {
+              console.error(err);
+              connection.release();
+              return;
+          }
+          customer.setReservable(connection,req.user[0],1);
+      });
+      pool.acquire(function (err, connection) {
+          if (err) {
+              console.error(err);
+              connection.release();
+              return;
+          }
+          cancelTime++;
+          customer.setCancel(connection,req.user[0],cancelTime);
+      });
+      pool.acquire(function (err, connection) {
+          if (err) {
+              console.error(err);
+              connection.release();
+              return;
+          }
+          parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,0);
+      });
+      pool.acquire(function (err, connection) {
+          if (err) {
+              console.error(err);
+              connection.release();
+              return;
+          }
+          if(cancelTime > 5){
+              console.log('Too much cancellation, you are banned');
+              customer.setReservable(connection,req.user[0],0);
+          }
+      });
     });
   }
 });
@@ -1092,7 +1066,8 @@ app.post('/cancel',async function(req,res){
   });
   await sleep(1000);
   if(exceedReservetime == true){
-      console.log('You cannot cancel the reserve');
+      console.log('You cannot cancel the reservation');
+      req.flash('error', 'You cannot cancel the reservation');
       res.redirect('/home');
   }else{
     pool.acquire(function (err, connection) {
@@ -1126,7 +1101,6 @@ app.post('/cancel',async function(req,res){
             connection.release();
             return;
         }
-        //find reserveid,buildingname,floor,slot
         parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,0);
     });
     pool.acquire(function (err, connection) {
@@ -1136,15 +1110,18 @@ app.post('/cancel',async function(req,res){
             return;
         }
         if(cancelTime > 5){
-            console.log('Too much cancel, you are banned')
+            console.log('Too much cancel, you are banned');
             customer.setReservable(connection,req.user[0],0);
+            req.flash('error', 'You are banned from resserving because you cancel more than 5 times.');
             res.redirect('home');
         }
-        res.redirect('home')
+        req.flash('success', 'Your reservation is cancelled.');
+        res.redirect('home');
     });
   }
 });
 
+//not finished wait for check in/out
 app.post('/pay',function(req,res){
   pool.acquire(function (err, connection) {
       if (err) {
@@ -1172,7 +1149,6 @@ app.post('/pay',function(req,res){
       res.render('showqr', {qrCode:transactionId,currentUsername: req.user[0],currentPicture: currentPicture});
   });
 });
-
 
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
@@ -1205,18 +1181,24 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
       currentColor.push(car_info.carcolor);
       currentCarPicture.push(car_info.carpicture);
   });
-  res.render('userinfo', {currentCarPicture: currentCarPicture,
-                         currentBrand:currentBrand,
-                         currentColor:currentColor,
-                         currentModel:currentModel,
-                         currentPlateNumber: currentPlateNumber,
-                         currentUsername: req.user[0],
-                         currentEmail:currentEmail,
-                         currentFirstname:currentFirstname,
-                         currentLastname:currentLastname,
-                         currentCustomerType:currentCustomerType,
-                         currentID:customer.getID(req.user),
-                         currentPicture:currentPicture});
+  // if (confirm("Press a button!")) {
+  //   res.redirect('/userinfo');
+  // }
+  req.flash('success', 'Your car has been added.')
+  res.redirect('/userinfo');
+  // res.render('userinfo', {currentCarPicture: currentCarPicture,
+  //                        currentBrand:currentBrand,
+  //                        currentColor:currentColor,
+  //                        currentModel:currentModel,
+  //                        currentPlateNumber: currentPlateNumber,
+  //                        currentUsername: req.user[0],
+  //                        currentEmail:currentEmail,
+  //                        currentFirstname:currentFirstname,
+  //                        currentLastname:currentLastname,
+  //                        currentCustomerType:currentCustomerType,
+  //                        currentID:customer.getID(req.user),
+  //                        currentPicture:currentPicture
+  //                      });
 },autoReap);
 
 app.post('/deletecar/:id',loggedIn,function(req,res){
@@ -1232,22 +1214,27 @@ app.post('/deletecar/:id',loggedIn,function(req,res){
       delete currentModel[id];
       delete currentColor[id];
       delete currentCarPicture[id];
+      currentPlateNumber = currentPlateNumber.filter(function( element ) {
+        return element !== undefined;
+      });
+      currentBrand = currentBrand.filter(function( element ) {
+        return element !== undefined;
+      });
+      currentModel = currentModel.filter(function( element ) {
+        return element !== undefined;
+      });
+      currentColor = currentColor.filter(function( element ) {
+        return element !== undefined;
+      });
+      currentCarPicture = currentCarPicture.filter(function( element ) {
+        return element !== undefined;
+      });
+      req.flash('success', 'Your car has been deleted');
       res.redirect('/userinfo');
   });
 
 },autoReap);
 
-// app.post('/deletecar1',loggedIn,function(req,res){
-//   console.log('Trying to delete car');
-//   pool.acquire(function (err, connection) {
-//       if (err) {
-//           console.error(err);
-//           connection.release();
-//           return;
-//       }
-//       car.removeCar(connection,req.user[0],platenumber[0]);
-//   });
-// });
 app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
   console.log('Trying to edit profile');
   pool.acquire(function (err, connection) {
@@ -1289,33 +1276,38 @@ app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
       currentPicture = data;
     })
   });
-  res.render('userinfo', {currentCarPicture: currentCarPicture,
-                         currentBrand:currentBrand,
-                         currentColor:currentColor,
-                         currentModel:currentModel,
-                         currentPlateNumber: currentPlateNumber,
-                         currentUsername: req.user[0],
-                         currentEmail:currentEmail,
-                         currentFirstname:currentFirstname,
-                         currentLastname:currentLastname,
-                         currentCustomerType:currentCustomerType,
-                         currentID:customer.getID(req.user),
-                         currentPicture:currentPicture});
+
+  req.flash('success', 'Your information has been changed.');
+  res.redirect('/userinfo');
+  // res.render('userinfo', {currentCarPicture: currentCarPicture,
+  //                        currentBrand:currentBrand,
+  //                        currentColor:currentColor,
+  //                        currentModel:currentModel,
+  //                        currentPlateNumber: currentPlateNumber,
+  //                        currentUsername: req.user[0],
+  //                        currentEmail:currentEmail,
+  //                        currentFirstname:currentFirstname,
+  //                        currentLastname:currentLastname,
+  //                        currentCustomerType:currentCustomerType,
+  //                        currentID:customer.getID(req.user),
+  //                        currentPicture:currentPicture});
 },autoReap);
 
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
-    // req.flash('error', 'Flash is back!');
     successRedirect: '/home',
+    successFlash: 'Successfully logged in',
     failureRedirect: '/login',
-    failureFlash: true,
+    failureFlash: 'Invalid username or password',
     session: true
 }));
 
 app.post('/register', upload.single('profilePic'),passport.authenticate('local-signup' ,{
     successRedirect: '/login',
+    // successFlash: 'You are registered! Please login.',
     failureRedirect: '/register',
-    session: false,
+    failureFlash: true,
+    session: false
 }));
 
 app.listen(3000, process.env.IP, function(){

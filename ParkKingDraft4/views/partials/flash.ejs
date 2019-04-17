@@ -1,0 +1,17 @@
+<% if(error && error.length > 0){ %>
+  <p class="flash-message error">
+    <%= error %>
+  </p>
+<% } %>
+
+<% if(success && success.length > 0){ %>
+  <p class="flash-message success">
+    <%= success %>
+  </p>
+<% } %>
+
+<script type="text/javascript">
+  var flashTimeId = setTimeout(function(){
+    $('.flash-message').slideUp(500);
+  }, 5000);
+</script>
