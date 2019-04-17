@@ -284,3 +284,48 @@ exports.removeReserve = function(connection,reserveid) {
     });
     connection.execSql(request);
 }
+//*******************************************************Reserve's checker***********************************************
+exports.checkINcheck = function(connection,username,Callback){
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT QRCodeIn,reserveID FROM dbo.Reserve WHERE Username = @username AND hasPaid = @notPaid',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+      } else {
+        connection.release();
+        return Callback(returnedValue);
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.addParameter('notPaid',TYPES.Bit,0);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+exports.checkOUTcheck = function(connection,username,Callback){
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT TransactionID FROM dbo.TransactionReceipt WHERE Username = @username',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue);
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}

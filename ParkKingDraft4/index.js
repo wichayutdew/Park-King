@@ -12,10 +12,10 @@ var artsCapacity, poliCapacity;
 const building = require('./Building.js');
 //require Reserve.js file
 var exceedReservetime = false;
-var reservePlatenumber,reserveBrand,reserveModel,reserveColor,reserveCarPicture,reserveBuildingname,reserveFloor,reserveSlot,reserveMap,reserveReservable,reserveId,reserveIsfull;
+var reservePlatenumber,reserveBrand,reserveModel,reserveColor,reserveCarPicture,reserveBuildingname,reserveFloor,reserveSlot,reserveMap,reserveReservable,reserveId,reserveIsfull,reserveCheckIn,reserveCheckOut;
 const reserve = require('./Reserve.js');
-var reserveTimein == 1;
-var reserveTimeout == 1;
+var reserveTimein = 1;
+var reserveTimeout = 1;
 
 //require TransactionReceipt.js file
 var exceedCheckoutTime = false;
@@ -389,92 +389,8 @@ storage: storage,
 //retrive image from database,imgPhase is a string retrive from database
 //
 // var UserImage = new Image();
-<<<<<<< HEAD
 
 
-=======
-// UserImage.src = 'data:image/png;base64,'+imgPhase;
-// function Reserve(floor,slot,buildingName,plateNumber,username,QRin,QRout,Timein,Timeout,reserveid,haspaid,connection){
-//   var request = new Request(
-//       "INSERT INTO dbo.Reserve(PlateNumber,Username,Floor,Slot,BuildingName,QRCodeIn,QRCodeOut,Time_In,Time_Out,reserveID,hasPaid) VALUES (@PlateNumber,@Username,@Floor,@Slot,@BuildingName,@QRCodeIn,@QRCodeOut,@Time_In,@Time_Out,@reserveID,@hasPaid)",
-//       function(err, rowCount, rows){
-//
-//           if(err){
-//               console.log(err);
-//               connection.release();
-//               return;
-//           }else{
-//               console.log('!!!Parking spot reserved!!!');
-//               connection.release();
-//               return ;
-//           }
-//   });
-//   request.addParameter('PlateNumber',TYPES.VarChar,plateNumber);
-//   request.addParameter('Username',TYPES.VarChar,username);
-//   request.addParameter('Floor',TYPES.VarChar,floor);
-//   request.addParameter('Slot',TYPES.VarChar,slot);
-//   request.addParameter('BuildingName',TYPES.VarChar,buildingName);
-//   request.addParameter('QRCodeIn',TYPES.VarChar,QRin);
-//   request.addParameter('QRCodeOut',TYPES.VarChar,QRout);
-//   request.addParameter('Time_In',TYPES.VarChar,Timein);
-//   request.addParameter('Time_Out',TYPES.VarChar,Timeout);
-//   request.addParameter('reserveID',TYPES.VarChar,reserveid);
-//   request.addParameter('hasPaid',TYPES.Bit,haspaid);
-//
-//   request.on('Done',function(err, rowCount, rows){
-//   });
-//
-//   connection.execSql(request);
-// }
-// function UpdateParkingspot(floor,slot,buildingName,connection){
-//   var request = new Request(
-//       "UPDATE dbo.ParkingSpot SET isFull=1 WHERE dbo.ParkingSpot.Floor=@Floor AND dbo.ParkingSpot.Slot=@Slot AND dbo.ParkingSpot.BuildingName=@BuildingName" ,
-//       function(err, rowCount, rows){
-//
-//           if(err){
-//               console.log(err);
-//               connection.release();
-//               return;
-//           }else{
-//               //connection.release();
-//               console.log('!!!Parking spot updated!!!');
-//               connection.release();
-//               return;
-//           }
-//   });
-//   request.addParameter('Floor',TYPES.VarChar,floor);
-//   request.addParameter('Slot',TYPES.VarChar,slot);
-//   request.addParameter('BuildingName',TYPES.VarChar,buildingName);
-//
-//
-//   request.on('Done',function(err, rowCount, rows){
-//   });
-//
-//   connection.execSql(request);
-// }
-// function UpdateCustomer(username,connection){
-//   var request = new Request(
-//       "UPDATE dbo.Customer SET Reserveable=0 WHERE dbo.Customer.Username = @Username" ,
-//       function(err, rowCount, rows){
-//
-//           if(err){
-//               console.log(err);
-//               connection.release();
-//               return;
-//           }else{
-//               console.log('!!!Customer updated!!!');
-//               connection.release();
-//               return;
-//           }
-//   });
-//   request.addParameter('Username',TYPES.VarChar,username);
-//
-//   request.on('Done',function(err, rowCount, rows){
-//   });
-//
-//   connection.execSql(request);
-// }
->>>>>>> 5276b6524fa3cd3610fd5fa74a5be0b7ef3b6a12
 function generateTokenID(){
   const uuidv4 = require('uuid/v4');
   var tokenID = uuidv4();
@@ -683,11 +599,13 @@ app.get('/reserve',loggedIn, function(req, res){
   });
 });
 
+
 //ROUTE TO QR CODE PAGE
 app.get('/showqr',hasReserved, function(req, res){
   var qrCode = 'TEST';
   res.render('showqr', {qrCode:qrCode,currentUsername: req.user[0],currentPicture: currentPicture});
   setInterval(function() {
+    console.log('Please wait for check-in/check-out');
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
@@ -709,17 +627,77 @@ app.get('/showqr',hasReserved, function(req, res){
 
     if(reserveTimein != null && reserveTimeout == null){
         //get qr
+        pool.acquire(function (err, connection) {
+          if (err) {
+            console.error(err);
+            connection.release();
+          }
+          reserve.getQRCodeIn(connection,reserveId,function(data){
+              reserveQRin = data;
+          });
+        });
         //check reserveid,qr is match
-        //start parking timer
+        pool.acquire(function (err, connection) {
+          if (err) {
+            console.error(err);
+            connection.release();
+          }
+          reserve.checkINcheck(connection,req.user[0],function(data){
+              reserveCheckIn = data;
+          });
+        });
+
+        if(reserveCheckIn[0] == reserveQRin && reserveCheckIn [1] == reserveId){
+            clearInterval();
+            //start timer
+        }
     }else if(reserveTimeout != null){
         //get qr
+        pool.acquire(function (err, connection) {
+          if (err) {
+            console.error(err);
+            connection.release();
+          }
+          reserve.getQRCodeOut(connection,reserveId,function(data){
+              reserveCheckOut = data;
+          });
+        });
         //check transactionId is match
+        pool.acquire(function (err, connection) {
+          if (err) {
+            console.error(err);
+            connection.release();
+          }
+          reserve.checkOUTcheck(connection,req.user[0],function(data){
+              reserveCheckOut = data;
+          });
+        });
         //set parkingspot.isFull = o, customer.reserveReservable = 1
-    }
+        if(reserveCheckOut == transactionId){
+          pool.acquire(function (err, connection) {
+            if (err) {
+              console.error(err);
+              connection.release();
+            }
+            parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,0);
+          });
+          pool.acquire(function (err, connection) {
+            if (err) {
+              console.error(err);
+              connection.release();
+            }
+            customer.setReservable(connection,req.user[0],1);
+          });
 
+          clearInterval();
+        }
+      }
 
   },1000);
 });
+app.get('/scanner',loggedIn, function(res,req){
+
+})
 
 //ROUTE TO STATUS
 app.get('/status',hasReserved, function(req, res){
