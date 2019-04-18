@@ -60,6 +60,19 @@
               <h3><strong>Current Parking Fee</strong></h3>
               <p>100 Baht</p>
         </div>
+        <form action="/pay" class="pay" enctype="multipart/form-data" method="POST">
+          <li><button type="submit" class="new-btn black">Payment</button></li>
+        </form>
+        <script>
+        $('form.pay').submit(function(event){
+                var r = confirm("Do you want to go out?");
+                if (r == true) {
+                  return;
+                } else {
+                  return false;
+              }
+              });
+        </script>
 
 
     </div>

@@ -149,6 +149,52 @@ exports.getHasPaid = function(connection,reserveid,Callback) {
     connection.execSql(request);
 }
 
+exports.getAllTimeIn = function(connection,username,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT Time_In FROM dbo.Reserve WHERE Username = @username',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue);
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getAllTimeOut = function(connection,username,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT Time_Out FROM dbo.Reserve WHERE Username = @username',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue);
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
 exports.reserved = function(connection,username,Callback) {
   var returnedValue  = [];
   var request = new Request(

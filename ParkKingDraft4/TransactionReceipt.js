@@ -19,7 +19,7 @@ exports.Transaction = function(connection,platenumber,username,floor,slot,buildi
   request.addParameter('username',TYPES.VarChar,username);
   request.addParameter('floor',TYPES.VarChar,floor);
   request.addParameter('slot',TYPES.VarChar,slot);
-  request.addParameter('buildingname',TYPES.VarChar,buidlingname);
+  request.addParameter('buildingname',TYPES.VarChar,buildingname);
   request.addParameter('transactionid',TYPES.VarChar,transactionid);
   request.addParameter('fee',TYPES.VarChar,fee);
   request.addParameter('paymentmethod',TYPES.VarChar,paymentmethod);
@@ -125,6 +125,143 @@ exports.getDate = function(connection,transactionid,Callback) {
     connection.execSql(request);
 }
 
+exports.getAllTransaction = function(connection,username,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT TransactionID FROM dbo.TransactionReceipt WHERE Username = @username',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue);
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getAllDate = function(connection,username,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT Date FROM dbo.TransactionReceipt WHERE Username = @username',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue);
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getAllBuilding = function(connection,username,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT BuildingName FROM dbo.TransactionReceipt WHERE Username = @username',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue);
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getAllTotalTime = function(connection,username,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT TotalTime FROM dbo.TransactionReceipt WHERE Username = @username',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue);
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getAllFee = function(connection,username,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT Fee FROM dbo.TransactionReceipt WHERE Username = @username',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue);
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getAllPaymentMethod = function(connection,username,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT PaymentMethod FROM dbo.TransactionReceipt WHERE Username = @username',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue);
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
 //*******************************************************Reserve's Setter***********************************************
 exports.setFee = function(connection,transactionid,fee) {
   var request = new Request("UPDATE dbo.TransactionReceipt SET Fee = @fee WHERE TransactionID = @transactionid",

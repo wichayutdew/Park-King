@@ -10,7 +10,7 @@ var leftTimeout = 0;
 
 
 //start user's timer
-function startUserTimer(){
+exports.startUserTimer = function(){
   stopwatch.start();
 }
 
@@ -26,23 +26,12 @@ function userCurrentTime() {
 }
 
 //stop the stopwatch
-function stopUserTimer(){
-  var totalTime = parseInt(stopwatch.read()/1000);
+exports.stopUserTimer = function(){
+  var totalTime = parseInt(stopwatch.read()/60000);
   clearInterval(elaspedInterval);
   stopwatch.stop();
   return totalTime;
 }
-
-//time out function
-const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
-var check = false;
-console.log(check);
-sleep(1000).then(() => {
-  check = true;
-  console.log(check);
-});
-
-
 
 //get current time in hr:min:sec format
 exports.getCurrentDate = function(){

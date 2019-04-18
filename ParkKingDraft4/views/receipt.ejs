@@ -66,39 +66,39 @@
 
       <div>
       <section id="receiptHeader">
-        <h3><center>Reserve ID: 27638126378</center></h3>
+        <h3><center>Transaction ID: <%= totalTransaction %></center></h3>
       </section>
       <hr>
       <section id="dateAndName">
-        <span id="date"> 13/2/18 </span>
-        <span id="name"> John Doe </span>
+        <span id="date"> <%= receiptDate %> </span>
+        <span id="name"> <%= currentFirstname %> <%= currentLastname %> </span>
       </section>
       <hr>
 
 
         <section class="detailSec">
           <span>Check-in:</span>
-          <span>13:03</span>
+          <span><%= receiptTimeIn %></span>
         </section>
         <section class="detailSec">
           <span>Check-out:</span>
-          <span>13:02</span>
+          <span><%= receiptTimeOut %></span>
         </section>
         <section class="detailSec">
           <span>Duration:</span>
-          <span>3 HRS. 23 MINS</span>
+          <span><%= receiptTotaltime %> Minutes</span>
         </section>
         <section class="detailSec">
           <span>Building:</span>
-          <span>AKSORN BUILDING</span>
+          <span><%= receiptBuilding %></span>
         </section>
         <section class="detailSec">
           <span>Fee:</span>
-          <span>75 BAHT</span>
+          <span><%= receiptFee %> Baht</span>
         </section>
         <section class="detailSec">
           <span>Payment:</span>
-          <span>K-BANK</span>
+          <span><%= receiptPaymentmethod %></span>
         </section>
         </div>
 
