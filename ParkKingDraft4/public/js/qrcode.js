@@ -1245,14 +1245,14 @@ function showQRCode(text) {
 
 }
 
-exports.updateQRCode= function(text) {
-
-	var element = document.getElementById("qrcode");
-
-	var bodyElement = document.body;
-	if (element.lastChild)
-		element.replaceChild(showQRCode(text), element.lastChild);
-	else
-		element.appendChild(showQRCode(text));
-
-}
+// function updateQRCode(text) {
+// 
+// 	var element = document.getElementById("qrcode");
+//
+// 	var bodyElement = document.body;
+// 	if (element.lastChild)
+// 		element.replaceChild(showQRCode(text), element.lastChild);
+// 	else
+// 		element.appendChild(showQRCode(text));
+//
+// }

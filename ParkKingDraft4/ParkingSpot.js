@@ -77,6 +77,31 @@ exports.getSensor = function(connection,buildingname,floor,slot,Callback) {
     connection.execSql(request);
 }
 
+exports.getMapLocation = function(connection,buildingname,floor,slot,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT MapLocation FROM dbo.ParkingSpot WHERE BuildingName = @buildingname AND Floor = @floor AND Slot = @slot',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('buildingname',TYPES.VarChar,buildingname);
+    request.addParameter('floor',TYPES.VarChar,floor);
+    request.addParameter('slot',TYPES.VarChar,slot);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
 exports.getLowestFloor = function(connection,buildingname,Callback) {
   var returnedValue  = [];
   var request = new Request(
