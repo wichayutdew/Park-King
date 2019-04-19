@@ -603,7 +603,7 @@ app.get('/reserve',loggedIn, function(req, res){
 
 //ROUTE TO QR CODE PAGE
 app.get('/showqr',hasReserved, function(req, res){
-  var qrCode = 'TEST';
+  qrCode = 'TEST';
   res.render('showqr', {qrCode:qrCode,currentUsername: req.user[0],currentPicture: currentPicture});
   setInterval(function() {
     console.log('Please wait for check-in/check-out');
