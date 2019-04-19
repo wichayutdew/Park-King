@@ -20,7 +20,7 @@ var exceedCheckoutTime = false;
 var transactionId,totaltime,parkingFee,paymentmethod,date,totalTransaction=[];
 const transaction = require('./TransactionReceipt.js');
 
-var receiptFee,receiptTotaltime,receiptBuilding,receiptDate,receiptFirstname,receiptLastname,receiptTimeIn,receiptTimeOut,receiptPaymentmethod;
+var receiptFee,receiptTotaltime,receiptBuilding,receiptDate,receiptFirstname,receiptLastname,receiptTimeIn,receiptTimeOut,receiptPaymentmethod,receiptPlatenumber;
 
 //NPM REQUIRE
 const express = require('express');
@@ -1010,7 +1010,7 @@ app.get('/receipt',loggedIn, function(req, res){
 });
 
 // dew's version
-app.post('/reserve',async function(req, res){
+app.post('/reserve',loggedIn,async function(req, res){
   reservePlatenumber = req.body.plateNumber;
   reserveBuildingname = req.body.buildingName;
   console.log(reservePlatenumber);
@@ -1160,7 +1160,7 @@ app.post('/reserve',async function(req, res){
   }
 });
 
-app.post('/cancel',async function(req,res){
+app.post('/cancel',loggedIn,async function(req,res){
   pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
@@ -1228,7 +1228,7 @@ app.post('/cancel',async function(req,res){
 });
 
 //not finished wait for check in/out
-app.post('/pay',function(req,res){
+app.post('/pay',loggedIn,function(req,res){
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
@@ -1365,6 +1365,7 @@ app.post('/deletecar/:id',loggedIn,function(req,res){
   });
 
 },autoReap);
+
 app.post('/receipt/:id',loggedIn,function(req,res){
   var id = req.params.id;
   pool.acquire(function (err, connection) {
@@ -1392,6 +1393,15 @@ app.post('/receipt/:id',loggedIn,function(req,res){
       }
       reserve.getAllTimeOut(connection,req.user[0],function(data){
         receiptTimeOut = data;
+      })
+  });
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+      }
+      transaction.getAllPlateNumber(connection,req.user[0],function(data){
+        receiptPlatenumber = data;
         res.render('receipt', {currentFirstname:currentFirstname,
                                currentLastname:currentLastname,
                                totalTransaction:totalTransaction[id],
@@ -1401,7 +1411,8 @@ app.post('/receipt/:id',loggedIn,function(req,res){
                                receiptBuilding:receiptBuilding[id],
                                receiptPaymentmethod:receiptPaymentmethod[id],
                                receiptTimeIn:receiptTimeIn[id],
-                               receiptTimeOut:receiptTimeOut[id]
+                               receiptTimeOut:receiptTimeOut[id],
+                               receiptPlatenumber:receiptPlatenumber[id]
                              });
       })
   });

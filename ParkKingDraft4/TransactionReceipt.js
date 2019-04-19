@@ -194,6 +194,29 @@ exports.getAllBuilding = function(connection,username,Callback) {
     connection.execSql(request);
 }
 
+exports.getAllPlateNumber = function(connection,username,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT PlateNumber FROM dbo.TransactionReceipt WHERE Username = @username',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue);
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
 exports.getAllTotalTime = function(connection,username,Callback) {
   var returnedValue  = [];
   var request = new Request(
