@@ -238,6 +238,27 @@ exports.setSensor = function(connection,buildingname,floor,slot,sensor) {
   connection.execSql(request);
 }
 
+exports.setFlap = function(connection,buildingname,floor,slot,flap) {
+  var request = new Request("UPDATE dbo.ParkingSpot SET Flap = @flap WHERE Buildingname = @buildingname AND Floor = @floor AND Slot = @slot",
+  function(err, rowCount, rows) {
+    if (err) {
+      console.log(err);
+      connection.release();
+    } else {
+      connection.release();
+    }
+  });
+  request.addParameter('buildingname',TYPES.VarChar,buildingname);
+  request.addParameter('floor',TYPES.VarChar,floor);
+  request.addParameter('slot',TYPES.VarChar,slot);
+  request.addParameter('flap',TYPES.Bit,flap);
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+}
+
 //*******************************************************ParkingSpot's Remover***********************************************
 exports.removeParkingspot = function(connection,buildingname,floor,slot) {
   var request = new Request("DELETE FROM dbo.ParkingSpot WHERE BuildingName = @buidlingname AND Floor = @floor AND Slot = @slot",

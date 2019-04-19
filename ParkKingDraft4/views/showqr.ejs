@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css" integrity="sha384-PDle/QlgIONtM1aqA2Qemk5gPOE7wFq8+Em+G/hmo5Iq0CCmYZLv3fVRDJ4MMwEA" crossorigin="anonymous">
 
   <!-- <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> -->
-
+  <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
   <script type="text/javascript" src="./js/qrcode.js"></script>
 
   <style type="text/css">
@@ -40,7 +40,9 @@
     <div class="col" id="qrcode">
     </div>
     <div class="col">
-        <a class="btn btn-lg btn-dark btn-block btn mt-1" id="parkingFlap">Open Parking Flap</a>
+      <form action="/openflap"  class="openflap" method="POST">
+        <button class="btn btn-lg btn-dark btn-block mt-1" type="submit" id="opnflap">Open Flap</button>
+      </form>
     <form action="/cancel"  class="cancel" method="POST">
       <button class="btn btn-lg btn-dark btn-block mt-1" type="submit" id="cancel">Cancel</button>
     </form>
