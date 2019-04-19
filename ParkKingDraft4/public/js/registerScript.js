@@ -26,6 +26,31 @@ $('form').submit(function(event){
   console.log(professorID);
   console.log(nationalID);
 
+  if(username.length < 8 || username.length > 20){
+    alert('Username must be between 8 to 20 characters');
+    return false;
+  }
+
+  if(password.length < 8){
+    alert('Password must has more than 8 characters.');
+    return false;
+  }
+
+  if(studentID.length != 10 && occupation == 'Student'){
+    alert('Student ID must has 10 digits');
+    return false;
+  }
+
+  else if(professorID.length != 8 && occupation == 'Professor' ){
+    alert('Professor ID must has 8 digits');
+    return false;
+  }
+
+  else if(nationalID.length != 13 && occupation == 'Guest'){
+    alert('National ID must has 13 digits');
+    return false;
+  }
+
   if(password !== passwordConfirmation){
     alert('Your passwords are not match.');
     return false;

@@ -1,8 +1,8 @@
 //require Customer.js file
-var currentUsername,currentEmail,currentFirstname,currentLastname,currentCustomerType,currentID,currentPicture,cancelTime;
+var currentUsername,currentEmail,currentFirstname,currentLastname,currentCustomerType,currentID,currentPicture,cancelTime,customerReservable;
 const customer = require('./Customer.js');
 //require Car.js file
-var currentPlateNumber=[],currentBrand=[],currentModel=[],currentColor=[],currentCarPicture=[];
+var currentPlateNumber=[],currentBrand=[],currentModel=[],currentColor=[],currentCarPicture=[],currentPlateProvince=[];
 var car = require('./Car.js');
 //require ParkingSpot.js file
 var totalArtsFreeSpot,totalPoliFreeSpot,lowestFloorArts,lowestSlotArts,lowestFloorPoli,lowestSlotPoli;
@@ -12,15 +12,16 @@ var artsCapacity, poliCapacity;
 const building = require('./Building.js');
 //require Reserve.js file
 var exceedReservetime = false;
-var reservePlatenumber,reserveBrand,reserveModel,reserveColor,reserveCarPicture,reserveBuildingname,reserveFloor,reserveSlot,reserveMap,reserveReservable,reserveId,reserveIsfull,reserveCheckIn,reserveCheckOut;
+var reservePlatenumber,reserveBrand,reserveModel,reserveColor,reserveCarPicture,reserveBuildingname,reserveFloor,reserveSlot,reserveMap,reserveReservable,reserveId,reserveIsfull,reserveCheckIn,reserveCheckOut,reserveTimein,reserveTimeout,reserveQRin,reserveQRout;
 const reserve = require('./Reserve.js');
-var reserveTimein = 1;
-var reserveTimeout = 1;
-
+var qrCode;
 //require TransactionReceipt.js file
 var exceedCheckoutTime = false;
-var transactionId,totaltime,parkingFee,paymentmethod,date;
+var transactionId,totaltime,parkingFee,paymentmethod,date,totalTransaction=[];
 const transaction = require('./TransactionReceipt.js');
+
+var receiptFee,receiptTotaltime,receiptBuilding,receiptDate,receiptFirstname,receiptLastname,receiptTimeIn,receiptTimeOut,receiptPaymentmethod,receiptPlatenumber;
+
 //NPM REQUIRE
 const express = require('express');
 const app = express();
@@ -371,12 +372,13 @@ function hasReserved(req, res, next) {
           console.error(err);
           connection.release();
       }
-      reserve.reserved(connection,req.user[0],function(data){
-        numReserved = data;
+      customer.getReservable(connection,req.user[0],function(data){
+        customerReservable = data;
+        console.log(reserveReservable);
       });
 
   });
-  if (numReserved == 0) {
+  if (customerReservable == 1) {
     res.redirect('/reserve');
   }else{
     return next();
@@ -385,11 +387,11 @@ function hasReserved(req, res, next) {
 var feeRate;
 function feeRate(customerType){
   if(customerType = 'Student'){
-    rate = 10;
+    feeRate = (10/60);
   }else if(customerType = 'Professor'){
-    rate = 5;
+    feeRate = (5/60);
   }else{
-    rate = 15;
+    feeRate = (15/60);
   }
 }
 // loggedIn using example
@@ -567,6 +569,15 @@ app.get('/home',loggedIn, function(req, res){
       }
       car.getAllCarPicture(connection,req.user[0],function(data){
         currentCarPicture = data;
+      });
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      car.getAllPlateProvince(connection,req.user[0],function(data){
+        currentPlateProvince = data;
         res.render('home', {lowestFloorArts:lowestFloorArts,
                             lowestSlotArts:lowestSlotArts,
                             artsCapacity:artsCapacity,
@@ -672,7 +683,6 @@ app.get('/showqr',hasReserved, function(req, res){
               reserveCheckIn = data;
           });
         });
-
         if(reserveCheckIn[0] == reserveQRin && reserveCheckIn [1] == reserveId){
             clearInterval();
             //start timer
@@ -730,7 +740,7 @@ app.get('/showqr',hasReserved, function(req, res){
 // import QrReader from 'react-qr-reader'
 
 app.get('/scanner',loggedIn, function(req,res){
-  // 
+  //
   // class Test extends Component {
   //   state = {
   //     result: 'No result'
@@ -764,7 +774,7 @@ app.get('/scanner',loggedIn, function(req,res){
 });
 
 //ROUTE TO STATUS
-app.get('/status',hasReserved, function(req, res){
+app.get('/status',hasReserved,async function(req, res){
 
   pool.acquire(function (err, connection) {
     if (err) {
@@ -793,6 +803,7 @@ app.get('/status',hasReserved, function(req, res){
       reserveColor = data;
     })
   });
+  await sleep(1000);
   pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
@@ -825,7 +836,7 @@ app.get('/status',hasReserved, function(req, res){
 });
 
 //ROUTE TO USER INFO
-app.get('/userinfo', loggedIn, function(req, res){
+app.get('/userinfo', loggedIn, async function(req, res){
    pool.acquire(function (err, connection) {
      if (err) {
        console.error(err);
@@ -860,19 +871,72 @@ app.get('/userinfo', loggedIn, function(req, res){
      }
      customer.getCustomerType(connection,req.user[0],function(data){
        currentCustomerType = data;
-       res.render('userinfo', {currentCarPicture: currentCarPicture,
-                              currentBrand:currentBrand,
-                              currentColor:currentColor,
-                              currentModel:currentModel,
-                              currentPlateNumber: currentPlateNumber,
-                              currentUsername: req.user[0],
-                              currentEmail:currentEmail,
-                              currentFirstname:currentFirstname,
-                              currentLastname:currentLastname,
-                              currentCustomerType:currentCustomerType,
-                              currentID:customer.getID(req.user),
-                              currentPicture:currentPicture});
      })
+   });
+   pool.acquire(function (err, connection) {
+     if (err) {
+       console.error(err);
+       connection.release();
+     }
+     transaction.getAllTransaction(connection,req.user[0],function(data){
+       totalTransaction = data;
+     })
+   });
+   pool.acquire(function (err, connection) {
+       if (err) {
+           console.error(err);
+           connection.release();
+       }
+       transaction.getAllFee(connection,req.user[0],function(data){
+         receiptFee = data;
+       })
+   });
+   pool.acquire(function (err, connection) {
+       if (err) {
+           console.error(err);
+           connection.release();
+       }
+       transaction.getAllDate(connection,req.user[0],function(data){
+         receiptDate= data;
+       })
+   });
+   pool.acquire(function (err, connection) {
+       if (err) {
+           console.error(err);
+           connection.release();
+       }
+       transaction.getAllTotalTime(connection,req.user[0],function(data){
+         receiptTotaltime = data;
+       })
+   });
+  await sleep(1000);
+   pool.acquire(function (err, connection) {
+       if (err) {
+           console.error(err);
+           connection.release();
+       }
+       transaction.getAllBuilding(connection,req.user[0],function(data){
+         receiptBuilding = data;
+         res.render('userinfo', {currentCarPicture: currentCarPicture,
+                                currentBrand:currentBrand,
+                                currentColor:currentColor,
+                                currentModel:currentModel,
+                                currentPlateNumber: currentPlateNumber,
+                                currentUsername: req.user[0],
+                                currentEmail:currentEmail,
+                                currentFirstname:currentFirstname,
+                                currentLastname:currentLastname,
+                                currentCustomerType:currentCustomerType,
+                                currentPlateProvince:currentPlateProvince,
+                                currentID:customer.getID(req.user),
+                                currentPicture:currentPicture,
+                                totalTransaction:totalTransaction,
+                                receiptFee:receiptFee,
+                                receiptDate:receiptDate,
+                                receiptTotaltime:receiptTotaltime,
+                                receiptBuilding:receiptBuilding});
+
+       })
    });
 });
 
@@ -882,10 +946,6 @@ app.get('/edituserinfo', loggedIn, function(req, res){
                              currentEmail:currentEmail,
                              currentFirstname:currentFirstname,
                              currentLastname:currentLastname,
-                             currentCustomerType:currentCustomerType,
-                             currentStudentID:req.user[6],
-                             currentProfessorID:req.user[7],
-                             currentNationalID:req.user[8],
                              currentPicture:currentPicture
                            });
 
@@ -952,7 +1012,7 @@ app.get('/receipt',loggedIn, function(req, res){
 });
 
 // dew's version
-app.post('/reserve',async function(req, res){
+app.post('/reserve',loggedIn,async function(req, res){
   reservePlatenumber = req.body.plateNumber;
   reserveBuildingname = req.body.buildingName;
   console.log(reservePlatenumber);
@@ -1038,7 +1098,6 @@ app.post('/reserve',async function(req, res){
         }
         customer.setReservable(connection, req.user[0], 0);
         console.log('set user reservable');
-        // alert('sucess');
         req.flash('success', 'You have made a reservation. Use this QR Code to enter the parking lot.');
         res.render('showqr', {qrCode:reserveId,currentUsername: req.user[0],currentPicture: currentPicture});
     });
@@ -1103,7 +1162,7 @@ app.post('/reserve',async function(req, res){
   }
 });
 
-app.post('/cancel',async function(req,res){
+app.post('/cancel',loggedIn,async function(req,res){
   pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
@@ -1170,8 +1229,20 @@ app.post('/cancel',async function(req,res){
   }
 });
 
+app.post('/openflap',loggedIn,function(req,res){
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+          return;
+      }
+      parkingspot.setFlap(connection,reserveBuildingname,reserveFloor,reserveSlot,1);
+      res.redirect('showqr');
+  });
+});
+
 //not finished wait for check in/out
-app.post('/pay',function(req,res){
+app.post('/pay',loggedIn,function(req,res){
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
@@ -1179,9 +1250,10 @@ app.post('/pay',function(req,res){
           return;
       }
       transactionId = generateTokenID();
+      // totaltime = functions.stopUserTimer();
       totaltime = 100;
-      feeRate(customerType);
-      parkingFee = totaltime * feeRate;
+      feeRate(currentCustomerType);
+      parkingFee = parseInt(totaltime * feeRate);
       paymentmethod = 'Kbank';
       date = transaction.getCurrentDate();
       transaction.Transaction(connection,reservePlatenumber,req.user[0],reserveFloor,reserveSlot,reserveBuildingname,transactionId,parkingFee,paymentmethod,totaltime,date);
@@ -1214,7 +1286,6 @@ app.post('/pay',function(req,res){
               connection.release();
               return;
           }
-          reserveId = generateTokenID();
           reserveTimein = functions.getCurrentTime();
           reserve.setTimeIn(connection,reserveId,reserveTimein);
           console.log('set timein');
@@ -1245,6 +1316,7 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
         carbrand:req.body.carBrand,
         carmodel:req.body.carModel,
         carcolor:req.body.carColor,
+        plateprovince:req.body.province,
         carpicture:encode_image,
       };
       //console.log(car_info);
@@ -1253,31 +1325,16 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
       currentBrand.push(car_info.carbrand);
       currentModel.push(car_info.carmodel);
       currentColor.push(car_info.carcolor);
+      currentPlateProvince.push(car_info.plateprovince);
       currentCarPicture.push(car_info.carpicture);
+      res.redirect('/userinfo');
   });
-  // if (confirm("Press a button!")) {
-  //   res.redirect('/userinfo');
-  // }
   req.flash('success', 'Your car has been added.')
-  res.redirect('/userinfo');
-  // res.render('userinfo', {currentCarPicture: currentCarPicture,
-  //                        currentBrand:currentBrand,
-  //                        currentColor:currentColor,
-  //                        currentModel:currentModel,
-  //                        currentPlateNumber: currentPlateNumber,
-  //                        currentUsername: req.user[0],
-  //                        currentEmail:currentEmail,
-  //                        currentFirstname:currentFirstname,
-  //                        currentLastname:currentLastname,
-  //                        currentCustomerType:currentCustomerType,
-  //                        currentID:customer.getID(req.user),
-  //                        currentPicture:currentPicture
-  //                      });
 },autoReap);
 
-app.post('/deletecar/:id',loggedIn,function(req,res){
+app.post('/deletecar/:id',loggedIn, function(req,res){
   var id = req.params.id;
-  pool.acquire(function (err, connection) {
+  pool.acquire(async function (err, connection) {
       if (err) {
           console.error(err);
           connection.release();
@@ -1288,6 +1345,7 @@ app.post('/deletecar/:id',loggedIn,function(req,res){
       delete currentModel[id];
       delete currentColor[id];
       delete currentCarPicture[id];
+      delete currentPlateProvince[id];
       currentPlateNumber = currentPlateNumber.filter(function( element ) {
         return element !== undefined;
       });
@@ -1303,11 +1361,69 @@ app.post('/deletecar/:id',loggedIn,function(req,res){
       currentCarPicture = currentCarPicture.filter(function( element ) {
         return element !== undefined;
       });
+      currentPlateProvince = currentPlateProvince.filter(function( element ) {
+        return element !== undefined;
+      });
       req.flash('success', 'Your car has been deleted');
+      await sleep(1000);
       res.redirect('/userinfo');
   });
 
 },autoReap);
+
+app.post('/receipt/:id',loggedIn,async function(req,res){
+  var id = req.params.id;
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+      }
+      transaction.getAllPaymentMethod(connection,req.user[0],function(data){
+        receiptPaymentmethod = data;
+      })
+  });
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+      }
+      reserve.getAllTimeIn(connection,req.user[0],function(data){
+        receiptTimeIn = data;
+      })
+  });
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+      }
+      reserve.getAllTimeOut(connection,req.user[0],function(data){
+        receiptTimeOut = data;
+      })
+  });
+  await sleep(1000);
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+      }
+      transaction.getAllPlateNumber(connection,req.user[0],function(data){
+        receiptPlatenumber = data;
+        res.render('receipt', {currentFirstname:currentFirstname,
+                               currentLastname:currentLastname,
+                               totalTransaction:totalTransaction[id],
+                               receiptFee:receiptFee[id],
+                               receiptDate:receiptDate[id],
+                               receiptTotaltime:receiptTotaltime[id],
+                               receiptBuilding:receiptBuilding[id],
+                               receiptPaymentmethod:receiptPaymentmethod[id],
+                               receiptTimeIn:receiptTimeIn[id],
+                               receiptTimeOut:receiptTimeOut[id],
+                               receiptPlatenumber:receiptPlatenumber[id]
+                             });
+      })
+  });
+});
+
 
 app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
   console.log('Trying to edit profile');
@@ -1328,18 +1444,12 @@ app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
       email : req.body.email,
       firstname : req.body.firstName,
       lastname : req.body.lastName,
-      customertype: req.body.occupation,
-      studentID: req.body.studentID,
-      professorID: req.body.professorID,
-      nationalID: req.body.NationalID,
       CustomerPicture: encode_image,
     };
     customer.editCustomer(connection,req.user[0],edited_info);
     currentEmail = edited_info.email;
     currentFirstname = edited_info.firstname;
     currentLastname = edited_info.lastname;
-    currentCustomerType = edited_info.customertype;
-    currentID =customer.getID(req.user);
   });
   pool.acquire(function (err, connection) {
     if (err) {
@@ -1348,23 +1458,11 @@ app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
     }
     customer.getCustomerPicture(connection,req.user[0],async function(data){
       currentPicture = data;
+        res.redirect('/userinfo');
     })
   });
-
   req.flash('success', 'Your information has been changed.');
-  res.redirect('/userinfo');
-  // res.render('userinfo', {currentCarPicture: currentCarPicture,
-  //                        currentBrand:currentBrand,
-  //                        currentColor:currentColor,
-  //                        currentModel:currentModel,
-  //                        currentPlateNumber: currentPlateNumber,
-  //                        currentUsername: req.user[0],
-  //                        currentEmail:currentEmail,
-  //                        currentFirstname:currentFirstname,
-  //                        currentLastname:currentLastname,
-  //                        currentCustomerType:currentCustomerType,
-  //                        currentID:customer.getID(req.user),
-  //                        currentPicture:currentPicture});
+
 },autoReap);
 
 //when login button click

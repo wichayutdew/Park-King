@@ -41,57 +41,6 @@
               <input class="input100" type="text" name="lastName" value="<%= currentLastname %>" placeholder="Last Name" id="lastname" required>
               <span class="focus-input100"></span>
             </div>
-                            <!-- <div class="wrap-input100 validate-input m-b-25" data-validate = "Enter password">
-                                    <input class="input100" type="text" name="profession" placeholder="Profession">
-                                    <span class="focus-input100"></span>
-                            </div>   -->
-            <div class="wrap-input100 validate-input m-b-25">
-              <select class="input100 select100" name="occupation" onchange="occupationCheck(this)" id="occupation">
-                <option><%= currentCustomerType %></option>
-                <option value="Student">Student</option>
-                <option value="Professor">Professor or Faculty member</option>
-                <option value="Guest">Others</option>
-              </select>
-            </div>
-
-                            <!-- hidden input for student id -->
-                            <div id="inputStudentID" class="wrap-input100 validate-input m-b-25" style="display: none;">
-                                    <input class="input100" type="text" name="studentID" value="<%= currentStudentID %>" placeholder="Student ID" id="studentID">
-                                    <span class="focus-input100"></span>
-                            </div>
-                            <!-- hidden input for professor id -->
-                            <div id="inputProfessorID" class="wrap-input100 validate-input m-b-25" style="display: none;">
-                                    <input class="input100" type="text" name="professorID" value="<%= currentProfessorID %>" placeholder="Professor ID" id="professorID">
-                                    <span class="focus-input100"></span>
-                            </div>
-                            <!-- hidden input for national id -->
-                            <div id="inputNationalID" class="wrap-input100 validate-input m-b-25" style="display: none;">
-                                    <input class="input100" type="text" name="NationalID" value="<%= currentNationalID %>" placeholder="National ID" id="nationalID">
-                                    <span class="focus-input100"></span>
-                            </div>
-                                                        <!-- JS for occupation checking -->
-                                                        <script type="text/javascript">
-                                                            function occupationCheck(that){
-                                                            if(that.value == "Student"){
-                                                                document.getElementById("inputStudentID").style.display = "block";
-                                                                document.getElementById("inputProfessorID").style.display = "none";
-                                                                document.getElementById("inputNationalID").style.display = "none";
-                                                            } else if(that.value == "Professor"){
-                                                                document.getElementById("inputStudentID").style.display = "none";
-                                                                document.getElementById("inputProfessorID").style.display = "block";
-                                                                document.getElementById("inputNationalID").style.display = "none";
-                                                            } else if(that.value == "Guest"){
-                                                                document.getElementById("inputStudentID").style.display = "none";
-                                                                document.getElementById("inputProfessorID").style.display = "none";
-                                                                document.getElementById("inputNationalID").style.display = "block";
-                                                            } else{
-                                                                document.getElementById("inputStudentID").style.display = "none";
-                                                                document.getElementById("inputProfessorID").style.display = "none";
-                                                                document.getElementById("inputNationalID").style.display = "none";
-                                                            }
-                                                            }
-                                                        </script>
-
                             <div style="padding: 10px;">
                               <img src="data:image/png;base64,<%= currentPicture %>" alt="" width="60px" height="60px" style="border-radius: 50%; margin-right: 10px">
                               <a id="changePicBut" class="txt2 hov1" onclick="showUploadPic()" href="javascript:;">Change picture</a>
