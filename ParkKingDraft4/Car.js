@@ -5,7 +5,7 @@ var TYPES =require('tedious').TYPES;
 
 //*******************************************************Inserting new car into database***********************************************
 exports.insert_newCar = function(connection,car_info,username){
-  var request = new Request('INSERT INTO dbo.Car (PlateNumber,Username,CarBrand,CarModel,CarColor,CarPicture) VALUES (@PlateNumber,@Username,@CarBrand,@CarModel,@CarColor,@CarPicture)',
+  var request = new Request('INSERT INTO dbo.Car (PlateNumber,Username,CarBrand,CarModel,CarColor,CarPicture,PlateProvince) VALUES (@PlateNumber,@Username,@CarBrand,@CarModel,@CarColor,@CarPicture,@PlateProvince)',
       function(err, rowCount, rows){
           if(err){
               console.log(err);
@@ -16,6 +16,7 @@ exports.insert_newCar = function(connection,car_info,username){
           }
   });
   request.addParameter('PlateNumber',TYPES.VarChar,car_info.platenumber);
+  request.addParameter('PlateProvince',TYPES.VarChar,car_info.plateprovince);
   request.addParameter('Username',TYPES.VarChar,username);
   request.addParameter('CarBrand',TYPES.VarChar,car_info.carbrand);
   request.addParameter('CarModel',TYPES.VarChar,car_info.carmodel);
@@ -29,10 +30,10 @@ exports.insert_newCar = function(connection,car_info,username){
 }
 
 //*******************************************************Car's Getter***********************************************
-exports.getAllPlateNumber = function(connection,username,Callback) {
+exports.getAllPlateProvince = function(connection,username,Callback) {
   var returnedValue  = [];
   var request = new Request(
-    'SELECT PlateNumber FROM dbo.Car WHERE Username = @username',
+    'SELECT PlateProvince FROM dbo.Car WHERE Username = @username',
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
