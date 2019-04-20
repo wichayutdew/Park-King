@@ -320,7 +320,33 @@ passport.use('local-login', new LocalStrategy({
 //===================================================================================================================================================
 // Operation
 //===================================================================================================================================================
+var Stopwatch = require('statman-stopwatch');
+var stopwatch = new Stopwatch();
+var elaspedInterval = 0;
+var arriveTimeout = 0;
+var leftTimeout = 0;
 
+//start user's timer
+function startUserTimer(){
+  stopwatch.start();
+}
+//show elasped time
+function userCurrentTime() {
+  elaspedInterval = setInterval(function() {
+    var time = parseInt(stopwatch.read()/1000);
+    var hours = ~~(time / 3600);
+    var min = ~~((time % 3600) / 60);
+    var sec = time % 60;
+    console.log(hours+":"+min+":"+sec);
+  },1000);
+}
+//stop the stopwatch
+function stopUserTimer(){
+  var totalTime = parseInt(stopwatch.read()/1000);
+  clearInterval(elaspedInterval);
+  stopwatch.stop();
+  return totalTime;
+}
 // //check log-in state
 function loggedInBoolean(req) {
     if (req.user) {
@@ -613,7 +639,7 @@ app.get('/reserve',loggedIn, function(req, res){
 
 //ROUTE TO QR CODE PAGE
 app.get('/showqr',hasReserved, function(req, res){
-  qrCode = 'TEST';
+  var qrCode = req.user[0];
   res.render('showqr', {qrCode:qrCode,currentUsername: req.user[0],currentPicture: currentPicture});
   setInterval(function() {
     console.log('Please wait for check-in/check-out');
@@ -660,6 +686,7 @@ app.get('/showqr',hasReserved, function(req, res){
         if(reserveCheckIn[0] == reserveQRin && reserveCheckIn [1] == reserveId){
             clearInterval();
             //start timer
+            startUserTimer();
         }
     }else if(reserveTimeout != null){
         //get qr
@@ -700,85 +727,51 @@ app.get('/showqr',hasReserved, function(req, res){
           });
 
           clearInterval();
+          var parkingTime = stopUserTimer();
+          console.log(parkingTime);
         }
       }
 
   },1000);
 });
-
-//dew's version
-// app.get('/showqr',hasReserved, function(req, res){
-//   res.render('showqr', {currentUsername: req.user[0],currentPicture: currentPicture});
-//   setInterval(function() {
-//     console.log('Please wait for check-in/check-out');
-//     pool.acquire(function (err, connection) {
-//       if (err) {
-//         console.error(err);
-//         connection.release();
-//       }
-//       reserve.getTimeIn(connection,reserveId,function(data){
-//         reserveTimein= data;
-//       });
-//     });
-//     pool.acquire(function (err, connection) {
-//       if (err) {
-//         console.error(err);
-//         connection.release();
-//       }
-//       reserve.getTimeOut(connection,reserveId,function(data){
-//         reserveTimeout= data;
-//       });
-//     });
 //
-//     if(reserveTimein != null && reserveTimeout == null){
-//         //get qr
-//         pool.acquire(function (err, connection) {
-//           if (err) {
-//             console.error(err);
-//             connection.release();
-//           }
-//           reserve.getQRCodeIn(connection,reserveId,function(data){
-//               reserveQRin = data;
-//           });
-//         });
-//         if(reserveQRin == reserveId){
-//             functions.startUserTimer();
-//         }
-//     }else if(reserveTimeout != null){
-//         //get qr
-//         pool.acquire(function (err, connection) {
-//           if (err) {
-//             console.error(err);
-//             connection.release();
-//           }
-//           reserve.getQRCodeOut(connection,reserveId,function(data){
-//               reserveQRout = data;
-//           });
-//         });
-//         if(reserveQRout == transactionId){
-//           pool.acquire(function (err, connection) {
-//             if (err) {
-//               console.error(err);
-//               connection.release();
-//             }
-//             parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,0);
-//           });
-//           pool.acquire(function (err, connection) {
-//             if (err) {
-//               console.error(err);
-//               connection.release();
-//             }
-//             customer.setReservable(connection,req.user[0],1);
-//           });
-//           clearInterval();
-//         }
-//       }
-//
-//   },5000);
-// });
-app.get('/scanner',loggedIn, function(res,req){
+// const Instascan = require('instascan');
+// import React, { Component } from 'react'
+// import QrReader from 'react-qr-reader'
 
-})
+app.get('/scanner',loggedIn, function(req,res){
+  //
+  // class Test extends Component {
+  //   state = {
+  //     result: 'No result'
+  //   }
+  //
+  //   handleScan = data => {
+  //     if (data) {
+  //       this.setState({
+  //         result: data
+  //       })
+  //     }
+  //   }
+  //   handleError = err => {
+  //     console.error(err)
+  //   }
+  //   render() {
+  //     return (
+  //       <div>
+  //         <QrReader
+  //           delay={300}
+  //           onError={this.handleError}
+  //           onScan={this.handleScan}
+  //           style={{ width: '100%' }}
+  //         />
+  //         <p>{this.state.result}</p>
+  //       </div>
+  //     )
+  //   }
+  // }
+  res.render('scanner');
+});
 
 //ROUTE TO STATUS
 app.get('/status',hasReserved,async function(req, res){
