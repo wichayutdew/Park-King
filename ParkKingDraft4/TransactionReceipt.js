@@ -363,7 +363,7 @@ exports.setDate = function(connection,transactionid,fee) {
 }
 
 //*******************************************************Reserve's Remover***********************************************
-exports.removeReserve = function(connection,reserveid) {
+exports.removeTransaction = function(connection,transactionid) {
   var request = new Request("DELETE FROM dbo.TransactionReceipt WHERE TransactionID = @transactionid",
     function(err, rowCount, rows) {
       if (err) {
