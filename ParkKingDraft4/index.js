@@ -383,6 +383,7 @@ function hasReserved(req, res, next) {
 
     });
     if (customerReservable == 1) {
+      req.flash('error', 'You can only view this page after you have reserved.')
       res.redirect('/reserve');
     }else{
       return next();
@@ -597,7 +598,8 @@ app.get('/home',loggedIn, function(req, res){
                             totalArtsFreeSpot:totalArtsFreeSpot,
                             totalPoliFreeSpot:totalPoliFreeSpot,
                             currentUsername: req.user[0],
-                            currentPicture: currentPicture});
+                            currentPicture: currentPicture,
+                            reservePlatenumber: reservePlatenumber});
         // ====================================================================
       });
     });
@@ -790,7 +792,7 @@ app.get('/scanner',loggedIn, function(req,res){
 });
 
 //ROUTE TO STATUS
-app.get('/status', loggedIn,async function(req, res){
+app.get('/status', loggedIn, async function(req, res){
 
   pool.acquire(function (err, connection) {
     if (err) {

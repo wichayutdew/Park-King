@@ -3,7 +3,7 @@ For All Pages
 ============================================================ */
 
 body {
-    background-color: black !important;
+    background-color: #242424 !important;
     color: white !important;
     font-family: 'Lato', sans-serif !important;
 }
@@ -78,13 +78,13 @@ body {
 Set background color using class
 ============================================================ */
 .green {
-    background-image: url("../colors/ColorBackGroundGreen.jpg");
+    background-image: url("../colors/bgGreen2.jpg");
     background-size: cover;
     background-repeat: no-repeat;
 }
 
 .green2 {
-    background-image: url("../colors/ColorBackGroundGreen2.jpg");
+    background-image: url("../colors/bgGreen2.jpg");
     background-size: cover;
 }
 
@@ -94,16 +94,16 @@ Set background color using class
 }
 
 .orange {
-    background-image: url("../colors/ColorBackGroundOrange.jpg");
+    background-image: url("../colors/bgOrange2.jpg");
     background-size: cover;
 }
 
 .pink {
-    background-image: url("../colors/ColorBackGroundPink.jpg");
+    background-image: url("../colors/bgPink2.jpg");
     background-size: cover;
 }
 .purple {
-    background-image: url("../colors/ColorBackGroundPurple.jpg");
+    background-image: url("../colors/bgRed2.jpg");
     background-size: cover;
 }
 .white {
