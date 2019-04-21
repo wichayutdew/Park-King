@@ -368,7 +368,7 @@ function loggedIn(req, res, next) {
     }
 }
 
-//Check if the user has already reaserved
+// Middleware Check if the user has already reaserved
 var numReserved;
 function hasReserved(req, res, next) {
     pool.acquire(function (err, connection) {
