@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Park King</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link rel="stylesheet" href="stylesheet/style.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+
+</head>
+<body>
+
+    <!-- Menu =========================================================== -->
+    <nav>
+        <section class="menu">
+            <a class="top-menu-item" href="/home"><img src="img/pklogo2.png"></a>
+            <a id="profileBut" class="top-menu-item" href="#"><img src="img/profiledicut.png"></a>
+        </section>
+        <section class="profile-menu">
+            <div class="profile-menu-div">
+                    <!-- data:image/png;base64,<%=currentPicture%> -->
+                <li><img src="img/profilePic.png" alt=""></li>
+                <li><h4>Welcome a !</h4></li>
+                <div class="notification">
+                    <li>Welcome to Park-King <br>
+                        Contact us via <br>
+                        no-reply@parkking.com
+                    </li>
+                </div>
+                <li class="button-li"><a href="/userinfo" class="button">View Profile</a></li>
+                <li class="button-li" style="margin-top: 20px;"><a href="/logout" class="button">Logout</a></li>
+            </div>
+        </section>
+
+        <section class="menu">
+            <!-- <a class="menu-item green" href="/status">Status</a>
+            <a class="menu-item orange" href="/showqr">My QR</a> -->
+            <a class="menu-item green" style="flex-basis: 100%;" href="/reserve">Reserve</a>
+        </section>
+    </nav>
+    <script>
+        $('#profileBut').on('click', function(){
+            $('.profile-menu').slideToggle(500);
+        });
+    </script>
+
+    <!-- Menu =========================================================== -->
+
+    <div class="main-user-info">
+        <div class="infoDiv dark-grey-div-gradient">
+            <h3><Strong>ARTS BUILDING</Strong></h3>
+            <section class="info-text-div">
+                <span>Free spot:</span>
+                <span>2 of 5</span>
+            </section>
+            <section class="info-text-div">
+                <span>Lowest Floor Available:</span>
+                <span>01</span>
+            </section>
+            <section class="info-text-div">
+                <span>Lowest Spot Available</span>
+                <span>0004</span>
+            </section>
+        </div>
+        <div class="infoDiv dark-grey-div-gradient">
+            <h3><Strong>POLITICAL SCIENCE BUILDING</Strong></h3>
+            <section class="info-text-div">
+                <span>Free spot:</span>
+                <span>2 of 5</span>
+            </section>
+            <section class="info-text-div">
+                <span>Lowest Floor Available:</span>
+                <span>01</span>
+            </section>
+            <section class="info-text-div">
+                <span>Lowest Spot Available</span>
+                <span>0004</span>
+            </section>
+        </div>
+        <div class="infoDiv dark-grey-div-gradient">
+            <h3><Strong>HOW TO USE</Strong></h3>
+            <section class="info-text-div">
+                <span>1. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex, atque.</span>
+            </section>
+            <section class="info-text-div">
+                <span>2. Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus, pariatur?</span>
+            </section>
+            <section class="info-text-div">
+                <span>3. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Incidunt, quaerat.</span>
+            </section>
+        </div>
+        <div class="infoDiv dark-grey-div-gradient">
+            <h3><Strong>RULES</Strong></h3>
+            <section class="info-text-div center">
+                <span>1. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex, atque.</span>
+            </section>
+            <section class="info-text-div center">
+                <span>2. Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus, pariatur?</span>
+            </section>
+            <section class="info-text-div center">
+                <span>3. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Incidunt, quaerat.</span>
+            </section>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+</body>
+</html>
