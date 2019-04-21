@@ -230,6 +230,7 @@ Set background color using class
 .blue {
     background-image: url("../colors/bgBlue2.jpg");
     background-size: cover;
+    color: white;
     /* background-repeat: no-repeat; */
 }
 
