@@ -22,8 +22,8 @@ exports.Reserve = function(connection,platenumber, username, floor, slot, buildi
   request.addParameter('buildingname',TYPES.VarChar,buildingname);
   request.addParameter('qrcodein',TYPES.VarChar,null);
   request.addParameter('qrcodeout',TYPES.VarChar,null);
-  request.addParameter('time_in',TYPES.VarChar,null);
-  request.addParameter('time_out',TYPES.VarChar,null);
+  request.addParameter('time_in',TYPES.VarChar,"initialize");
+  request.addParameter('time_out',TYPES.VarChar,"initialize");
   request.addParameter('reserveid',TYPES.VarChar,reserveid);
   request.addParameter('haspaid',TYPES.Bit,0);
 

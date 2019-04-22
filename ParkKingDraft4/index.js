@@ -14,7 +14,7 @@ const building = require('./Building.js');
 var exceedReservetime = false;
 var reserveStatus = "Not Reserved",reservePlatenumber = "--",reserveBrand,reserveModel,reserveColor,reserveCarPicture,reserveBuildingname = "--",reserveFloor,reserveSlot,reserveMap,reserveId,reserveIsfull,reserveCheckIn,reserveCheckOut,reserveTimein,reserveTimeout,reserveQRin,reserveQRout;
 const reserve = require('./Reserve.js');
-var qrCode = "TEST";
+var qrCode;
 //require TransactionReceipt.js file
 var exceedCheckoutTime = false;
 var transactionId,totaltime,parkingFee,paymentmethod,date,totalTransaction=[];
@@ -323,9 +323,6 @@ passport.use('local-login', new LocalStrategy({
 var Stopwatch = require('statman-stopwatch');
 var stopwatch = new Stopwatch();
 var elaspedInterval = 0;
-var arriveTimeout = 0;
-var leftTimeout = 0;
-
 //start user's timer
 function startUserTimer(){
   stopwatch.start();
@@ -377,36 +374,29 @@ function hasReserved(req, res, next) {
         }
         customer.getReservable(connection,req.user[0],function(data){
           customerReservable = data;
-          console.log(customerReservable);
         });
 
     });
     if (customerReservable == 1) {
-      // req.flash('error', 'You can only view this page after you have reserved.')
       res.redirect('/reserve');
     }else{
       return next();
     }
 }
 
-
-
 //Calculate the fee rate
-var feeRate;
+var feeRate
+var check = "initialize";
 function feeRate(customerType){
   if(customerType = 'Student'){
-    feeRate = (10/60);
+    return (10/60);
   }else if(customerType = 'Professor'){
-    feeRate = (5/60);
+    return (5/60);
   }else{
-    feeRate = (15/60);
+    return (15/60);
   }
 }
-// loggedIn using example
-// app.get('/orders', loggedIn, function(req, res, next) {
-//     // req.user - will exist
-//     // load user orders and render them
-// });
+
 // SET STORAGE
 const storage = multer.diskStorage({
 destination: function (req, file, cb) {
@@ -422,17 +412,14 @@ storage: storage,
 //limits: {fileSize: 1024 * 1024 * 5}
 });
 
-//retrive image from database,imgPhase is a string retrive from database
-//
-// var UserImage = new Image();
-
-
+//UUID GENERATOR
 function generateTokenID(){
   const uuidv4 = require('uuid/v4');
   var tokenID = uuidv4();
   return tokenID;
 }
 
+//TIMEOUT FUNCTION
 function sleep(ms){
     return new Promise(resolve=>{
         setTimeout(resolve,ms);
@@ -608,6 +595,7 @@ app.get('/home2',loggedIn, function(req, res){
     });
 });
 
+//ROUTE TO HOME
 app.get('/home',loggedIn, function(req, res){
     pool.acquire(function (err, connection) {
       if (err) {
@@ -767,7 +755,6 @@ app.get('/home',loggedIn, function(req, res){
 //ROUTES TO REGISTER PAGE
 app.get('/register', function(req, res){
     res.render('register');
-    //res.sendFile(__dirname + '/register.ejs');
 });
 
 //ROUTE TO LOGIN PAGE
@@ -782,16 +769,6 @@ app.get('/carregister',loggedIn, function(req, res){
 
 //ROUTE TO RESERVE PAGE
 app.get('/reserve',loggedIn, function(req, res){
-  // pool.acquire(function (err, connection) {
-  //   if (err) {
-  //     console.error(err);
-  //     connection.release();
-  //   }
-  //   customer.getCustomerPicture(connection,req.user[0],function(data){
-  //     currentPicture = data;
-  //   })
-  //   res.render('reserve', {currentUsername: req.user[0],currentPicture: currentPicture});
-  // });
   pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
@@ -799,19 +776,14 @@ app.get('/reserve',loggedIn, function(req, res){
     }
     customer.getCancel(connection,req.user[0],function(data){
       cancelTime = data;
-      // ====================================================================
-      //RENDER RESERVE PAGE
       res.render('reserve', {currentCarPicture: currentCarPicture,
                              currentPlateNumber: currentPlateNumber,
                              currentUsername: req.user[0],
                              currentPicture:currentPicture,
                              cancelTime:cancelTime});
-      // ====================================================================
-
     });
   });
 });
-
 
 //ROUTE TO QR CODE PAGE
 app.get('/showqr', loggedIn,hasReserved, async function(req, res){
@@ -824,7 +796,7 @@ app.get('/showqr', loggedIn,hasReserved, async function(req, res){
         connection.release();
       }
       reserve.getTimeIn(connection,reserveId,function(data){
-        reserveTimein= data;
+        reserveTimein = data;
       });
     });
     pool.acquire(function (err, connection) {
@@ -837,8 +809,7 @@ app.get('/showqr', loggedIn,hasReserved, async function(req, res){
       });
     });
 
-    if(reserveTimein != null && reserveTimeout == null){
-        //get qr
+    if(reserveTimein != check && reserveTimeout == check){
         pool.acquire(function (err, connection) {
           if (err) {
             console.error(err);
@@ -848,44 +819,20 @@ app.get('/showqr', loggedIn,hasReserved, async function(req, res){
               reserveQRin = data;
           });
         });
-        //check reserveid,qr is match
-        pool.acquire(function (err, connection) {
-          if (err) {
-            console.error(err);
-            connection.release();
-          }
-          reserve.checkINcheck(connection,req.user[0],function(data){
-              reserveCheckIn = data;
-          });
-        });
-        if(reserveCheckIn[0] == reserveQRin && reserveCheckIn [1] == reserveId){
-            clearInterval();
-            //start timer
+        if(reserveQRin == reserveId){
             startUserTimer();
         }
-    }else if(reserveTimeout != null){
-        //get qr
+    }else if(reserveTimeout != check){
         pool.acquire(function (err, connection) {
           if (err) {
             console.error(err);
             connection.release();
           }
           reserve.getQRCodeOut(connection,reserveId,function(data){
-              reserveCheckOut = data;
+              reserveQRout = data;
           });
         });
-        //check transactionId is match
-        pool.acquire(function (err, connection) {
-          if (err) {
-            console.error(err);
-            connection.release();
-          }
-          reserve.checkOUTcheck(connection,req.user[0],function(data){
-              reserveCheckOut = data;
-          });
-        });
-        //set parkingspot.isFull = o, customer.customerReservable = 1
-        if(reserveCheckOut == transactionId){
+        if(reserveQRout == transactionId){
           pool.acquire(function (err, connection) {
             if (err) {
               console.error(err);
@@ -900,15 +847,11 @@ app.get('/showqr', loggedIn,hasReserved, async function(req, res){
             }
             customer.setReservable(connection,req.user[0],1);
           });
-
-          clearInterval();
-          var parkingTime = stopUserTimer();
-          console.log(parkingTime);
         }
       }
-  },1000);
+  },5000);
 });
-//
+
 // const Instascan = require('instascan');
 // import React, { Component } from 'react'
 // import QrReader from 'react-qr-reader'
@@ -948,7 +891,7 @@ app.get('/scanner',loggedIn, function(req,res){
 });
 
 //ROUTE TO STATUS
-app.get('/status', loggedIn, hasReserved, async function(req, res){
+app.get('/status', loggedIn, hasReserved, function(req, res){
   pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
@@ -1049,6 +992,7 @@ app.get('/userinfo', loggedIn, async function(req, res){
        currentCustomerType = data;
      })
    });
+   await(3000);
    pool.acquire(function (err, connection) {
      if (err) {
        console.error(err);
@@ -1085,7 +1029,6 @@ app.get('/userinfo', loggedIn, async function(req, res){
          receiptTotaltime = data;
        })
    });
-  await sleep(1000);
    pool.acquire(function (err, connection) {
        if (err) {
            console.error(err);
@@ -1095,26 +1038,29 @@ app.get('/userinfo', loggedIn, async function(req, res){
          receiptBuilding = data;
          // ====================================================================
          //RENDER USERINFO PAGE
-         res.render('userinfo', {currentCarPicture: currentCarPicture,
-                                currentBrand:currentBrand,
-                                currentColor:currentColor,
-                                currentModel:currentModel,
-                                currentPlateNumber: currentPlateNumber,
-                                currentUsername: req.user[0],
-                                currentEmail:currentEmail,
-                                currentFirstname:currentFirstname,
-                                currentLastname:currentLastname,
-                                currentCustomerType:currentCustomerType,
-                                currentPlateProvince:currentPlateProvince,
-                                currentID:customer.getID(req.user),
-                                currentPicture:currentPicture,
-                                totalTransaction:totalTransaction,
-                                receiptFee:receiptFee,
-                                receiptDate:receiptDate,
-                                receiptTotaltime:receiptTotaltime,
-                                receiptBuilding:receiptBuilding});
+         res.render('userinfo', {
+                                 //USER INFO
+                                 currentUsername:req.user[0],
+                                 currentPicture:currentPicture,
+                                 currentEmail:currentEmail,
+                                 currentCustomerType:currentCustomerType,
+                                 currentID:customer.getID(req.user),
+                                 currentFirstname:currentFirstname,
+                                 currentLastname:currentLastname,
+                                 //CAR INFO
+                                 currentCarPicture: currentCarPicture,
+                                 currentBrand:currentBrand,
+                                 currentColor:currentColor,
+                                 currentModel:currentModel,
+                                 currentPlateNumber:currentPlateNumber,
+                                 currentPlateProvince:currentPlateProvince,
+                                 //RECEIPT INFO
+                                 totalTransaction:totalTransaction,
+                                 receiptFee:receiptFee,
+                                 receiptDate:receiptDate,
+                                 receiptTotaltime:receiptTotaltime,
+                                 receiptBuilding:receiptBuilding});
           // ====================================================================
-
        });
    });
 });
@@ -1135,12 +1081,10 @@ app.get('/receipt',loggedIn, function(req, res){
     res.render('receipt');
 });
 
-
-
 // ====================================================================
 //POST ROUTES
 // ====================================================================
-// dew's version
+//MAKING RESERVATION
 app.post('/reserve',loggedIn,async function(req, res){
   reservePlatenumber = req.body.plateNumber;
   reserveBuildingname = req.body.buildingName;
@@ -1206,6 +1150,7 @@ app.post('/reserve',loggedIn,async function(req, res){
             return;
         }
         reserveId = generateTokenID();
+        qrCode = reserveId
         reserve.Reserve(connection,reservePlatenumber,req.user[0], reserveFloor, reserveSlot,reserveBuildingname, reserveId);
         console.log('Reserve finished');
     });
@@ -1226,10 +1171,9 @@ app.post('/reserve',loggedIn,async function(req, res){
         }
         customer.setReservable(connection, req.user[0], 0);
         console.log('set user reservable');
-        // req.flash('success', 'You have made a reservation. Use this QR Code to enter the parking lot.');
         reserveStatus = "Reserved";
         res.render('showqr', {
-            qrCode:reserveId,
+            qrCode:qrCode,
             currentUsername: req.user[0],
             currentPicture: currentPicture,
             message: 'You have made a reservation. Use this QR Code to enter the parking lot.'
@@ -1320,18 +1264,18 @@ app.post('/cancel',loggedIn,async function(req,res){
             return;
         }
         reserve.removeReserve(connection,reserveId);
-        reserveStatus = "Not Reserved",
-        reservePlatenumber = "--",
+        reserveStatus = "Not Reserved"
+        reservePlatenumber = "--"
         reserveBrand = null
         reserveModel = null
         reserveColor = null
         reserveCarPicture = null,
-        reserveBuildingname = "--",
+        reserveBuildingname = "--"
         reserveFloor = null
         reserveSlot = null
         reserveMap = null
         reserveId = null
-        reserveIsfull = null
+        reserveIsfull = '0'
         customerReservable = '1'
     });
     pool.acquire(function (err, connection) {
@@ -1369,10 +1313,8 @@ app.post('/cancel',loggedIn,async function(req,res){
             console.log('Too much cancel, you are banned');
             customer.setReservable(connection,req.user[0],0);
             req.flash('error', 'You are banned from resserving because you cancel more than 5 times.');
-            res.redirect('home');
         }
         req.flash('success', 'Your reservation is cancelled.');
-        reserveStatus = "Not Reserved";
         res.render('home',{lowestFloorArts:lowestFloorArts,
                             lowestSlotArts:lowestSlotArts,
                             artsCapacity:artsCapacity,
@@ -1390,7 +1332,6 @@ app.post('/cancel',loggedIn,async function(req,res){
   }
 });
 
-
 //OPEN FLAP POST REQUEST
 app.post('/openflap',loggedIn,function(req,res){
   pool.acquire(function (err, connection) {
@@ -1406,24 +1347,9 @@ app.post('/openflap',loggedIn,function(req,res){
 
 //not finished wait for check in/out
 //PAY POST REQUEST
-app.post('/pay',loggedIn,function(req,res){
-  if(reserveTimein != null){
-  pool.acquire(function (err, connection) {
-      if (err) {
-          console.error(err);
-          connection.release();
-          return;
-      }
-      transactionId = generateTokenID();
-      // totaltime = functions.stopUserTimer();
-      totaltime = 100;
-      feeRate(currentCustomerType);
-      parkingFee = parseInt(totaltime * feeRate);
-      paymentmethod = 'Kbank';
-      date = transaction.getCurrentDate();
-      transaction.Transaction(connection,reservePlatenumber,req.user[0],reserveFloor,reserveSlot,reserveBuildingname,transactionId,parkingFee,paymentmethod,totaltime,date);
-  });
-  pool.acquire(function (err, connection) {
+app.post('/pay',loggedIn,async function(req,res){
+  if(reserveTimein != check){
+    pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
           connection.release();
@@ -1431,11 +1357,26 @@ app.post('/pay',loggedIn,function(req,res){
       }
       reserve.setHasPaid(connection,reserveId,1);
       reserveStatus = "Not Reserved"
-      res.render('showqr', {qrCode:transactionId,currentUsername: req.user[0],currentPicture: currentPicture});
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+          return;
+      }
+      transactionId = generateTokenID();
+      qrCode = transactionId;
+      totaltime = stopUserTimer();
+      feeRate = feeRate(currentCustomerType);
+      parkingFee = parseInt(totaltime * feeRate);
+      paymentmethod = 'Kbank';
+      date = transaction.getCurrentDate();
+      transaction.Transaction(connection,reservePlatenumber,req.user[0],reserveFloor,reserveSlot,reserveBuildingname,transactionId,parkingFee,paymentmethod,totaltime,date);
+      res.render('showqr', {qrCode:qrCode,currentUsername: req.user[0],currentPicture: currentPicture});
   });
-  sleep(1000*60*15).then(() => {
+    sleep(1000*60*15).then(() => {
     exceedCheckoutTime = true;
-    if(reserveTimeout == null){
+    if(reserveTimeout == check){
       pool.acquire(function (err, connection) {
           if (err) {
               console.error(err);
@@ -1459,9 +1400,10 @@ app.post('/pay',loggedIn,function(req,res){
       //startTimer + 15 minutes
     }
   });
+  }else{
+  res.redirect('status');
 }
 });
-
 
 //CAR REGISTER POST REQUEST
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
@@ -1500,7 +1442,6 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   });
   req.flash('success', 'Your car has been added.')
 },autoReap);
-
 
 //DELETE CAR POST REQUEST
 app.post('/deletecar/:id',loggedIn, function(req,res){
@@ -1541,7 +1482,6 @@ app.post('/deletecar/:id',loggedIn, function(req,res){
   });
 
 },autoReap);
-
 
 //RECEIPT POST REQUEST
 app.post('/receipt/:id',loggedIn,async function(req,res){
@@ -1597,7 +1537,6 @@ app.post('/receipt/:id',loggedIn,async function(req,res){
   });
 });
 
-
 //EDIT USER POST REQUEST
 app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
   console.log('Trying to edit profile');
@@ -1640,7 +1579,6 @@ app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
 },autoReap);
 
 //LOGIN
-//when login button click
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',
     successFlash: 'Successfully logged in',
@@ -1657,7 +1595,6 @@ app.post('/register', upload.single('profilePic'),passport.authenticate('local-s
     failureFlash: true,
     session: false
 }));
-
 
 app.listen(3000, process.env.IP, function(){
     console.log('Park King Server is running on port 3000.....');
