@@ -355,6 +355,8 @@ function loggedInBoolean(req) {
         return false;
     }
 }
+
+//Middlware check if the user is loggedIn
 function loggedIn(req, res, next) {
     if (req.user) {
         console.log('user in login state');
@@ -365,25 +367,32 @@ function loggedIn(req, res, next) {
         res.redirect('/login');
     }
 }
+
+// Middleware Check if the user has already reaserved return next()
 var numReserved;
 function hasReserved(req, res, next) {
-  pool.acquire(function (err, connection) {
-      if (err) {
-          console.error(err);
-          connection.release();
-      }
-      customer.getReservable(connection,req.user[0],function(data){
-        customerReservable = data;
-        console.log(reserveReservable);
-      });
+    pool.acquire(function (err, connection) {
+        if (err) {
+            console.error(err);
+            connection.release();
+        }
+        customer.getReservable(connection,req.user[0],function(data){
+          customerReservable = data;
+          console.log(reserveReservable);
+        });
 
-  });
-  if (customerReservable == 1) {
-    res.redirect('/reserve');
-  }else{
-    return next();
-  }
+    });
+    if (customerReservable == 1) {
+      // req.flash('error', 'You can only view this page after you have reserved.')
+      res.redirect('/reserve');
+    }else{
+      return next();
+    }
 }
+
+
+
+//Calculate the fee rate
 var feeRate;
 function feeRate(customerType){
   if(customerType = 'Student'){
@@ -439,11 +448,167 @@ function sleep(ms){
 app.get('/',loggedIn, function(req, res){
     res.redirect('/home');
 });
+//LOGGING OUT
 app.get('/logout',loggedIn,function(req, res){
   req.logout();
   req.flash('success', 'You are logged out.');
   res.redirect('/login');
 });
+
+//ROUTES TO HOME2
+app.get('/home2',loggedIn, function(req, res){
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      customer.getCustomerPicture(connection,req.user[0],async function(data){
+        currentPicture = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      parkingspot.getTotalSpot(connection,'buildingArts',async function(data){
+        artsCapacity = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      parkingspot.getTotalSpot(connection,'buildingPoli',async function(data){
+        poliCapacity = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      parkingspot.getTotalFreeSpot(connection,'buildingArts',async function(data){
+        totalArtsFreeSpot = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      parkingspot.getTotalFreeSpot(connection,'buildingPoli',async function(data){
+        totalPoliFreeSpot = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      parkingspot.getLowestFloor(connection,'buildingArts',async function(data){
+        lowestFloorArts = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      parkingspot.getLowestSlot(connection,'buildingArts',async function(data){
+        lowestSlotArts = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      parkingspot.getLowestFloor(connection,'buildingPoli',async function(data){
+        lowestFloorPoli = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      parkingspot.getLowestSlot(connection,'buildingPoli',async function(data){
+        lowestSlotPoli = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      car.getAllPlateNumber(connection,req.user[0],function(data){
+        currentPlateNumber = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      car.getAllCarBrand(connection,req.user[0],function(data){
+        currentBrand = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      car.getAllCarModel(connection,req.user[0],function(data){
+        currentModel = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      car.getAllCarColor(connection,req.user[0],function(data){
+        currentColor = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      car.getAllCarPicture(connection,req.user[0],function(data){
+        currentCarPicture = data;
+      });
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      car.getAllPlateProvince(connection,req.user[0],function(data){
+        currentPlateProvince = data;
+
+        // ====================================================================
+        // rendering home page
+        res.render('home2', {lowestFloorArts:lowestFloorArts,
+                            lowestSlotArts:lowestSlotArts,
+                            artsCapacity:artsCapacity,
+                            poliCapacity:poliCapacity,
+                            lowestFloorPoli:lowestFloorPoli,
+                            lowestSlotPoli:lowestSlotPoli,
+                            totalArtsFreeSpot:totalArtsFreeSpot,
+                            totalPoliFreeSpot:totalPoliFreeSpot,
+                            currentUsername: req.user[0],
+                            currentPicture: currentPicture,
+                            reservePlatenumber: reservePlatenumber});
+        // ====================================================================
+      });
+    });
+});
+
 app.get('/home',loggedIn, function(req, res){
     pool.acquire(function (err, connection) {
       if (err) {
@@ -578,6 +743,9 @@ app.get('/home',loggedIn, function(req, res){
       }
       car.getAllPlateProvince(connection,req.user[0],function(data){
         currentPlateProvince = data;
+
+        // ====================================================================
+        // rendering home page
         res.render('home', {lowestFloorArts:lowestFloorArts,
                             lowestSlotArts:lowestSlotArts,
                             artsCapacity:artsCapacity,
@@ -587,12 +755,14 @@ app.get('/home',loggedIn, function(req, res){
                             totalArtsFreeSpot:totalArtsFreeSpot,
                             totalPoliFreeSpot:totalPoliFreeSpot,
                             currentUsername: req.user[0],
-                            currentPicture: currentPicture});
+                            currentPicture: currentPicture,
+                            reservePlatenumber: reservePlatenumber});
+        // ====================================================================
       });
     });
-
 });
 
+//ROUTES TO REGISTER PAGE
 app.get('/register', function(req, res){
     res.render('register');
     //res.sendFile(__dirname + '/register.ejs');
@@ -627,18 +797,22 @@ app.get('/reserve',loggedIn, function(req, res){
     }
     customer.getCancel(connection,req.user[0],function(data){
       cancelTime = data;
+      // ====================================================================
+      //RENDER RESERVE PAGE
       res.render('reserve', {currentCarPicture: currentCarPicture,
                              currentPlateNumber: currentPlateNumber,
                              currentUsername: req.user[0],
                              currentPicture:currentPicture,
                              cancelTime:cancelTime});
-    })
+      // ====================================================================
+
+    });
   });
 });
 
 
 //ROUTE TO QR CODE PAGE
-app.get('/showqr',hasReserved, function(req, res){
+app.get('/showqr', loggedIn, hasReserved, function(req, res){
   var qrCode = req.user[0];
   res.render('showqr', {qrCode:qrCode,currentUsername: req.user[0],currentPicture: currentPicture});
   setInterval(function() {
@@ -774,7 +948,7 @@ app.get('/scanner',loggedIn, function(req,res){
 });
 
 //ROUTE TO STATUS
-app.get('/status',hasReserved,async function(req, res){
+app.get('/status', loggedIn, async function(req, res){
 
   pool.acquire(function (err, connection) {
     if (err) {
@@ -820,6 +994,8 @@ app.get('/status',hasReserved,async function(req, res){
     }
     car.getCarPicture(connection,req.user[0],reservePlatenumber,function(data){
       reserveCarPicture = data;
+      // ====================================================================
+      //RENDERING STATUS PAGE
       res.render('status', {reservePlatenumber:reservePlatenumber,
                           reserveBuildingname:reserveBuildingname,
                           reserveFloor:reserveFloor,
@@ -831,6 +1007,7 @@ app.get('/status',hasReserved,async function(req, res){
                           reserveCarPicture:reserveCarPicture,
                           currentUsername: req.user[0],
                           currentPicture: currentPicture});
+        // ====================================================================
     });
   });
 });
@@ -917,6 +1094,8 @@ app.get('/userinfo', loggedIn, async function(req, res){
        }
        transaction.getAllBuilding(connection,req.user[0],function(data){
          receiptBuilding = data;
+         // ====================================================================
+         //RENDER USERINFO PAGE
          res.render('userinfo', {currentCarPicture: currentCarPicture,
                                 currentBrand:currentBrand,
                                 currentColor:currentColor,
@@ -935,8 +1114,9 @@ app.get('/userinfo', loggedIn, async function(req, res){
                                 receiptDate:receiptDate,
                                 receiptTotaltime:receiptTotaltime,
                                 receiptBuilding:receiptBuilding});
+          // ====================================================================
 
-       })
+       });
    });
 });
 
@@ -951,66 +1131,19 @@ app.get('/edituserinfo', loggedIn, function(req, res){
 
 });
 
-//ROUTE TO TEMPORARY PAGE
-app.get('/temp', loggedIn, function(req, res){
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    customer.getEmail(connection,req.user[0],function(data){
-      currentEmail = data;
-    })
-  });
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    customer.getFirstname(connection,req.user[0],function(data){
-      currentFirstname = data;
-    })
-  });
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    customer.getLastname(connection,req.user[0],function(data){
-      currentLastname = data;
-    })
-  });
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    customer.getCustomerType(connection,req.user[0],function(data){
-      currentCustomerType = data;
-      res.render('temp', {currentCarPicture: currentCarPicture,
-                             currentBrand:currentBrand,
-                             currentColor:currentColor,
-                             currentModel:currentModel,
-                             currentPlateNumber: currentPlateNumber,
-                             currentUsername: req.user[0],
-                             currentEmail:currentEmail,
-                             currentFirstname:currentFirstname,
-                             currentLastname:currentLastname,
-                             currentCustomerType:currentCustomerType,
-                             currentID:customer.getID(req.user),
-                             currentPicture:currentPicture});
-    })
-  });
-});
 
-app.get('/statustemp', function(req, res){
-    res.render('statusTemp');
-});
 
+
+//ROUTE TO RECEIPT PAGE
 app.get('/receipt',loggedIn, function(req, res){
     res.render('receipt');
 });
 
+
+
+// ====================================================================
+//POST ROUTES
+// ====================================================================
 // dew's version
 app.post('/reserve',loggedIn,async function(req, res){
   reservePlatenumber = req.body.plateNumber;
@@ -1098,8 +1231,13 @@ app.post('/reserve',loggedIn,async function(req, res){
         }
         customer.setReservable(connection, req.user[0], 0);
         console.log('set user reservable');
-        req.flash('success', 'You have made a reservation. Use this QR Code to enter the parking lot.');
-        res.render('showqr', {qrCode:reserveId,currentUsername: req.user[0],currentPicture: currentPicture});
+        // req.flash('success', 'You have made a reservation. Use this QR Code to enter the parking lot.');
+        res.render('showqr', {
+            qrCode:reserveId,
+            currentUsername: req.user[0],
+            currentPicture: currentPicture,
+            message: 'You have made a reservation. Use this QR Code to enter the parking lot.'
+          });
     });
     pool.acquire(function (err, connection) {
       if (err) {
@@ -1162,6 +1300,7 @@ app.post('/reserve',loggedIn,async function(req, res){
   }
 });
 
+//CANCELING THE RESERVATION
 app.post('/cancel',loggedIn,async function(req,res){
   pool.acquire(function (err, connection) {
     if (err) {
@@ -1229,6 +1368,8 @@ app.post('/cancel',loggedIn,async function(req,res){
   }
 });
 
+
+//OPEN FLAP POST REQUEST
 app.post('/openflap',loggedIn,function(req,res){
   pool.acquire(function (err, connection) {
       if (err) {
@@ -1242,6 +1383,7 @@ app.post('/openflap',loggedIn,function(req,res){
 });
 
 //not finished wait for check in/out
+//PAY POST REQUEST
 app.post('/pay',loggedIn,function(req,res){
   pool.acquire(function (err, connection) {
       if (err) {
@@ -1295,6 +1437,8 @@ app.post('/pay',loggedIn,function(req,res){
   });
 });
 
+
+//CAR REGISTER POST REQUEST
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
   pool.acquire(function (err, connection) {
@@ -1332,6 +1476,8 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   req.flash('success', 'Your car has been added.')
 },autoReap);
 
+
+//DELETE CAR POST REQUEST
 app.post('/deletecar/:id',loggedIn, function(req,res){
   var id = req.params.id;
   pool.acquire(async function (err, connection) {
@@ -1371,6 +1517,8 @@ app.post('/deletecar/:id',loggedIn, function(req,res){
 
 },autoReap);
 
+
+//RECEIPT POST REQUEST
 app.post('/receipt/:id',loggedIn,async function(req,res){
   var id = req.params.id;
   pool.acquire(function (err, connection) {
@@ -1425,6 +1573,7 @@ app.post('/receipt/:id',loggedIn,async function(req,res){
 });
 
 
+//EDIT USER POST REQUEST
 app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
   console.log('Trying to edit profile');
   pool.acquire(function (err, connection) {
@@ -1465,6 +1614,7 @@ app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
 
 },autoReap);
 
+//LOGIN
 //when login button click
 app.post('/login',passport.authenticate('local-login', {
     successRedirect: '/home',
@@ -1474,6 +1624,7 @@ app.post('/login',passport.authenticate('local-login', {
     session: true
 }));
 
+//REGISTER
 app.post('/register', upload.single('profilePic'),passport.authenticate('local-signup' ,{
     successRedirect: '/login',
     // successFlash: 'You are registered! Please login.',
