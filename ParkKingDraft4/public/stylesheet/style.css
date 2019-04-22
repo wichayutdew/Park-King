@@ -57,6 +57,11 @@ div.main-user-info{
     justify-content: center;
 }
 
+.img-contain {
+  width: 100%;
+  height: auto;
+}
+
 
 /* ============================================================
 Flash message
@@ -90,6 +95,10 @@ a.closeB{
 /* =======================================================================
 Reserve
 ======================================================================= */
+div.card-body{
+  background-image: linear-gradient(#545454, #585858, #545454);
+  color: #d6d6d6;
+}
 .card {
     border-radius: 10px !important;
 }
@@ -138,11 +147,11 @@ Reserve
 
 }
 
-.buildingSelect .buildingBtnGroup .buildingChoice .building.arts {
+.buildingSelect .buildingBtnGroup .buildingChoice .building-arts {
     background-image: url("../img/artbuilding.jpg");
 }
 
-.buildingSelect .buildingBtnGroup .buildingChoice .building.poli {
+.buildingSelect .buildingBtnGroup .buildingChoice .building-poli {
     background-image: url("../img/polibuilding.jpg");
 }
 
@@ -152,53 +161,85 @@ Reserve
     outline: none !important;
 }
 
+.building-pic {
+  width: 100%;
+  height: 100%;
+}
+
 .carSelect {
       /* padding: 50px; */
 }
 
-.carSelect .carBtnGroup {
-      max-width: 1000px;
-      /* margin: auto; */
-}
+/* .carBtnGroup {
+       max-width: 1000px;
+       margin: auto;
+      display: flex;
+      align-content: space-around;
+} */
 
-.carSelect .carBtnGroup .carChoice {
-      padding: 65px;
+.carChoice {
+      /* padding: 65px;  */
       box-shadow: none;
-      position: relative;
+      /* position: relative; */
       border-radius: 10px;
+      flex-basis: 50%;
+
 
 }
 
-.carSelect .carBtnGroup .carChoice.active {
+.carChoice.active {
       outline: none !important;
       border-radius: 10px;
 
 }
 
-.carSelect .carBtnGroup .carChoice.active .method {
+.carChoice.active .method {
       border-color: #04f735;
     border-radius: 10px;
       outline: none !important;
       box-shadow: 0px 3px 22px 0px #7b7b7b;
 }
 
-.carSelect .carBtnGroup .carChoice .method {
-      position: absolute;
-      right: 5px;
+.carChoice .method {
+      /* position: absolute; */
+      /* right: 5px;
       top: 5px;
       bottom: 5px;
-      left: 5px;
+      left: 5px; */
+      max-width: 90%;
       background-size: contain;
       background-position: center;
       background-repeat: no-repeat;
       border: 3px solid transparent;
       transition: all 0.5s;
       border-radius: 10px;
-
 }
 
+.method img {
+  width: 100%;
+}
 
-.carSelect .carBtnGroup .carChoice .method:hover {
+/* HIDE RADIO */
+[type=radio] {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* IMAGE STYLES */
+/* [type=radio] + img {
+  cursor: pointer;
+} */
+
+/* CHECKED STYLES */
+/* [type=radio]:checked + img {
+  border-color: #04f735;
+border-radius: 10px;
+  outline: none !important;
+  box-shadow: 0px 3px 22px 0px #7b7b7b;
+} */
+
+.carChoice .method:hover {
       border-color: #04f735;
     border-radius: 10px;
       outline: none

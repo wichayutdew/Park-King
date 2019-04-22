@@ -20,15 +20,16 @@
             <h3><Strong>YOUR RESERVATION</Strong></h3>
             <section class="info-text-div">
                 <span>Status:</span>
-                <span> <%= reserveStatus %> </span>
+                <span> <%= reserveStatus %></span>
+                <!-- <span>PARKED</span> -->
             </section>
-            <section class="info-text-div center">
+            <!-- <section class="info-text-div center">
                     <li>
                         <img src="data:image/png;base64,<%= reserveMap %>" style="  width: 70px;
                         height: 70px;
                         border-radius: 50%;">
                     </li>
-            </section>
+            </section> -->
             <section class="info-text-div">
                 <span>Building:</span>
                 <span><%= reserveBuildingname %></span>
@@ -43,13 +44,20 @@
             </section>
         </div>
 
+        <div style="margin-bottom: 20px; margin-top: 40px; z-index: -10;" class="infoDiv">
+          <img src="data:image/png;base64,<%= reserveMap %>" class="img-contain" alt="">
+        </div>
+        <!-- <div style="margin-bottom: 20px; margin-top: 40px; z-index: -10;" class="infoDiv">
+          <img src="data:image/png;base64,<%= reserveCarPicture %>" class="img-fluid" alt="">
+        </div> -->
+
 
         <div class="infoDiv dark-grey-div-gradient">
             <h3><Strong>YOUR CAR</Strong></h3>
             <section class="info-text-div center">
                     <li>
-                        <img src="data:image/png;base64,<%= reserveCarPicture %>" style="  width: 70px;
-                        height: 70px;
+                        <img src="data:image/png;base64,<%= reserveCarPicture %>" style="  width: 60%;
+                        height: auto;
                         border-radius: 50%;">
                     </li>
             </section>
