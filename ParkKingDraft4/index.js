@@ -368,7 +368,7 @@ function loggedIn(req, res, next) {
     }
 }
 
-// Middleware Check if the user has already reaserved
+// Middleware Check if the user has already reaserved return next()
 var numReserved;
 function hasReserved(req, res, next) {
     pool.acquire(function (err, connection) {
@@ -383,12 +383,14 @@ function hasReserved(req, res, next) {
 
     });
     if (customerReservable == 1) {
-      req.flash('error', 'You can only view this page after you have reserved.')
-      res.redirect('/reserve');
+      // req.flash('error', 'You can only view this page after you have reserved.')
+      res.redirect('/home2');
     }else{
       return next();
     }
 }
+
+
 
 //Calculate the fee rate
 var feeRate;
@@ -452,7 +454,162 @@ app.get('/logout',loggedIn,function(req, res){
   req.flash('success', 'You are logged out.');
   res.redirect('/login');
 });
-app.get('/home',loggedIn, function(req, res){
+
+//ROUTES TO HOME2
+app.get('/home2',loggedIn, function(req, res){
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      customer.getCustomerPicture(connection,req.user[0],async function(data){
+        currentPicture = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      parkingspot.getTotalSpot(connection,'buildingArts',async function(data){
+        artsCapacity = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      parkingspot.getTotalSpot(connection,'buildingPoli',async function(data){
+        poliCapacity = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      parkingspot.getTotalFreeSpot(connection,'buildingArts',async function(data){
+        totalArtsFreeSpot = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      parkingspot.getTotalFreeSpot(connection,'buildingPoli',async function(data){
+        totalPoliFreeSpot = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      parkingspot.getLowestFloor(connection,'buildingArts',async function(data){
+        lowestFloorArts = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      parkingspot.getLowestSlot(connection,'buildingArts',async function(data){
+        lowestSlotArts = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      parkingspot.getLowestFloor(connection,'buildingPoli',async function(data){
+        lowestFloorPoli = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      parkingspot.getLowestSlot(connection,'buildingPoli',async function(data){
+        lowestSlotPoli = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      car.getAllPlateNumber(connection,req.user[0],function(data){
+        currentPlateNumber = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      car.getAllCarBrand(connection,req.user[0],function(data){
+        currentBrand = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      car.getAllCarModel(connection,req.user[0],function(data){
+        currentModel = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      car.getAllCarColor(connection,req.user[0],function(data){
+        currentColor = data;
+      })
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      car.getAllCarPicture(connection,req.user[0],function(data){
+        currentCarPicture = data;
+      });
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      car.getAllPlateProvince(connection,req.user[0],function(data){
+        currentPlateProvince = data;
+
+        // ====================================================================
+        // rendering home page
+        res.render('home2', {lowestFloorArts:lowestFloorArts,
+                            lowestSlotArts:lowestSlotArts,
+                            artsCapacity:artsCapacity,
+                            poliCapacity:poliCapacity,
+                            lowestFloorPoli:lowestFloorPoli,
+                            lowestSlotPoli:lowestSlotPoli,
+                            totalArtsFreeSpot:totalArtsFreeSpot,
+                            totalPoliFreeSpot:totalPoliFreeSpot,
+                            currentUsername: req.user[0],
+                            currentPicture: currentPicture,
+                            reservePlatenumber: reservePlatenumber});
+        // ====================================================================
+      });
+    });
+});
+
+app.get('/home',loggedIn, hasReserved, function(req, res){
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
@@ -603,7 +760,6 @@ app.get('/home',loggedIn, function(req, res){
         // ====================================================================
       });
     });
-
 });
 
 //ROUTES TO REGISTER PAGE

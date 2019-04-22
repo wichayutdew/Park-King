@@ -66,8 +66,8 @@ p.flash-message {
     text-align: center;
     color: white !important;
     font-size: 15px !important;
-    padding: 3px 2px;
-    border-radius: 10px;
+    padding: 5px 2px;
+    border-radius: 5px;
   }
 
   p.error {
@@ -81,6 +81,11 @@ p.flash-message {
   p.gone {
     display: none;
   }
+
+a.closeB{
+  color: white;
+  text-decoration: underline;
+}
 
 /* =======================================================================
 Reserve

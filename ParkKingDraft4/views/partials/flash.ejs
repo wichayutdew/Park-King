@@ -1,17 +1,24 @@
 <% if(error && error.length > 0){ %>
   <p class="flash-message error">
-    <%= error %>
+    <span><%= error %></span>
+    <span><a class="closeB">close</a></span>
   </p>
 <% } %>
 
 <% if(success && success.length > 0){ %>
   <p class="flash-message success">
-    <%= success %>
+    <span><%= success %></span>
+    <span><a class="closeB">close</a></span>
   </p>
 <% } %>
 
+
 <script type="text/javascript">
-  var flashTimeId = setTimeout(function(){
+  // var flashTimeId = setTimeout(function(){
+  //   $('.flash-message').slideUp(500);
+  // }, 5000);
+
+  $('.closeB').on('click', function(){
     $('.flash-message').slideUp(500);
-  }, 5000);
+  });
 </script>
