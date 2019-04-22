@@ -803,7 +803,7 @@ app.get('/status',hasReserved,async function(req, res){
       reserveColor = data;
     })
   });
-  await sleep(1000);
+  await sleep(3000);
   pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
