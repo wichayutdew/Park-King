@@ -44,7 +44,7 @@ div.main-user-info{
 
 .info-text-div{
     display: flex;
-    flex-direction: row;
+    flex-direc=-tion: row;
     justify-content: space-between;
     padding: 0 5px 10px 5px;
 }
@@ -55,6 +55,11 @@ div.main-user-info{
 
 .center-flex {
     justify-content: center;
+}
+
+.img-contain {
+  width: 100%;
+  height: auto;
 }
 
 
