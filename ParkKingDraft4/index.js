@@ -1,3 +1,5 @@
+var isScan = false;
+var obb = {isScan: isScan};
 //require Customer.js file
 var currentUsername,currentEmail,currentFirstname,currentLastname,currentCustomerType,currentID,currentPicture,cancelTime,customerReservable;
 const customer = require('./Customer.js');
@@ -786,8 +788,11 @@ app.get('/reserve',loggedIn, function(req, res){
 });
 
 //ROUTE TO QR CODE PAGE
-app.get('/showqr', loggedIn,hasReserved, async function(req, res){
-  res.render('showqr', {qrCode: qrCode,currentUsername: req.user[0],currentPicture: currentPicture});
+app.get('/showqr', loggedIn, async function(req, res){
+  res.render('showqr', {qrCode: qrCode,
+                        currentUsername: req.user[0],
+                        currentPicture: currentPicture,
+                        isScan: isScan});
   setInterval(function() {
     console.log('Please wait for check-in/check-out');
     pool.acquire(function (err, connection) {
@@ -852,6 +857,10 @@ app.get('/showqr', loggedIn,hasReserved, async function(req, res){
   },5000);
 });
 
+app.route('/getScan').get(function(req, res, next){
+  res.json(obb);
+});
+
 // const Instascan = require('instascan');
 // import React, { Component } from 'react'
 // import QrReader from 'react-qr-reader'
@@ -891,7 +900,7 @@ app.get('/scanner',loggedIn, function(req,res){
 });
 
 //ROUTE TO STATUS
-app.get('/status', loggedIn, hasReserved, function(req, res){
+app.get('/status', loggedIn, function(req, res){
   pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
@@ -1085,6 +1094,7 @@ app.get('/receipt',loggedIn, function(req, res){
 //POST ROUTES
 // ====================================================================
 //MAKING RESERVATION
+//ADD SENSOR CHECK
 app.post('/reserve',loggedIn,async function(req, res){
   reservePlatenumber = req.body.plateNumber;
   reserveBuildingname = req.body.buildingName;
@@ -1150,7 +1160,8 @@ app.post('/reserve',loggedIn,async function(req, res){
             return;
         }
         reserveId = generateTokenID();
-        qrCode = reserveId
+        qrCode = reserveId;
+        isScan = true;
         reserve.Reserve(connection,reservePlatenumber,req.user[0], reserveFloor, reserveSlot,reserveBuildingname, reserveId);
         console.log('Reserve finished');
     });
@@ -1333,19 +1344,11 @@ app.post('/cancel',loggedIn,async function(req,res){
 });
 
 //OPEN FLAP POST REQUEST
-app.post('/openflap',loggedIn,function(req,res){
-  pool.acquire(function (err, connection) {
-      if (err) {
-          console.error(err);
-          connection.release();
-          return;
-      }
-      parkingspot.setFlap(connection,reserveBuildingname,reserveFloor,reserveSlot,1);
-      res.redirect('showqr');
-  });
+app.post('/openflap',function(req,res){
+
 });
 
-//not finished wait for check in/out
+//not finished wait for check in/out, SENSORCHECK
 //PAY POST REQUEST
 app.post('/pay',loggedIn,async function(req,res){
   if(reserveTimein != check){
@@ -1369,6 +1372,9 @@ app.post('/pay',loggedIn,async function(req,res){
       totaltime = stopUserTimer();
       feeRate = feeRate(currentCustomerType);
       parkingFee = parseInt(totaltime * feeRate);
+      if(exceedCheckoutTime == true){
+        parkingFee += parseInt(15 * feeRate);
+      }
       paymentmethod = 'Kbank';
       date = transaction.getCurrentDate();
       transaction.Transaction(connection,reservePlatenumber,req.user[0],reserveFloor,reserveSlot,reserveBuildingname,transactionId,parkingFee,paymentmethod,totaltime,date);
