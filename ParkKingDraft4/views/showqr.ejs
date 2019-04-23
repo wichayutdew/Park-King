@@ -11,6 +11,7 @@
   <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
   <script type="text/javascript" src="./js/qrcode.js"></script>
 
+
   <style type="text/css">
     #main {
       text-align: center;
@@ -24,14 +25,83 @@
       background-color: white;
       padding: 30px 0;
     }
-    /* body {
-        background-image: url("../colors/ColorBackGroundOrange.jpg");
-        background-size: auto;
-        background-repeat: no-repeat;
-      } */
-
-
   </style>
+  <script>
+var config = {
+	mqtt_server: "m24.cloudmqtt.com",
+	mqtt_websockets_port: 34366,
+	mqtt_user: "vxamsplq",
+	mqtt_password: "VQ5vPZMpOmrc"
+};
+
+$(document).ready(function(e) {
+	// Create a client instance
+	client = new Paho.MQTT.Client(config.mqtt_server, config.mqtt_websockets_port, "web_" + parseInt(Math.random() * 100, 10));
+	//Example client = new Paho.MQTT.Client("m11.cloudmqtt.com", 32903, "web_" + parseInt(Math.random() * 100, 10));
+	// connect the client
+	client.connect({
+		useSSL: true,
+		userName: config.mqtt_user,
+		password: config.mqtt_password,
+		onSuccess: function() {
+			// Once a connection has been made, make a subscription and send a message.
+			// console.log("onConnect");
+			$("#status").text("Connected").removeClass().addClass("connected");
+			client.subscribe("/PARKINGFLAP");
+			mqttSend("/PARKINGFLAP", "PREVIOUS");
+		},
+		onFailure: function(e) {
+			$("#status").text("Error : " + e).removeClass().addClass("error");
+			// console.log(e);
+		}
+	});
+
+	client.onConnectionLost = function(responseObject) {
+		if (responseObject.errorCode !== 0) {
+			$("#status").text("onConnectionLost:" + responseObject.errorMessage).removeClass().addClass("connect");
+			setTimeout(function() { client.connect() }, 1000);
+		}
+	}
+
+	client.onMessageArrived = function(message) {
+		// $("#status").text("onMessageArrived:" + message.payloadString).removeClass().addClass("error");
+		console.log(message.payloadString);
+		if (message.payloadString == "open" || message.payloadString == "close") {
+			$("#open").attr("disabled", (message.payloadString == "open" ? true : false));
+			$("#close").attr("disabled", (message.payloadString == "close" ? true : false));
+		}
+	}
+
+  var isScan;
+  function checkScan(){
+    $.get('/getScan', function(data){
+      isScan = data.isScan;
+      console.log('Scan status:'+isScan);
+    });
+  }
+  setInterval(checkScan,1000)
+
+	$("#open").click(function(e) {
+    if(isScan){
+      console.log('openning flap');
+      mqttSend("/PARKINGFLAP", "OPEN");
+    } else {
+      console.log('scan first');
+    }
+
+    });
+
+	$("#close").click(function(e) {
+        mqttSend("/PARKINGFLAP", "CLOSE");
+    });
+});
+
+var mqttSend = function(topic, msg) {
+	var message = new Paho.MQTT.Message(msg);
+	message.destinationName = topic;
+	client.send(message);
+}
+</script>
 
 </head>
 
@@ -58,9 +128,13 @@
     <div class="col" id="qrcode">
     </div>
 
-    <form action="/openflap"  class="openflap" method="POST">
-        <button class="button green" type="submit" id="opnflap">Open Flap</button>
-    </form>
+    <h3>LED Control : <span id="status" class="connect">Connect...</span></h3>
+    <!-- <hr /> -->
+
+
+      <button type="submit" id="open">OPEN</button>
+
+    &nbsp;&nbsp;&nbsp;<button id="close">CLOSE</button>
     <form action="/cancel"  class="cancel" method="POST">
         <button class="button purple" type="submit" id="cancel">Cancel</button>
     </form>
@@ -95,8 +169,9 @@
 
 
   <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="./js/jquery-1.11.3.min.js"></script>
+  <script src="./js/mqttws31.js"></script>
 
 
 </body>
