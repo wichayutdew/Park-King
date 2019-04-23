@@ -369,7 +369,7 @@ function loggedIn(req, res, next) {
 
 // Middleware Check if the user has already reaserved return next()
 function hasReserved(req, res, next) {
-    if (customerReservable == '1') {
+    if (customerReservable == 1) {
       res.redirect('/reserve');
     }else{
       return next();
@@ -421,7 +421,6 @@ function sleep(ms){
 //=======================================================
 // ROUTES
 //=======================================================
-
 //ROUTE TO HOME PAGE
 app.get('/',loggedIn, function(req, res){
     res.redirect('/home');
@@ -597,8 +596,7 @@ app.get('/home',loggedIn, async function(req, res){
       customer.getReservable(connection,req.user[0],function(data){
         customerReservable = data;
       });
-
-  });
+    });
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
@@ -794,7 +792,7 @@ app.get('/showqr', loggedIn,hasReserved, async function(req, res){
                         currentUsername: req.user[0],
                         currentPicture: currentPicture,
                         isScan: isScan});
-  setInterval(function() {
+  setInterval(async function() {
     console.log('Please wait for check-in/check-out');
     pool.acquire(function (err, connection) {
       if (err) {
@@ -814,7 +812,7 @@ app.get('/showqr', loggedIn,hasReserved, async function(req, res){
         reserveTimeout= data;
       });
     });
-
+    await sleep(2000);
     if(reserveTimein != check && reserveTimeout == check){
         pool.acquire(function (err, connection) {
           if (err) {
@@ -844,7 +842,7 @@ app.get('/showqr', loggedIn,hasReserved, async function(req, res){
               console.error(err);
               connection.release();
             }
-            reserveIsfull = '0';
+            reserveIsfull = 0;
             parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,0);
 
           });
@@ -853,7 +851,7 @@ app.get('/showqr', loggedIn,hasReserved, async function(req, res){
               console.error(err);
               connection.release();
             }
-            customerReservable = '1';
+            customerReservable = 1;
             customer.setReservable(connection,req.user[0],1);
           });
         }
@@ -1152,7 +1150,7 @@ app.post('/reserve',loggedIn,async function(req, res){
         console.log(reserveIsfull);
       });
   });
-  if(customerReservable == '0' || reserveIsfull == '1'){
+  if(customerReservable == 0 || reserveIsfull == 1){
     console.log('your accout is decline to reserve');
     req.flash('error', 'Your account cannot reserve.');
     res.redirect('/home');
@@ -1177,7 +1175,7 @@ app.post('/reserve',loggedIn,async function(req, res){
             connection.release();
             return;
         }
-        reserveIsfull = '1';
+        reserveIsfull = 1;
         parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,1);
         console.log('set parking spot occupied');
     });
@@ -1188,7 +1186,7 @@ app.post('/reserve',loggedIn,async function(req, res){
             connection.release();
             return;
         }
-        customerReservable = '0';
+        customerReservable = 0;
         customer.setReservable(connection, req.user[0],0);
         console.log('set user reservable');
         reserveStatus = "Reserved";
@@ -1225,7 +1223,7 @@ app.post('/reserve',loggedIn,async function(req, res){
               connection.release();
               return;
           }
-          customerReservable = '1';
+          customerReservable = 1;
           customer.setReservable(connection,req.user[0],1);
       });
         pool.acquire(function (err, connection) {
@@ -1243,7 +1241,7 @@ app.post('/reserve',loggedIn,async function(req, res){
               connection.release();
               return;
           }
-          reserveIsfull = '0';
+          reserveIsfull = 0;
           parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,0);
       });
         pool.acquire(function (err, connection) {
@@ -1254,10 +1252,12 @@ app.post('/reserve',loggedIn,async function(req, res){
           }
           if(cancelTime > 5){
               console.log('Too much cancellation, you are banned');
-              customerReservable = '0';
+              customerReservable = 0;
               customer.setReservable(connection,req.user[0],0);
-
           }
+          reserveStatus = "Not Reserved"
+          reservePlatenumber = "--"
+          reserveBuildingname = "--"
       });
       }
     });
@@ -1295,7 +1295,7 @@ app.post('/cancel',loggedIn,async function(req,res){
             connection.release();
             return;
         }
-        customerReservable = '1';
+        customerReservable = 1;
         customer.setReservable(connection,req.user[0],1);
     });
     pool.acquire(function (err, connection) {
@@ -1313,10 +1313,23 @@ app.post('/cancel',loggedIn,async function(req,res){
             connection.release();
             return;
         }
-        reserveIsfull = '0';
+        reserveIsfull = 0;
         parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,0);
     });
     await sleep(3000);
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      parkingspot.getTotalFreeSpot(connection,reserveBuildingname,async function(data){
+        if(reserveBuildingname = "buildingArts"){
+          totalArtsFreeSpot = data;
+        }else{
+          totalPoliFreeSpot = data;
+        }
+      })
+    });
     pool.acquire(function (err, connection) {
         if (err) {
             console.error(err);
@@ -1325,21 +1338,13 @@ app.post('/cancel',loggedIn,async function(req,res){
         }
         if(cancelTime > 5){
             console.log('Too much cancel, you are banned');
-            customerReservable = '0';
+            customerReservable = 0;
             customer.setReservable(connection,req.user[0],0);
             req.flash('error', 'You are banned from resserving because you cancel more than 5 times.');
         }
         reserveStatus = "Not Reserved"
         reservePlatenumber = "--"
-        reserveBrand = null
-        reserveModel = null
-        reserveColor = null
-        reserveCarPicture = null,
         reserveBuildingname = "--"
-        reserveFloor = null
-        reserveSlot = null
-        reserveMap = null
-        reserveId = null
         req.flash('success', 'Your reservation is cancelled.');
         res.render('home',{lowestFloorArts:lowestFloorArts,
                             lowestSlotArts:lowestSlotArts,
@@ -1361,6 +1366,16 @@ app.post('/cancel',loggedIn,async function(req,res){
 //not finished wait for check in/out, SENSORCHECK
 //PAY POST REQUEST
 app.post('/pay',loggedIn,async function(req,res){
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    reserve.getTimeIn(connection,reserveId,function(data){
+      reserveTimein = data;
+    });
+  });
+  await sleep(2000);
   if(reserveTimein != check){
     pool.acquire(function (err, connection) {
       if (err) {
@@ -1394,6 +1409,15 @@ app.post('/pay',loggedIn,async function(req,res){
   });
     sleep(1000*60*15).then(() => {
     exceedCheckoutTime = true;
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      reserve.getTimeOut(connection,reserveId,function(data){
+        reserveTimeout= data;
+      });
+    });
     if(reserveTimeout == check){
       pool.acquire(function (err, connection) {
           if (err) {
