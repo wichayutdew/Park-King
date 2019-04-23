@@ -867,7 +867,7 @@ app.route('/getScan').get(function(req, res, next){
 // import React, { Component } from 'react'
 // import QrReader from 'react-qr-reader'
 
-app.get('/scanner',loggedIn, function(req,res){
+app.get('/scanner', function(req,res){
   // global.$ = $;
   // let Instascan = require('instascan');
   // console.log('try to scan...');
