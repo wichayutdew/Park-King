@@ -1,1 +1,1 @@
-var window.Instascan = require('./index');
+window.Instascan = require('./index');
