@@ -1,99 +1,98 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Park King</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Park King</title>
 
-        <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link rel="stylesheet" href="/stylesheet/style.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
 
-        <link rel="stylesheet" href="/stylesheet/style.css">
-        <!-- Jquery -->
-        <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
-        <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
+</head>
+<body>
 
-    </head>
-    <body>
 
-      <% include partials/menuBar %>
-      <% include partials/flash %>
+    <% include partials/menuBar %>
+    <% include partials/flash %>
 
-      <div class="main-user-info">
-        <div class="infoDiv purple">
-
-          <h3><Strong>Free Spot</Strong></h3>
-
-          <p>Arts Building: <%= totalArtsFreeSpot %> of <%= artsCapacity %>
-            <br>lowest Free Spot: Floor: <%= lowestFloorArts %> Slot: <%= lowestSlotArts %>
-            <br>
-            Political science Building: <%= totalPoliFreeSpot %> of <%= poliCapacity %>
-            <br>lowest Free Spot: Floor: <%= lowestFloorPoli %> Slot: <%= lowestSlotPoli %>
-          </p>
-        </div>
+    <div class="main-user-info">
+      <div class="infoDiv dark-grey-div-gradient">
+          <h3><Strong>ARTS BUILDING</Strong></h3>
+          <section class="info-text-div">
+              <span>Free spot:</span>
+              <span><%= totalArtsFreeSpot %> of <%= artsCapacity %></span>
+          </section>
+          <section class="info-text-div">
+              <span>Lowest Floor Available:</span>
+              <span><%= lowestFloorArts %></span>
+          </section>
+          <section class="info-text-div">
+              <span>Lowest Spot Available</span>
+              <span><%= lowestSlotArts %></span>
+          </section>
       </div>
-      <!-- <div id="main" style="margin-top: 20px !important;">
-
-
-
-        <div id="firstPage" class="d-flex">
-          <div class="container text-center pt-5 h-100">
-            <div class="header">
-              <h1><strong> Park King</strong></h1>
-            </div>
-
-            <div id="carouselExampleSlidesOnly" class="carousel slide h-100" data-ride="carousel" data-interval="3000">
-              <div class="carousel-inner">
-                <div class="carousel-item active">
-                  <img class="d-block w-100" src="img/slide1.jpg" alt="First slide" height="400px">
-                </div>
-                <div class="carousel-item">
-                  <img class="d-block w-100" src="img/slide2.jpg" alt="Second slide" height="400px">
-                </div>
-                <div class="carousel-item">
-                  <img class="d-block w-100" src="img/slide3.jpg" alt="Third slide" height="400px">
-                </div>
-              </div>
-            </div>
-
-
-          </div>
-
-        </div>
-
-
-
-
-        <div id="info1Div" class="infoDiv text-center">
-
-          <h3><Strong>PARK KING</Strong></h3>
-
-          <p>Book a parking spot anyhwere anytime using any devices</p>
-        </div>
-
-
-
-        <div id="info2Div" class="infoDiv text-center">
-            <h3><strong>Park Convinently</strong></h3>
-            <p>Do not waste your time finding a perfect parking spot. You can book an available spot fpr your car before you even arrive at the campus!!</p>
-        </div>
-        <div id="info3Div" class="infoDiv text-center">
-            <h3><strong>No Parking Ticket</strong></h3>
-
-          </div>
-              <div id="info4Div" class="infoDiv text-center">
-          <h3><strong>Real-Time Status</strong></h3>
-          <p>Our sytem will update your parked car live to your device, so you know exactly how long you have parked and the parking fee.</p>
-
-        </div>
+      <div class="infoDiv dark-grey-div-gradient">
+          <h3><Strong>POLITICAL SCIENCE BUILDING</Strong></h3>
+          <section class="info-text-div">
+              <span>Free spot:</span>
+              <span><%= totalPoliFreeSpot %> of <%= poliCapacity %></span>
+          </section>
+          <section class="info-text-div">
+              <span>Lowest Floor Available:</span>
+              <span><%= lowestFloorPoli %></span>
+          </section>
+          <section class="info-text-div">
+              <span>Lowest Spot Available</span>
+              <span><%= lowestSlotPoli %></span>
+          </section>
       </div>
+        <div class="infoDiv dark-grey-div-gradient">
+            <h3><Strong>YOUR RESERVATION</Strong></h3>
+            <section class="info-text-div">
+                <span>Status:</span>
+                <span><%= reserveStatus %></span>
+                <!-- <span>PARKED</span> -->
+            </section>
+            <section class="info-text-div">
+                <span>Building:</span>
+                <span><%= reserveBuildingname %></span>
+                <!-- <span>Arts</span> -->
+            </section>
+            <section class="info-text-div">
+                <span>Car</span>
+                <span><%= reservePlatenumber %></span>
+                <!-- <span>1234</span> -->
+            </section>
+        </div>
 
-    </div> -->
+
+        <div class="infoDiv dark-grey-div-gradient">
+            <h3><Strong>RULES</Strong></h3>
+            <section class="info-text-div center">
+                <span>1. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex, atque.</span>
+            </section>
+            <section class="info-text-div center">
+                <span>2. Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus, pariatur?</span>
+            </section>
+            <section class="info-text-div center">
+                <span>3. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Incidunt, quaerat.</span>
+            </section>
+        </div>
+    </div>
 
 
 
 
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
-    </body>
+
+
+
+
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+</body>
 </html>
