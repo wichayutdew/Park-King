@@ -110,6 +110,9 @@ div.card-body {
 .buildingSelect .buildingBtnGroup {
   /* max-width: 1000px;
   margin: auto; */
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
 }
 
 .buildingChoice {
@@ -118,7 +121,8 @@ div.card-body {
   /* position: relative; */
   /* border-radius: 10px; */
   /* flex-basis: 50%; */
-
+  display: flex;
+  justify-content: center;
 }
 
 /* .buildingChoice.active {
@@ -144,7 +148,7 @@ div.card-body {
   border: 3px solid transparent;
   transition: all 0.5s;
   border-radius: 10px;
-  width: 45%;
+  width: 90%;
   float: left;
 
 }
@@ -179,12 +183,19 @@ div.card-body {
       display: flex;
       align-content: space-around;
 } */
+
+.carBtnGroup {
+  display: flex;
+  justify-content: center;
+}
 .carChoice {
   /* padding: 65px;  */
   box-shadow: none;
   /* position: relative; */
   border-radius: 10px;
-  flex-basis: 50%;
+  flex-basis: 90%;
+  display: flex;
+  justify-content: center;
 }
 
 .carChoice.active {
@@ -212,6 +223,7 @@ div.card-body {
   border: 3px solid transparent;
   transition: all 0.5s;
   border-radius: 10px;
+  padding-bottom: 5px;
 }
 
 .method img {
