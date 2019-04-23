@@ -72,7 +72,7 @@ $(document).ready(function(e) {
 		}
 	}
 
-  var isScan = false;
+  var isScan;
   function checkScan(){
     $.get('/getScan', function(data){
       isScan = data.isScan;
