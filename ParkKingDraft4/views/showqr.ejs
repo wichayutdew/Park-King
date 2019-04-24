@@ -88,12 +88,22 @@ $(document).ready(function(e) {
     } else {
       console.log('scan first');
     }
-
-    });
-
+    var r = confirm("Do you want to open the parking flap?");
+    if (r == true) {
+      return;
+    } else {
+      return false;
+  }
+  });
 	$("#close").click(function(e) {
-        mqttSend("/PARKINGFLAP", "CLOSE");
-    });
+      mqttSend("/PARKINGFLAP", "CLOSE");
+      var r = confirm("Do you want to close the parking flap?");
+      if (r == true) {
+        return;
+      } else {
+        return false;
+    }
+  });
 });
 
 var mqttSend = function(topic, msg) {
@@ -134,7 +144,7 @@ var mqttSend = function(topic, msg) {
 
       <button type="submit" id="open">OPEN</button>
 
-    &nbsp;&nbsp;&nbsp;<button id="close">CLOSE</button>
+    &nbsp;&nbsp;&nbsp;<button type="submit" id="close">CLOSE</button>
     <form action="/cancel"  class="cancel" method="POST">
         <button class="button purple" type="submit" id="cancel">Cancel</button>
     </form>
