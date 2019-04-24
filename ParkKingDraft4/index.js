@@ -322,6 +322,7 @@ passport.use('local-login', new LocalStrategy({
 //===================================================================================================================================================
 // Operation
 //===================================================================================================================================================
+// ALL TIMER IS IN SECOND(TO CHANGE TO MINUTES CHANGE /1000 TO /60000)
 var Stopwatch = require('statman-stopwatch');
 var stopwatch = new Stopwatch();
 //start user's timer
@@ -330,7 +331,7 @@ function startUserTimer(){
 }
 //stop the stopwatch
 function stopUserTimer(){
-  var totalTime = parseInt(stopwatch.stop()/60000);
+  var totalTime = parseInt(stopwatch.stop()/1000);
   stopwatch.reset();
   return totalTime;
 }
@@ -746,6 +747,7 @@ app.get('/home',loggedIn, async function(req, res){
         // ====================================================================
       });
     });
+    feeRate = feeRate(currentCustomerType);
     setInterval(async function() {
       console.log('Please wait for check-in/check-out');
       pool.acquire(function (err, connection) {
@@ -814,7 +816,13 @@ app.get('/home',loggedIn, async function(req, res){
             isScan = false;
           }
         }
-      console.log(parseInt(stopwatch.read()/1000));
+      totaltime = parseInt(stopwatch.read()/1000);
+      parkingFee = parseInt(totaltime * feeRate);
+      if(exceedCheckoutTime == true){
+        parkingFee += parseInt(15 * feeRate);
+      }
+      console.log(totaltime);
+      console.log(parkingFee);
     },1000);
 });
 
@@ -1361,7 +1369,6 @@ app.post('/pay',loggedIn,async function(req,res){
       isScan = false;
       obb = {isScan: isScan};
       totaltime = stopUserTimer();
-      feeRate = feeRate(currentCustomerType);
       parkingFee = parseInt(totaltime * feeRate);
       if(exceedCheckoutTime == true){
         parkingFee += parseInt(15 * feeRate);
@@ -1509,7 +1516,7 @@ app.post('/receipt/:id',loggedIn,async function(req,res){
         receiptTimeOut = data;
       })
   });
-  await sleep(100);
+  await sleep(500);
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
