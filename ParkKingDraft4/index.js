@@ -779,7 +779,8 @@ app.get('/home',loggedIn, async function(req, res){
           });
           if(reserveQRin == reserveId && reserveStatus != "Checked In" && qrCode == reserveQRin){
               startUserTimer();
-              reserveStatus = "Checked In"
+              reserveStatus = "Checked In";
+              isScan = true;
           }
       }else if(reserveTimeout != check){
           pool.acquire(function (err, connection) {
@@ -809,7 +810,8 @@ app.get('/home',loggedIn, async function(req, res){
               customerReservable = 1;
               customer.setReservable(connection,req.user[0],1);
             });
-            reserveStatus = "Checked Out"
+            reserveStatus = "Checked Out";
+            isScan = false;
           }
         }
       console.log(parseInt(stopwatch.read()/1000));
@@ -860,10 +862,6 @@ app.get('/showqr', loggedIn,hasReserved,function(req, res){
 app.route('/getScan').get(function(req, res, next){
   res.json(obb);
 });
-
-// const Instascan = require('instascan');
-// import React, { Component } from 'react'
-// import QrReader from 'react-qr-reader'
 
 app.get('/scanner', function(req,res){
   res.render('scanner');
@@ -972,7 +970,7 @@ app.get('/userinfo', loggedIn, async function(req, res){
        currentCustomerType = data;
      })
    });
-   await sleep(1000);
+   await sleep(2000);
    pool.acquire(function (err, connection) {
      if (err) {
        console.error(err);
@@ -1131,7 +1129,6 @@ app.post('/reserve',loggedIn,async function(req, res){
         }
         reserveId = generateTokenID();
         qrCode = reserveId;
-        isScan = true;
         obb = {isScan: isScan};
         reserve.Reserve(connection,reservePlatenumber,req.user[0], reserveFloor, reserveSlot,reserveBuildingname, reserveId);
         console.log('Reserve finished');
