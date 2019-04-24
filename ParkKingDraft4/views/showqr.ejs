@@ -111,11 +111,17 @@ var mqttSend = function(topic, msg) {
   <% include partials/flash %>
 
 
+  <% if(success && success.length > 0){ %>
+    <p class="flash-message success">
+      <span><%= message %></span>
+      <span><a class="closeB">close</a></span>
+    </p>
+  <% } %>
 
   <script type="text/javascript">
-    var flashTimeId = setTimeout(function(){
+    $('.closeB').on('click', function(){
       $('.flash-message').slideUp(500);
-    }, 5000);
+    });
   </script>
 
   <div id="main">
