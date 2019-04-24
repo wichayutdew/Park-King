@@ -16,6 +16,7 @@
           console.log('scanner');
           let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
           scanner.addListener('scan', function (content) {
+            $.post('/qrcode', {data: content});
             console.log(content);
           });
           Instascan.Camera.getCameras().then(cameras =>
