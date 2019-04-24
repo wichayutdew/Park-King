@@ -746,6 +746,74 @@ app.get('/home',loggedIn, async function(req, res){
         // ====================================================================
       });
     });
+    setInterval(async function() {
+      console.log('Please wait for check-in/check-out');
+      pool.acquire(function (err, connection) {
+        if (err) {
+          console.error(err);
+          connection.release();
+        }
+        reserve.getTimeIn(connection,reserveId,function(data){
+          reserveTimein = data;
+        });
+      });
+      pool.acquire(function (err, connection) {
+        if (err) {
+          console.error(err);
+          connection.release();
+        }
+        reserve.getTimeOut(connection,reserveId,function(data){
+          reserveTimeout= data;
+        });
+      });
+      await sleep(500);
+      if(reserveTimein != check && reserveTimeout == check){
+          pool.acquire(function (err, connection) {
+            if (err) {
+              console.error(err);
+              connection.release();
+            }
+            reserve.getQRCodeIn(connection,reserveId,function(data){
+                reserveQRin = data;
+            });
+          });
+          if(reserveQRin == reserveId && reserveStatus != "Checked In" && qrCode == reserveQRin){
+              startUserTimer();
+              reserveStatus = "Checked In"
+          }
+      }else if(reserveTimeout != check){
+          pool.acquire(function (err, connection) {
+            if (err) {
+              console.error(err);
+              connection.release();
+            }
+            reserve.getQRCodeOut(connection,reserveId,function(data){
+                reserveQRout = data;
+            });
+          });
+          if(reserveQRout == transactionId && reserveStatus != "Checked Out" && qrCode == reserveQRout){
+            pool.acquire(function (err, connection) {
+              if (err) {
+                console.error(err);
+                connection.release();
+              }
+              reserveIsfull = 0;
+              parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,0);
+
+            });
+            pool.acquire(function (err, connection) {
+              if (err) {
+                console.error(err);
+                connection.release();
+              }
+              customerReservable = 1;
+              customer.setReservable(connection,req.user[0],1);
+            });
+            reserveStatus = "Checked Out"
+          }
+        }
+      console.log(parseInt(stopwatch.read()/1000));
+    },1000);
 });
 
 //ROUTES TO REGISTER PAGE
@@ -782,79 +850,11 @@ app.get('/reserve',loggedIn, function(req, res){
 });
 
 //ROUTE TO QR CODE PAGE
-app.get('/showqr', loggedIn,hasReserved, async function(req, res){
+app.get('/showqr', loggedIn,hasReserved,function(req, res){
   res.render('showqr', {qrCode: qrCode,
                         currentUsername: req.user[0],
                         currentPicture: currentPicture,
                         isScan: isScan});
-  setInterval(async function() {
-    console.log('Please wait for check-in/check-out');
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      reserve.getTimeIn(connection,reserveId,function(data){
-        reserveTimein = data;
-      });
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      reserve.getTimeOut(connection,reserveId,function(data){
-        reserveTimeout= data;
-      });
-    });
-    await sleep(500);
-    if(reserveTimein != check && reserveTimeout == check){
-        pool.acquire(function (err, connection) {
-          if (err) {
-            console.error(err);
-            connection.release();
-          }
-          reserve.getQRCodeIn(connection,reserveId,function(data){
-              reserveQRin = data;
-          });
-        });
-        if(reserveQRin == reserveId && reserveStatus != "Checked In"){
-            startUserTimer();
-            reserveStatus = "Checked In"
-        }
-    }else if(reserveTimeout != check){
-        pool.acquire(function (err, connection) {
-          if (err) {
-            console.error(err);
-            connection.release();
-          }
-          reserve.getQRCodeOut(connection,reserveId,function(data){
-              reserveQRout = data;
-          });
-        });
-        if(reserveQRout == transactionId){
-          pool.acquire(function (err, connection) {
-            if (err) {
-              console.error(err);
-              connection.release();
-            }
-            reserveIsfull = 0;
-            parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,0);
-
-          });
-          pool.acquire(function (err, connection) {
-            if (err) {
-              console.error(err);
-              connection.release();
-            }
-            customerReservable = 1;
-            customer.setReservable(connection,req.user[0],1);
-          });
-          reserveStatus = "Checked Out"
-        }
-      }
-    console.log(parseInt(stopwatch.read()/1000));
-  },1000);
 });
 
 app.route('/getScan').get(function(req, res, next){
