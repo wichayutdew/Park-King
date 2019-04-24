@@ -330,8 +330,8 @@ function startUserTimer(){
 }
 //stop the stopwatch
 function stopUserTimer(){
-  var totalTime = parseInt(stopwatch.read()/1000);
-  stopwatch.stop();
+  var totalTime = parseInt(stopwatch.stop()/1000);
+  stopwatch.reset();
   return totalTime;
 }
 // //check log-in state
@@ -800,7 +800,7 @@ app.get('/showqr', loggedIn,hasReserved, async function(req, res){
         reserveTimeout= data;
       });
     });
-    await sleep(100);
+    await sleep(500);
     if(reserveTimein != check && reserveTimeout == check){
         pool.acquire(function (err, connection) {
           if (err) {
@@ -1097,7 +1097,7 @@ app.post('/reserve',loggedIn,async function(req, res){
       });
   });
   //wait for update request
-  await sleep(100);
+  await sleep(200);
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
@@ -1274,7 +1274,7 @@ app.post('/cancel',loggedIn,async function(req,res){
         reserveIsfull = 0;
         parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,0);
     });
-    await sleep(200);
+    await sleep(500);
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
