@@ -7,10 +7,8 @@ var arriveTimeout = 0;
 var leftTimeout = 0;
 
 
-
-
 //start user's timer
-exports.startUserTimer = function(){
+function startUserTimer(){
   stopwatch.start();
 }
 
@@ -26,7 +24,7 @@ function userCurrentTime() {
 }
 
 //stop the stopwatch
-exports.stopUserTimer = function(){
+function stopUserTimer(){
   var totalTime = parseInt(stopwatch.read()/60000);
   clearInterval(elaspedInterval);
   stopwatch.stop();

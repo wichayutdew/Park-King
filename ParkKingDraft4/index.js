@@ -324,25 +324,13 @@ passport.use('local-login', new LocalStrategy({
 //===================================================================================================================================================
 var Stopwatch = require('statman-stopwatch');
 var stopwatch = new Stopwatch();
-var elaspedInterval = 0;
 //start user's timer
 function startUserTimer(){
   stopwatch.start();
 }
-//show elasped time
-function userCurrentTime() {
-  elaspedInterval = setInterval(function() {
-    var time = parseInt(stopwatch.read()/1000);
-    var hours = ~~(time / 3600);
-    var min = ~~((time % 3600) / 60);
-    var sec = time % 60;
-    console.log(hours+":"+min+":"+sec);
-  },1000);
-}
 //stop the stopwatch
 function stopUserTimer(){
   var totalTime = parseInt(stopwatch.read()/1000);
-  clearInterval(elaspedInterval);
   stopwatch.stop();
   return totalTime;
 }
@@ -723,7 +711,7 @@ app.get('/home',loggedIn, async function(req, res){
         currentCarPicture = data;
       });
     });
-    await sleep(1000);
+    await sleep(100);
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
@@ -812,7 +800,7 @@ app.get('/showqr', loggedIn,hasReserved, async function(req, res){
         reserveTimeout= data;
       });
     });
-    await sleep(2000);
+    await sleep(100);
     if(reserveTimein != check && reserveTimeout == check){
         pool.acquire(function (err, connection) {
           if (err) {
@@ -825,6 +813,7 @@ app.get('/showqr', loggedIn,hasReserved, async function(req, res){
         });
         if(reserveQRin == reserveId){
             startUserTimer();
+            reserveStatus = "Checked In"
         }
     }else if(reserveTimeout != check){
         pool.acquire(function (err, connection) {
@@ -854,6 +843,7 @@ app.get('/showqr', loggedIn,hasReserved, async function(req, res){
             customerReservable = 1;
             customer.setReservable(connection,req.user[0],1);
           });
+          reserveStatus = "Checked Out"
         }
       }
   },5000);
@@ -868,60 +858,20 @@ app.route('/getScan').get(function(req, res, next){
 // import QrReader from 'react-qr-reader'
 
 app.get('/scanner', function(req,res){
-  // global.$ = $;
-  // let Instascan = require('instascan');
-  // console.log('try to scan...');
-  // let scanner = new Instascan.Scanner(
-  //     {
-  //       // Whether to scan continuously for QR codes. If false, use scanner.scan() to manually scan.
-  //       // If true, the scanner emits the "scan" event when a QR code is scanned. Default true.
-  //       continuous: true,
-  //
-  //       // The HTML element to use for the camera's video preview. Must be a <video> element.
-  //       // When the camera is active, this element will have the "active" CSS class, otherwise,
-  //       // it will have the "inactive" class. By default, an invisible element will be created to
-  //       // host the video.
-  //       video: document.getElementById('preview'),
-  //
-  //       // Whether to horizontally mirror the video preview. This is helpful when trying to
-  //       // scan a QR code with a user-facing camera. Default true.
-  //       mirror: true,
-  //
-  //       // Whether to include the scanned image data as part of the scan result. See the "scan" event
-  //       // for image format details. Default false.
-  //       captureImage: false,
-  //
-  //       // Only applies to continuous mode. Whether to actively scan when the tab is not active.
-  //       // When false, this reduces CPU usage when the tab is not active. Default true.
-  //       backgroundScan: true,
-  //
-  //       // Only applies to continuous mode. The period, in milliseconds, before the same QR code
-  //       // will be recognized in succession. Default 5000 (5 seconds).
-  //       refractoryPeriod: 5000,
-  //
-  //       // Only applies to continuous mode. The period, in rendered frames, between scans. A lower scan period
-  //       // increases CPU usage but makes scan response faster. Default 1 (i.e. analyze every frame).
-  //       scanPeriod: 1
-  //     }
-  // );
-  // scanner.addListener('scan', function(content) {
-  //     alert('Do you want to open this page?: ' + content);
-  //     window.open(content, "_blank");
-  //     //console.log(content);
-  // });
-  // Instascan.Camera.getCameras().then(cameras =>
-  // {
-  //     if(cameras.length > 0){
-  //         scanner.start(cameras[0]);
-  //     } else {
-  //         console.error("Please enable Camera!");
-  //     }
-  // });
   res.render('scanner');
 });
 
 //ROUTE TO STATUS
 app.get('/status', loggedIn,hasReserved, async function(req, res){
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    parkingspot.getMapLocation(connection,reserveBuildingname,reserveFloor,reserveSlot,function(data){
+      reserveMap = data;
+    })
+  });
   pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
@@ -949,16 +899,7 @@ app.get('/status', loggedIn,hasReserved, async function(req, res){
       reserveColor = data;
     })
   });
-  await sleep(1000)
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    parkingspot.getMapLocation(connection,reserveBuildingname,reserveFloor,reserveSlot,function(data){
-      reserveMap = data;
-    })
-  });
+  await sleep(500)
   pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
@@ -1023,7 +964,7 @@ app.get('/userinfo', loggedIn, async function(req, res){
        currentCustomerType = data;
      })
    });
-   await(3000);
+   (1000);
    pool.acquire(function (err, connection) {
      if (err) {
        console.error(err);
@@ -1155,9 +1096,8 @@ app.post('/reserve',loggedIn,async function(req, res){
         console.log(reserveSlot);
       });
   });
-
   //wait for update request
-  await sleep(2000);
+  await sleep(100);
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
@@ -1198,7 +1138,7 @@ app.post('/reserve',loggedIn,async function(req, res){
         parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,1);
         console.log('set parking spot occupied');
     });
-    await sleep(2000);
+    await sleep(100);
     pool.acquire(function (err, connection) {
         if (err) {
             console.error(err);
@@ -1294,7 +1234,6 @@ app.post('/cancel',loggedIn,async function(req,res){
       cancelTime = data;
     })
   });
-  await sleep(1000);
   if(exceedReservetime == true){
       console.log('You cannot cancel the reservation');
       req.flash('error', 'You cannot cancel the reservation');
@@ -1335,7 +1274,7 @@ app.post('/cancel',loggedIn,async function(req,res){
         reserveIsfull = 0;
         parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,0);
     });
-    await sleep(3000);
+    await sleep(200);
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
@@ -1349,6 +1288,10 @@ app.post('/cancel',loggedIn,async function(req,res){
         }
       })
     });
+    await sleep(10);
+    reserveStatus = "Cancelled"
+    reservePlatenumber = "--"
+    reserveBuildingname = "--"
     pool.acquire(function (err, connection) {
         if (err) {
             console.error(err);
@@ -1361,9 +1304,6 @@ app.post('/cancel',loggedIn,async function(req,res){
             customer.setReservable(connection,req.user[0],0);
             req.flash('error', 'You are banned from resserving because you cancel more than 5 times.');
         }
-        reserveStatus = "Not Reserved"
-        reservePlatenumber = "--"
-        reserveBuildingname = "--"
         req.flash('success', 'Your reservation is cancelled.');
         res.render('home',{lowestFloorArts:lowestFloorArts,
                             lowestSlotArts:lowestSlotArts,
@@ -1394,7 +1334,7 @@ app.post('/pay',loggedIn,async function(req,res){
       reserveTimein = data;
     });
   });
-  await sleep(2000);
+  await sleep(100);
   if(reserveTimein != check){
     pool.acquire(function (err, connection) {
       if (err) {
@@ -1403,7 +1343,7 @@ app.post('/pay',loggedIn,async function(req,res){
           return;
       }
       reserve.setHasPaid(connection,reserveId,1);
-      reserveStatus = "Not Reserved"
+      reserveStatus = "Paid"
     });
     pool.acquire(function (err, connection) {
       if (err) {
@@ -1427,18 +1367,9 @@ app.post('/pay',loggedIn,async function(req,res){
       res.render('showqr', {qrCode:qrCode,currentUsername: req.user[0],currentPicture: currentPicture});
   });
     sleep(1000*60*15).then(() => {
-    exceedCheckoutTime = true;
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      reserve.getTimeOut(connection,reserveId,function(data){
-        reserveTimeout= data;
-      });
-    });
-    if(reserveTimeout == check){
-      pool.acquire(function (err, connection) {
+      exceedCheckoutTime = true;
+      if(reserveTimeout == check){
+        pool.acquire(function (err, connection) {
           if (err) {
               console.error(err);
               connection.release();
@@ -1448,7 +1379,7 @@ app.post('/pay',loggedIn,async function(req,res){
           reserve.Reserve(connection,reservePlatenumber,req.user[0], reserveFloor, reserveSlot,reserveBuildingname, reserveId);
           console.log('re reserved');
       });
-      pool.acquire(function (err, connection) {
+        pool.acquire(function (err, connection) {
           if (err) {
               console.error(err);
               connection.release();
@@ -1458,12 +1389,12 @@ app.post('/pay',loggedIn,async function(req,res){
           reserve.setTimeIn(connection,reserveId,reserveTimein);
           console.log('set timein');
       });
-      //startTimer + 15 minutes
-    }
-  });
+        startUserTimer();
+      }
+    });
   }else{
   res.redirect('status');
-}
+  }
 });
 
 //CAR REGISTER POST REQUEST
@@ -1538,7 +1469,6 @@ app.post('/deletecar/:id',loggedIn, function(req,res){
         return element !== undefined;
       });
       req.flash('success', 'Your car has been deleted');
-      await sleep(1000);
       res.redirect('/userinfo');
   });
 
@@ -1574,7 +1504,7 @@ app.post('/receipt/:id',loggedIn,async function(req,res){
         receiptTimeOut = data;
       })
   });
-  await sleep(1000);
+  await sleep(100);
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
