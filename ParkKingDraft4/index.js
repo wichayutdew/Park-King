@@ -330,7 +330,7 @@ function startUserTimer(){
 }
 //stop the stopwatch
 function stopUserTimer(){
-  var totalTime = parseInt(stopwatch.stop()/1000);
+  var totalTime = parseInt(stopwatch.stop()/60000);
   stopwatch.reset();
   return totalTime;
 }
@@ -397,6 +397,13 @@ function generateTokenID(){
   const uuidv4 = require('uuid/v4');
   var tokenID = uuidv4();
   return tokenID;
+}
+
+//GET CURRENT TIME
+function getCurrentTime(){
+  var today = new Date();
+  var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+  return time;
 }
 
 //TIMEOUT FUNCTION
@@ -811,7 +818,7 @@ app.get('/showqr', loggedIn,hasReserved, async function(req, res){
               reserveQRin = data;
           });
         });
-        if(reserveQRin == reserveId){
+        if(reserveQRin == reserveId && reserveStatus != "Checked In"){
             startUserTimer();
             reserveStatus = "Checked In"
         }
@@ -846,7 +853,8 @@ app.get('/showqr', loggedIn,hasReserved, async function(req, res){
           reserveStatus = "Checked Out"
         }
       }
-  },5000);
+    console.log(parseInt(stopwatch.read()/1000));
+  },1000);
 });
 
 app.route('/getScan').get(function(req, res, next){
@@ -964,7 +972,7 @@ app.get('/userinfo', loggedIn, async function(req, res){
        currentCustomerType = data;
      })
    });
-   (1000);
+   await sleep(1000);
    pool.acquire(function (err, connection) {
      if (err) {
        console.error(err);
@@ -1097,7 +1105,7 @@ app.post('/reserve',loggedIn,async function(req, res){
       });
   });
   //wait for update request
-  await sleep(200);
+  await sleep(500);
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
@@ -1234,7 +1242,7 @@ app.post('/cancel',loggedIn,async function(req,res){
       cancelTime = data;
     })
   });
-  if(exceedReservetime == true){
+  if(exceedReservetime == true || reserveTimein != check){
       console.log('You cannot cancel the reservation');
       req.flash('error', 'You cannot cancel the reservation');
       res.redirect('/home');
@@ -1322,7 +1330,7 @@ app.post('/cancel',loggedIn,async function(req,res){
   }
 });
 
-//not finished wait for check in/out, SENSORCHECK
+//SENSORCHECK
 //PAY POST REQUEST
 app.post('/pay',loggedIn,async function(req,res){
   pool.acquire(function (err, connection) {
@@ -1588,7 +1596,44 @@ app.post('/register', upload.single('profilePic'),passport.authenticate('local-s
 }));
 
 app.post('/qrcode', function(req, res){
-  console.log(req.body.data);
+  var scannedQR = req.body.data;
+  console.log(scannedQR);
+  if(scannedQR == reserveId){
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      reserveQRin = scannedQR;
+      reserve.setQRCodeIn(connection,reserveId,reserveQRin);
+    });
+
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      reserveTimein = getCurrentTime();
+      reserve.setTimeIn(connection,reserveId,reserveTimein);
+    });
+  }else if(scannedQR == transactionId){
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      reserveQRout = scannedQR;
+      reserve.setQRCodeOut(connection,reserveId,reserveQRout);
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      reserveTimeout = getCurrentTime();
+      reserve.setTimeOut(connection,reserveId,reserveTimeout);
+    });
+  }
 });
 
 app.listen(3000, process.env.IP, function(){

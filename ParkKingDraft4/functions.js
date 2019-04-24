@@ -37,12 +37,11 @@ exports.getCurrentDate = function(){
   var date = today.getDate() + "/" + today.getMonth() + "/" + today.getFullYear();
   return date;
 }
-exports.getCurrentTime = function(){
+function getCurrentTime(){
   var today = new Date();
   var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
   return time;
 }
-
 
 //****************************************************ID Check field*****************************************
 //generate random unique id (npm install uuid)
