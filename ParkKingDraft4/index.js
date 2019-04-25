@@ -583,6 +583,12 @@ app.get('/home2',loggedIn, function(req, res){
 });
 
 //ROUTE TO HOME
+app.get('/reserveStatus', function(req, res){
+  console.log(reserveStatus);
+  res.send({
+    reserveStatus: reserveStatus
+  });
+});
 app.get('/home',loggedIn, async function(req, res){
     pool.acquire(function (err, connection) {
       if (err) {

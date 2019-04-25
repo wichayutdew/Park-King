@@ -71,8 +71,8 @@ function getTimeandFee(){
     const currentFee = document.querySelector('#currentFee');
     // console.log(data.totaltime);
     // console.log(data.parkingFee);
-    hoursElement.textContent = 0;
-    minutesElement.textContent = data.totaltime;
+    hoursElement.textContent = data.hours;
+    minutesElement.textContent = data.mins;
     currentFee.textContent = data.parkingFee + ' Baht';
   })
   .fail(function(){
