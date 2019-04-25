@@ -60,3 +60,27 @@ function startTimer(){
 */
 
 // countDownClock(30, 'minutes');
+
+
+//get Time from the node Server
+function getTimeandFee(){
+  $.get('/getTimeandFee')
+  .done(function(data){
+    const hoursElement = document.querySelector('.hours');
+    const minutesElement = document.querySelector('.minutes');
+    const currentFee = document.querySelector('#currentFee');
+    // console.log(data.totaltime);
+    // console.log(data.parkingFee);
+    hoursElement.textContent = 0;
+    minutesElement.textContent = data.totaltime;
+    currentFee.textContent = data.parkingFee + ' Baht';
+  })
+  .fail(function(){
+    console.log('err');
+  });
+}
+
+
+//call getTimeandFee every 0.5s
+
+var getTimeandFeeIntervalID = setInterval(getTimeandFee, 500);

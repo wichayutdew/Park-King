@@ -829,6 +829,13 @@ app.get('/home',loggedIn, async function(req, res){
     },1000);
 });
 
+app.get('/getTimeandFee', function(req, res){
+  res.send({
+    totaltime: totaltime,
+    parkingFee: parkingFee
+  });
+});
+
 //------------------------------------------------------------------------------------------------------------//
 //------------------------------------------------------------------------------------------------------------//
 //ROUTES TO REGISTER PAGE
