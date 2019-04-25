@@ -13,7 +13,6 @@ const parkingspot = require('./ParkingSpot.js');
 var artsCapacity, poliCapacity;
 const building = require('./Building.js');
 //require Reserve.js file
-var exceedReservetime = false;
 var reserveStatus = "Not Reserved",reservePlatenumber = "--",reserveBrand,reserveModel,reserveColor,reserveCarPicture,reserveBuildingname = "--",reserveFloor,reserveSlot,reserveMap,reserveId,reserveIsfull,reserveCheckIn,reserveCheckOut,reserveTimein,reserveTimeout,reserveQRin,reserveQRout;
 const reserve = require('./Reserve.js');
 var qrCode;
@@ -821,9 +820,6 @@ app.get('/home',loggedIn, async function(req, res){
         }
       totaltime = parseInt(stopwatch.read()/1000);
       parkingFee = parseInt(totaltime * feeRate);
-      if(exceedCheckoutTime == true){
-        parkingFee += parseInt(15 * feeRate);
-      }
       console.log(totaltime);
       console.log(parkingFee);
       console.log(reserveTimein);
@@ -1166,7 +1162,7 @@ app.post('/reserve',loggedIn,async function(req, res){
         parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,1);
         console.log('set parking spot occupied');
     });
-    await sleep(100);
+    await sleep(200);
     pool.acquire(function (err, connection) {
         if (err) {
             console.error(err);
@@ -1194,7 +1190,6 @@ app.post('/reserve',loggedIn,async function(req, res){
       })
     });
     sleep(1000*60*30).then(() => {
-      exceedReservetime = true;
       if(reserveTimein == check){
         pool.acquire(function (err, connection) {
           if (err) {
@@ -1262,7 +1257,7 @@ app.post('/cancel',loggedIn,async function(req,res){
       cancelTime = data;
     })
   });
-  if(exceedReservetime == true || reserveTimein != check){
+  if(reserveTimein != check){
       console.log('You cannot cancel the reservation');
       req.flash('error', 'You cannot cancel the reservation');
       res.redirect('/home');
@@ -1387,6 +1382,7 @@ app.post('/pay',loggedIn,async function(req,res){
       parkingFee = parseInt(totaltime * feeRate);
       if(exceedCheckoutTime == true){
         parkingFee += parseInt(15 * feeRate);
+        exceedCheckoutTime = false;
       }
       paymentmethod = 'Kbank';
       date = transaction.getCurrentDate();
@@ -1407,15 +1403,17 @@ app.post('/pay',loggedIn,async function(req,res){
           reserve.Reserve(connection,reservePlatenumber,req.user[0], reserveFloor, reserveSlot,reserveBuildingname, reserveId);
           console.log('re reserved');
         });
-        pool.acquire(function (err, connection) {
-          if (err) {
+        sleep(200).then(() => {
+          pool.acquire(function (err, connection) {
+            if (err) {
               console.error(err);
               connection.release();
               return;
           }
-          reserveTimein = getCurrentTime();
-          reserve.setTimeIn(connection,reserveId,reserveTimein);
-          console.log('set timein');
+            reserveTimein = getCurrentTime();
+            reserve.setTimeIn(connection,reserveId,reserveTimein);
+            console.log('set timein');
+          });
         });
         startUserTimer();
       }
