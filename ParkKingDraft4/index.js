@@ -18,7 +18,7 @@ const reserve = require('./Reserve.js');
 var qrCode;
 //require TransactionReceipt.js file
 var exceedCheckoutTime = false;
-var transactionId,totaltime,parkingFee,paymentmethod,date,totalTransaction=[];
+var transactionId,totaltime,parkingFee,addedFee = 0,paymentmethod,date,totalTransaction=[];
 const transaction = require('./TransactionReceipt.js');
 
 var receiptFee,receiptTotaltime,receiptBuilding,receiptDate,receiptFirstname,receiptLastname,receiptTimeIn,receiptTimeOut,receiptPaymentmethod,receiptPlatenumber;
@@ -825,7 +825,7 @@ app.get('/home',loggedIn, async function(req, res){
           }
         }
       totaltime = parseInt(stopwatch.read()/1000);
-      parkingFee = parseInt(totaltime * feeRate);
+      parkingFee = parseInt((totaltime * feeRate) + addedFee);
       console.log(totaltime);
       console.log(parkingFee);
       console.log(reserveTimein);
@@ -1394,9 +1394,9 @@ app.post('/pay',loggedIn,async function(req,res){
       isScan = false;
       obb = {isScan: isScan};
       totaltime = stopUserTimer();
-      parkingFee = parseInt(totaltime * feeRate);
+      parkingFee = parseInt((totaltime * feeRate) + addedFee);
       if(exceedCheckoutTime == true){
-        parkingFee += parseInt(15 * feeRate);
+        addedFee = 0;
         exceedCheckoutTime = false;
       }
       paymentmethod = 'Kbank';
@@ -1404,7 +1404,7 @@ app.post('/pay',loggedIn,async function(req,res){
       transaction.Transaction(connection,reservePlatenumber,req.user[0],reserveFloor,reserveSlot,reserveBuildingname,transactionId,parkingFee,paymentmethod,totaltime,date);
       res.render('showqr', {qrCode:qrCode,currentUsername: req.user[0],currentPicture: currentPicture});
   });
-    sleep(1000*60*15).then(() => {
+    sleep(1000*5).then(() => {
       exceedCheckoutTime = true;
       if(reserveTimeout == check){
         pool.acquire(function (err, connection) {
@@ -1430,6 +1430,7 @@ app.post('/pay',loggedIn,async function(req,res){
             console.log('set timein');
           });
         });
+        addedFee = parseInt(15 * feeRate);
         startUserTimer();
       }
     });
