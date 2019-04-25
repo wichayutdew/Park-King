@@ -771,7 +771,7 @@ app.get('/home',loggedIn, async function(req, res){
           reserveTimeout= data;
         });
       });
-      await sleep(500);
+      await sleep(100);
       if(reserveTimein != check && reserveTimeout == check){
           pool.acquire(function (err, connection) {
             if (err) {
@@ -826,6 +826,8 @@ app.get('/home',loggedIn, async function(req, res){
       }
       console.log(totaltime);
       console.log(parkingFee);
+      console.log(reserveTimein);
+      console.log(reserveTimeout);
     },1000);
 });
 
@@ -990,7 +992,7 @@ app.get('/userinfo', loggedIn, async function(req, res){
        currentCustomerType = data;
      })
    });
-   await sleep(2000);
+   await sleep(500);
    pool.acquire(function (err, connection) {
      if (err) {
        console.error(err);
@@ -1027,6 +1029,7 @@ app.get('/userinfo', loggedIn, async function(req, res){
          receiptTotaltime = data;
        })
    });
+   await sleep(500);
    pool.acquire(function (err, connection) {
        if (err) {
            console.error(err);
@@ -1239,7 +1242,7 @@ app.post('/reserve',loggedIn,async function(req, res){
               customerReservable = 0;
               customer.setReservable(connection,req.user[0],0);
           }
-          reserveStatus = "Not Reserved"
+          reserveStatus = "Cancelled from reserve time out"
           reservePlatenumber = "--"
           reserveBuildingname = "--"
       });
@@ -1399,25 +1402,26 @@ app.post('/pay',loggedIn,async function(req,res){
               connection.release();
               return;
           }
+          reserveStatus = "Reserve from payment time out"
           reserveId = generateTokenID();
           reserve.Reserve(connection,reservePlatenumber,req.user[0], reserveFloor, reserveSlot,reserveBuildingname, reserveId);
           console.log('re reserved');
-      });
+        });
         pool.acquire(function (err, connection) {
           if (err) {
               console.error(err);
               connection.release();
               return;
           }
-          reserveTimein = functions.getCurrentTime();
+          reserveTimein = getCurrentTime();
           reserve.setTimeIn(connection,reserveId,reserveTimein);
           console.log('set timein');
-      });
+        });
         startUserTimer();
       }
     });
   }else{
-  res.redirect('status');
+    res.redirect('status');
   }
 });
 
