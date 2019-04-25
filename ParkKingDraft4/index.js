@@ -830,8 +830,17 @@ app.get('/home',loggedIn, async function(req, res){
 });
 
 app.get('/getTimeandFee', function(req, res){
+  var mins, hours;
+  if(totaltime/60>=1){
+    hours = Math.floor(totaltime/60);
+    mins = totaltime-(hours*60);
+  } else {
+    hours = 0;
+    mins = totaltime;
+  }
   res.send({
-    totaltime: totaltime,
+    mins: mins,
+    hours: hours,
     parkingFee: parkingFee
   });
 });
