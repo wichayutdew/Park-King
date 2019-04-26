@@ -85,7 +85,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(session({
     secret: "Fuck You",
-    resave: true,
+    resave: false,
     saveUninitialized: true
 }));
 
@@ -425,6 +425,10 @@ app.get('/logout',loggedIn,function(req, res){
   req.logout();
   req.flash('success', 'You are logged out.');
   res.redirect('/login');
+});
+
+app.get('/getthisusername', function(req, res){
+  res.send(req.user);
 });
 
 //ROUTES TO HOME2
