@@ -24,6 +24,7 @@
     div#qrcode {
       background-color: white;
       padding: 30px 0;
+      border-radius: 10px;
     }
   </style>
   <script>
@@ -155,11 +156,9 @@ var getReserveStatusID = setInterval(function(){
     <h3>LED Control : <span id="status" class="connect">Connect...</span></h3>
     <!-- <hr /> -->
 
-
     <button class="buttonhalf blue2" type="submit" id="open">OPEN</button>
-
-    <!-- &nbsp;&nbsp;&nbsp; -->
     <button class="buttonhalf purple" type="submit" id="close">CLOSE</button>
+
     <form action="/cancel"  class="cancel" method="POST">
         <button class="button pink2" type="submit" id="cancel">Cancel</button>
     </form>

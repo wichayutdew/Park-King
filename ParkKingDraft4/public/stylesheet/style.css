@@ -4,6 +4,11 @@ body {
   font-family: 'Lato', sans-serif;
 }
 
+.openClose{
+  display:flex;
+  align-items:center;
+}
+
 .button {
   color: #707070;
   text-decoration: none;
@@ -17,8 +22,8 @@ body {
 
 .buttonhalf {
   text-decoration: none;
-  width: 50%;
   float: left;
+  width: 50%;
   text-align: center;
   padding: 10px 20px;
   border-radius: 10px;

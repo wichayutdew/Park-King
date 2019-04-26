@@ -56,14 +56,14 @@
 
                 <% for(i = 0; i < currentPlateNumber.length; i++){ %>
                   <div class="car-div">
-                    <li><img src="data:image/png;base64,<%= currentCarPicture[i] %>" width="50%"></li>
+                    <li><img src="data:image/png;base64,<%= currentCarPicture[i] %>" width="50%" style="border-radius:10px;"></li>
                     <li style="padding-bottom: 20px;">Plate Number : <%=currentPlateNumber[i]%><br>
                                                       Province : <%=currentPlateProvince[i]%><br>
                                                       Brand : <%=currentBrand[i]%><br>
                                                       Model : <%=currentModel[i]%><br>
                                                       Color : <%=currentColor[i]%></li>
                   <form action="/deletecar/<%= i %>" class="deletecar" enctype="multipart/form-data" method="POST">
-                    <li><button type="submit" class="button green" style="width: auto;">Delete Car</button></li>
+                    <li><button type="submit" class="button purple" style="width: auto;">Delete Car</button></li>
                   </form>
                   </div>
                 <% } %>
@@ -79,7 +79,7 @@
                 </script>
 
                 <li>
-                    <a href="/carregister" class="button purple">Add Car</a>
+                    <a href="/carregister" class="button green">Add Car</a>
                 </li>
 
 
