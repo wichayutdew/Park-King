@@ -3,6 +3,32 @@ var ConnectionPool = require('tedious-connection-pool');
 var Request = require('tedious').Request;
 var TYPES =require('tedious').TYPES;
 
+
+//*******************************************************Create class object***********************************************
+exports.createTransaction = function() {
+   this.exceedCheckoutTime = false;
+   this.transactionId = null;
+   this.totaltime = null;
+   this.parkingFee = null;
+   this.addedFee = 0;
+   this.paymentmethod = null;
+   this.date = null;
+   this.totalTransaction=[];
+}
+
+exports.createReceipt = function() {
+  this.receiptFee = null;
+  this.receiptTotaltime = null;
+  this.receiptBuilding = null;
+  this.receiptDate = null;
+  this.receiptFirstname = null;
+  this.receiptLastname = null;
+  this.receiptTimeIn = null;
+  this.receiptTimeOut = null;
+  this.receiptPaymentmethod = null;
+  this.receiptPlatenumber = null;
+}
+
 //*******************************************************Transaction's Adder***********************************************
 exports.Transaction = function(connection,platenumber,username,floor,slot,buildingname,transactionid,fee,paymentmethod,totaltime,date){
   var request = new Request('INSERT INTO dbo.TransactionReceipt (PlateNumber,Username,Floor,Slot,BuildingName,TransactionID,Fee,PaymentMethod,TotalTime,Date) VALUES (@platenumber,@username,@floor,@slot,@buildingname,@transactionid,@fee,@paymentmethod,@totaltime,@date)',

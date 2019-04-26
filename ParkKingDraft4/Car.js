@@ -3,6 +3,18 @@ var ConnectionPool = require('tedious-connection-pool');
 var Request = require('tedious').Request;
 var TYPES =require('tedious').TYPES;
 
+
+//*******************************************************Create class object***********************************************
+exports.createCar = function() {
+   this.currentPlateNumber=[];
+   this.currentBrand=[];
+   this.currentModel=[];
+   this.currentColor=[];
+   this.currentCarPicture=[];
+   this.currentPlateProvince=[];
+}
+
+
 //*******************************************************Inserting new car into database***********************************************
 exports.insert_newCar = function(connection,car_info,username){
   var request = new Request('INSERT INTO dbo.Car (PlateNumber,Username,CarBrand,CarModel,CarColor,CarPicture,PlateProvince) VALUES (@PlateNumber,@Username,@CarBrand,@CarModel,@CarColor,@CarPicture,@PlateProvince)',

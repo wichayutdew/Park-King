@@ -3,6 +3,29 @@ var ConnectionPool = require('tedious-connection-pool');
 var Request = require('tedious').Request;
 var TYPES =require('tedious').TYPES;
 
+
+//*******************************************************Create class object***********************************************
+exports.createReserve = function() {
+   this.currentPlateNumber=[];
+   this.reserveStatus = "Not Reserved";
+   this.reservePlatenumber = "--";
+   this.reserveBrand = null;
+   this.reserveModel = null;
+   this.reserveColor = null;
+   this.reserveCarPicture = null;
+   this.reserveBuildingname = "--";
+   this.reserveFloor = null;
+   this.reserveSlot = null;
+   this.reserveMap = null;
+   this.reserveId = null;
+   this.reserveIsfull = null;
+   this.reserveTimein = null;
+   this.reserveTimeout = null;
+   this.reserveQRin = null;
+   this.reserveQRout = null;
+   this.qrCode = null;
+}
+
 //*******************************************************Inserting new Reserve into database***********************************************
 exports.Reserve = function(connection,platenumber, username, floor, slot, buildingname, reserveid){
   var request = new Request('INSERT INTO dbo.Reserve (PlateNumber,Username,Floor,Slot,BuildingName,QRCodeIn,QRCodeOut,Time_In,Time_Out,reserveID,hasPaid) VALUES (@platenumber,@username,@floor,@slot,@buildingname,@qrcodein,@qrcodeout,@time_in,@time_out,@reserveid,@haspaid)',
