@@ -1404,7 +1404,7 @@ app.post('/pay',loggedIn,async function(req,res){
       transaction.Transaction(connection,reservePlatenumber,req.user[0],reserveFloor,reserveSlot,reserveBuildingname,transactionId,parkingFee,paymentmethod,totaltime,date);
       res.render('showqr', {qrCode:qrCode,currentUsername: req.user[0],currentPicture: currentPicture});
   });
-    sleep(1000*5).then(() => {
+    sleep(1000*60*15).then(() => {
       exceedCheckoutTime = true;
       if(reserveTimeout == check){
         pool.acquire(function (err, connection) {
