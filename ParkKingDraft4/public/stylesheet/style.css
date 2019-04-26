@@ -12,6 +12,20 @@ body {
   padding: 10px 20px;
   border-radius: 10px;
   font-size: 16px;
+  border: none;
+}
+
+.buttonhalf {
+  text-decoration: none;
+  width: 50%;
+  float: left;
+  text-align: center;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 16px;
+  border: none;
+  color: white;
+  flex-basis: 22%;
 }
 
 .buttom-border-lg {
@@ -228,6 +242,7 @@ div.card-body {
 
 .method img {
   width: 100%;
+  border-radius: 10px;
 }
 
 
@@ -289,6 +304,13 @@ Set background color using class
   /* background-repeat: no-repeat; */
 }
 
+.blue2 {
+  background-image: url("../colors/ColorBackgroundBlue.jpg");
+  background-size: cover;
+  color: white;
+  /* background-repeat: no-repeat; */
+}
+
 .green2 {
   background-image: url("../colors/bgGreen2.jpg");
   background-size: cover;
@@ -297,6 +319,7 @@ Set background color using class
 .IG {
   background-image: url("../colors/ColorBackGroundIG.jpg");
   background-size: cover;
+  color: white;
 }
 
 .orange {
@@ -306,6 +329,12 @@ Set background color using class
 
 .pink {
   background-image: url("../colors/bgPink2.jpg");
+  background-size: cover;
+  color: white;
+}
+
+.pink2 {
+  background-image: url("../colors/ColorBackGroundPink.jpg");
   background-size: cover;
   color: white;
 }
@@ -351,6 +380,8 @@ Set background color using class
   background-color: #dddddd;
   color: #707070;
 }
+
+
 
 /* ============================================================
 Menu Bar
