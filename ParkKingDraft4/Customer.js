@@ -3,6 +3,20 @@ var ConnectionPool = require('tedious-connection-pool');
 var Request = require('tedious').Request;
 var TYPES =require('tedious').TYPES;
 
+
+
+//*******************************************************Create class object***********************************************
+exports.createCustomer = function() {
+   this.currentUsername = null;
+   this.currentEmail = null;
+   this.currentFirstname = null;
+   this.currentLastname = null;
+   this.currentCustomerType = null;
+   this.currentPicture = null;
+   this.cancelTime = null;
+   this.customerReservable = null;
+}
+
 //*******************************************************Inserting new customer into database***********************************************
 exports.insert_newCustomer = function(connection,customer_info,done,newUserMysql){
   var request = new Request("INSERT INTO dbo.Customer (FirstName,LastName,Email,Username,Password,customerType,studentID,professorID,NationalID,CustomerPicture,Cancel,Reserveable) values (@firstName,@lastName,@email,@username,@password,@occupation,@studentID,@professorID,@CitizenID,@profilePic,@cancel,@reserveAble)",

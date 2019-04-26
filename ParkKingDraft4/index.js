@@ -1,27 +1,24 @@
 var isScan;
 var obb = {isScan: isScan};
 //require Customer.js file
-var currentUsername,currentEmail,currentFirstname,currentLastname,currentCustomerType,currentID,currentPicture,cancelTime,customerReservable;
 const customer = require('./Customer.js');
+var currentCustomer = new customer.createCustomer();
 //require Car.js file
-var currentPlateNumber=[],currentBrand=[],currentModel=[],currentColor=[],currentCarPicture=[],currentPlateProvince=[];
 var car = require('./Car.js');
+var currentCar = new car.createCar();
 //require ParkingSpot.js file
 var totalArtsFreeSpot,totalPoliFreeSpot,lowestFloorArts,lowestSlotArts,lowestFloorPoli,lowestSlotPoli;
 const parkingspot = require('./ParkingSpot.js');
 //require Building.js file
 var artsCapacity, poliCapacity;
-const building = require('./Building.js');
 //require Reserve.js file
-var reserveStatus = "Not Reserved",reservePlatenumber = "--",reserveBrand,reserveModel,reserveColor,reserveCarPicture,reserveBuildingname = "--",reserveFloor,reserveSlot,reserveMap,reserveId,reserveIsfull,reserveCheckIn,reserveCheckOut,reserveTimein,reserveTimeout,reserveQRin,reserveQRout;
 const reserve = require('./Reserve.js');
-var qrCode;
+var currentReserve = new reserve.createReserve();
 //require TransactionReceipt.js file
-var exceedCheckoutTime = false;
-var transactionId,totaltime,parkingFee,addedFee = 0,paymentmethod,date,totalTransaction=[];
 const transaction = require('./TransactionReceipt.js');
+var currentTransaction = new transaction.createTransaction();
+var currentReceipt = new transaction.createReceipt();
 
-var receiptFee,receiptTotaltime,receiptBuilding,receiptDate,receiptFirstname,receiptLastname,receiptTimeIn,receiptTimeOut,receiptPaymentmethod,receiptPlatenumber;
 
 //NPM REQUIRE
 const express = require('express');
@@ -357,7 +354,7 @@ function loggedIn(req, res, next) {
 
 // Middleware Check if the user has already reaserved return next()
 function hasReserved(req, res, next) {
-    if (customerReservable == 1) {
+    if (currentCustomer.customerReservable == 1) {
       res.redirect('/reserve');
     }else{
       return next();
@@ -435,7 +432,7 @@ app.get('/home2',loggedIn, function(req, res){
         connection.release();
       }
       customer.getCustomerPicture(connection,req.user[0],async function(data){
-        currentPicture = data;
+        currentCustomer.currentPicture = data;
       })
     });
     pool.acquire(function (err, connection) {
@@ -516,7 +513,7 @@ app.get('/home2',loggedIn, function(req, res){
         connection.release();
       }
       car.getAllPlateNumber(connection,req.user[0],function(data){
-        currentPlateNumber = data;
+        currentCar.currentPlateNumber = data;
       })
     });
     pool.acquire(function (err, connection) {
@@ -525,7 +522,7 @@ app.get('/home2',loggedIn, function(req, res){
         connection.release();
       }
       car.getAllCarBrand(connection,req.user[0],function(data){
-        currentBrand = data;
+        currentCar.currentBrand = data;
       })
     });
     pool.acquire(function (err, connection) {
@@ -534,7 +531,7 @@ app.get('/home2',loggedIn, function(req, res){
         connection.release();
       }
       car.getAllCarModel(connection,req.user[0],function(data){
-        currentModel = data;
+        currentCar.currentModel = data;
       })
     });
     pool.acquire(function (err, connection) {
@@ -543,7 +540,7 @@ app.get('/home2',loggedIn, function(req, res){
         connection.release();
       }
       car.getAllCarColor(connection,req.user[0],function(data){
-        currentColor = data;
+        currentCar.currentColor = data;
       })
     });
     pool.acquire(function (err, connection) {
@@ -552,7 +549,7 @@ app.get('/home2',loggedIn, function(req, res){
         connection.release();
       }
       car.getAllCarPicture(connection,req.user[0],function(data){
-        currentCarPicture = data;
+        currentCar.currentCarPicture = data;
       });
     });
     pool.acquire(function (err, connection) {
@@ -561,7 +558,7 @@ app.get('/home2',loggedIn, function(req, res){
         connection.release();
       }
       car.getAllPlateProvince(connection,req.user[0],function(data){
-        currentPlateProvince = data;
+        currentCar.currentPlateProvince = data;
 
         // ====================================================================
         // rendering home page
@@ -574,8 +571,8 @@ app.get('/home2',loggedIn, function(req, res){
                             totalArtsFreeSpot:totalArtsFreeSpot,
                             totalPoliFreeSpot:totalPoliFreeSpot,
                             currentUsername: req.user[0],
-                            currentPicture: currentPicture,
-                            reservePlatenumber: reservePlatenumber});
+                            currentPicture: currentCustomer.currentPicture,
+                            reservePlatenumber: currentReserve.reservePlatenumber});
         // ====================================================================
       });
     });
@@ -583,9 +580,9 @@ app.get('/home2',loggedIn, function(req, res){
 
 //ROUTE TO HOME
 app.get('/reserveStatus', function(req, res){
-  console.log(reserveStatus);
+  console.log(currentReserve.reserveStatus);
   res.send({
-    reserveStatus: reserveStatus
+    reserveStatus: currentReserve.reserveStatus
   });
 });
 app.get('/home',loggedIn, async function(req, res){
@@ -595,7 +592,7 @@ app.get('/home',loggedIn, async function(req, res){
           connection.release();
       }
       customer.getReservable(connection,req.user[0],function(data){
-        customerReservable = data;
+        currentCustomer.customerReservable = data;
       });
     });
     pool.acquire(function (err, connection) {
@@ -604,7 +601,7 @@ app.get('/home',loggedIn, async function(req, res){
         connection.release();
       }
       customer.getCustomerPicture(connection,req.user[0],async function(data){
-        currentPicture = data;
+        currentCustomer.currentPicture = data;
       })
     });
     pool.acquire(function (err, connection) {
@@ -685,7 +682,7 @@ app.get('/home',loggedIn, async function(req, res){
         connection.release();
       }
       car.getAllPlateNumber(connection,req.user[0],function(data){
-        currentPlateNumber = data;
+        currentCar.currentPlateNumber = data;
       })
     });
     pool.acquire(function (err, connection) {
@@ -694,7 +691,7 @@ app.get('/home',loggedIn, async function(req, res){
         connection.release();
       }
       car.getAllCarBrand(connection,req.user[0],function(data){
-        currentBrand = data;
+        currentCar.currentBrand = data;
       })
     });
     pool.acquire(function (err, connection) {
@@ -703,7 +700,7 @@ app.get('/home',loggedIn, async function(req, res){
         connection.release();
       }
       car.getAllCarModel(connection,req.user[0],function(data){
-        currentModel = data;
+        currentCar.currentModel = data;
       })
     });
     pool.acquire(function (err, connection) {
@@ -712,7 +709,7 @@ app.get('/home',loggedIn, async function(req, res){
         connection.release();
       }
       car.getAllCarColor(connection,req.user[0],function(data){
-        currentColor = data;
+        currentCar.currentColor = data;
       })
     });
     pool.acquire(function (err, connection) {
@@ -721,17 +718,17 @@ app.get('/home',loggedIn, async function(req, res){
         connection.release();
       }
       car.getAllCarPicture(connection,req.user[0],function(data){
-        currentCarPicture = data;
+        currentCar.currentCarPicture = data;
       });
     });
-    await sleep(100);
+    await sleep(1000);
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
         connection.release();
       }
       car.getAllPlateProvince(connection,req.user[0],function(data){
-        currentPlateProvince = data;
+        currentCar.currentPlateProvince = data;
 
         // ====================================================================
         // rendering home page
@@ -744,10 +741,10 @@ app.get('/home',loggedIn, async function(req, res){
                             totalArtsFreeSpot:totalArtsFreeSpot,
                             totalPoliFreeSpot:totalPoliFreeSpot,
                             currentUsername: req.user[0],
-                            currentPicture: currentPicture,
-                            reservePlatenumber: reservePlatenumber,
-                            reserveBuildingname:reserveBuildingname,
-                            reserveStatus:reserveStatus
+                            currentPicture: currentCustomer.currentPicture,
+                            reservePlatenumber: currentReserve.reservePlatenumber,
+                            reserveBuildingname:currentReserve.reserveBuildingname,
+                            reserveStatus:currentReserve.reserveStatus
                             });
         // ====================================================================
       });
@@ -755,7 +752,7 @@ app.get('/home',loggedIn, async function(req, res){
 
     //------------------------------------------------------------------------------------------------------------//
     //------------------------------------------------------------------------------------------------------------//
-    feeRate = feeRate(currentCustomerType);
+    feeRate = feeRate(currentCustomer.currentCustomerType);
     setInterval(async function() {
       console.log('Please wait for check-in/check-out');
       pool.acquire(function (err, connection) {
@@ -763,8 +760,8 @@ app.get('/home',loggedIn, async function(req, res){
           console.error(err);
           connection.release();
         }
-        reserve.getTimeIn(connection,reserveId,function(data){
-          reserveTimein = data;
+        reserve.getTimeIn(connection,currentReserve.reserveId,function(data){
+          currentReserve.reserveTimein = data;
         });
       });
       pool.acquire(function (err, connection) {
@@ -772,44 +769,44 @@ app.get('/home',loggedIn, async function(req, res){
           console.error(err);
           connection.release();
         }
-        reserve.getTimeOut(connection,reserveId,function(data){
-          reserveTimeout= data;
+        reserve.getTimeOut(connection,currentReserve.reserveId,function(data){
+          currentReserve.reserveTimeout= data;
         });
       });
       await sleep(100);
-      if(reserveTimein != check && reserveTimeout == check){
+      if(currentReserve.reserveTimein != check && currentReserve.reserveTimeout == check){
           pool.acquire(function (err, connection) {
             if (err) {
               console.error(err);
               connection.release();
             }
-            reserve.getQRCodeIn(connection,reserveId,function(data){
-                reserveQRin = data;
+            reserve.getQRCodeIn(connection,currentReserve.reserveId,function(data){
+                currentReserve.reserveQRin = data;
             });
           });
-          if(reserveQRin == reserveId && reserveStatus != "Checked In" && qrCode == reserveQRin){
+          if(currentReserve.reserveQRin == currentReserve.reserveId && currentReserve.reserveStatus != "Checked In" && currentReserve.qrCode == currentReserve.reserveQRin){
               startUserTimer();
-              reserveStatus = "Checked In";
+              currentReserve.reserveStatus = "Checked In";
               isScan = true;
           }
-      }else if(reserveTimeout != check){
+      }else if(currentReserve.reserveTimeout != check){
           pool.acquire(function (err, connection) {
             if (err) {
               console.error(err);
               connection.release();
             }
-            reserve.getQRCodeOut(connection,reserveId,function(data){
-                reserveQRout = data;
+            reserve.getQRCodeOut(connection,currentReserve.reserveId,function(data){
+                currentReserve.reserveQRout = data;
             });
           });
-          if(reserveQRout == transactionId && reserveStatus != "Checked Out" && qrCode == reserveQRout){
+          if(currentReserve.reserveQRout == currentTransaction.transactionId && currentReserve.reserveStatus != "Checked Out" && currentReserve.qrCode == currentReserve.reserveQRout){
             pool.acquire(function (err, connection) {
               if (err) {
                 console.error(err);
                 connection.release();
               }
-              reserveIsfull = 0;
-              parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,0);
+              currentReserve.reserveIsfull = 0;
+              parkingspot.setIsFull(connection,currentReserve.reserveBuildingname,currentReserve.reserveFloor,currentReserve.reserveSlot,0);
 
             });
             pool.acquire(function (err, connection) {
@@ -817,35 +814,35 @@ app.get('/home',loggedIn, async function(req, res){
                 console.error(err);
                 connection.release();
               }
-              customerReservable = 1;
+              currentCustomer.customerReservable = 1;
               customer.setReservable(connection,req.user[0],1);
             });
-            reserveStatus = "Checked Out";
+            currentReserve.reserveStatus = "Checked Out";
             isScan = false;
           }
         }
-      totaltime = parseInt(stopwatch.read()/1000);
-      parkingFee = parseInt((totaltime * feeRate) + addedFee);
-      console.log(totaltime);
-      console.log(parkingFee);
-      console.log(reserveTimein);
-      console.log(reserveTimeout);
+      currentTransaction.totaltime = parseInt(stopwatch.read()/1000);
+      currentTransaction.parkingFee = parseInt((currentTransaction.totaltime * feeRate) + currentTransaction.addedFee);
+      console.log(currentTransaction.totaltime);
+      console.log(currentTransaction.parkingFee);
+      console.log(currentReserve.reserveTimein);
+      console.log(currentReserve.reserveTimeout);
     },1000);
 });
 
 app.get('/getTimeandFee', function(req, res){
   var mins, hours;
-  if(totaltime/60>=1){
-    hours = Math.floor(totaltime/60);
-    mins = totaltime-(hours*60);
+  if(currentTransaction.totaltime/60>=1){
+    hours = Math.floor(currentTransaction.totaltime/60);
+    mins = currentTransaction.totaltime-(hours*60);
   } else {
     hours = 0;
-    mins = totaltime;
+    mins = currentTransaction.totaltime;
   }
   res.send({
     mins: mins,
     hours: hours,
-    parkingFee: parkingFee
+    parkingFee: currentTransaction.parkingFee
   });
 });
 
@@ -874,21 +871,21 @@ app.get('/reserve',loggedIn, function(req, res){
       connection.release();
     }
     customer.getCancel(connection,req.user[0],function(data){
-      cancelTime = data;
-      res.render('reserve', {currentCarPicture: currentCarPicture,
-                             currentPlateNumber: currentPlateNumber,
+      currentCustomer.cancelTime = data;
+      res.render('reserve', {currentCarPicture: currentCar.currentCarPicture,
+                             currentPlateNumber: currentCar.currentPlateNumber,
                              currentUsername: req.user[0],
-                             currentPicture:currentPicture,
-                             cancelTime:cancelTime});
+                             currentPicture:currentCustomer.currentPicture,
+                             cancelTime:currentCustomer.cancelTime});
     });
   });
 });
 
 //ROUTE TO QR CODE PAGE
 app.get('/showqr', loggedIn,hasReserved,function(req, res){
-  res.render('showqr', {qrCode: qrCode,
+  res.render('showqr', {qrCode: currentReserve.qrCode,
                         currentUsername: req.user[0],
-                        currentPicture: currentPicture,
+                        currentPicture: currentCustomer.currentPicture,
                         isScan: isScan});
 });
 
@@ -907,8 +904,8 @@ app.get('/status', loggedIn,hasReserved, async function(req, res){
       console.error(err);
       connection.release();
     }
-    parkingspot.getMapLocation(connection,reserveBuildingname,reserveFloor,reserveSlot,function(data){
-      reserveMap = data;
+    parkingspot.getMapLocation(connection,currentReserve.reserveBuildingname,currentReserve.reserveFloor,currentReserve.reserveSlot,function(data){
+      currentReserve.reserveMap = data;
     })
   });
   pool.acquire(function (err, connection) {
@@ -916,8 +913,8 @@ app.get('/status', loggedIn,hasReserved, async function(req, res){
       console.error(err);
       connection.release();
     }
-    car.getCarBrand(connection,req.user[0],reservePlatenumber,function(data){
-      reserveBrand = data;
+    car.getCarBrand(connection,req.user[0],currentReserve.reservePlatenumber,function(data){
+      currentReserve.reserveBrand = data;
     })
   });
   pool.acquire(function (err, connection) {
@@ -925,8 +922,8 @@ app.get('/status', loggedIn,hasReserved, async function(req, res){
       console.error(err);
       connection.release();
     }
-    car.getCarModel(connection,req.user[0],reservePlatenumber,function(data){
-      reserveModel = data;
+    car.getCarModel(connection,req.user[0],currentReserve.reservePlatenumber,function(data){
+      currentReserve.reserveModel = data;
     })
   });
   pool.acquire(function (err, connection) {
@@ -934,8 +931,8 @@ app.get('/status', loggedIn,hasReserved, async function(req, res){
       console.error(err);
       connection.release();
     }
-    car.getCarColor(connection,req.user[0],reservePlatenumber,function(data){
-      reserveColor = data;
+    car.getCarColor(connection,req.user[0],currentReserve.reservePlatenumber,function(data){
+      currentReserve.reserveColor = data;
     })
   });
   await sleep(500)
@@ -944,22 +941,22 @@ app.get('/status', loggedIn,hasReserved, async function(req, res){
       console.error(err);
       connection.release();
     }
-    car.getCarPicture(connection,req.user[0],reservePlatenumber,function(data){
-      reserveCarPicture = data;
+    car.getCarPicture(connection,req.user[0],currentReserve.reservePlatenumber,function(data){
+      currentReserve.reserveCarPicture = data;
       // ====================================================================
       //RENDERING STATUS PAGE
-      res.render('status', {reservePlatenumber:reservePlatenumber,
-                          reserveBuildingname:reserveBuildingname,
-                          reserveFloor:reserveFloor,
-                          reserveSlot:reserveSlot,
-                          reserveMap:reserveMap,
-                          reserveBrand:reserveBrand,
-                          reserveModel:reserveModel,
-                          reserveColor:reserveColor,
-                          reserveCarPicture:reserveCarPicture,
+      res.render('status', {reservePlatenumber:currentReserve.reservePlatenumber,
+                          reserveBuildingname:currentReserve.reserveBuildingname,
+                          reserveFloor:currentReserve.reserveFloor,
+                          reserveSlot:currentReserve.reserveSlot,
+                          reserveMap:currentReserve.reserveMap,
+                          reserveBrand:currentReserve.reserveBrand,
+                          reserveModel:currentReserve.reserveModel,
+                          reserveColor:currentReserve.reserveColor,
+                          reserveCarPicture:currentReserve.reserveCarPicture,
                           currentUsername: req.user[0],
-                          currentPicture: currentPicture,
-                          reserveStatus:reserveStatus});
+                          currentPicture: currentCustomer.currentPicture,
+                          reserveStatus:currentReserve.reserveStatus});
         // ====================================================================
     });
   });
@@ -973,7 +970,7 @@ app.get('/userinfo', loggedIn, async function(req, res){
        connection.release();
      }
      customer.getEmail(connection,req.user[0],function(data){
-       currentEmail = data;
+       currentCustomer.currentEmail = data;
      })
    });
    pool.acquire(function (err, connection) {
@@ -982,7 +979,7 @@ app.get('/userinfo', loggedIn, async function(req, res){
        connection.release();
      }
      customer.getFirstname(connection,req.user[0],function(data){
-       currentFirstname = data;
+       currentCustomer.currentFirstname = data;
      })
    });
    pool.acquire(function (err, connection) {
@@ -991,7 +988,7 @@ app.get('/userinfo', loggedIn, async function(req, res){
        connection.release();
      }
      customer.getLastname(connection,req.user[0],function(data){
-       currentLastname = data;
+       currentCustomer.currentLastname = data;
      })
    });
    pool.acquire(function (err, connection) {
@@ -1000,7 +997,7 @@ app.get('/userinfo', loggedIn, async function(req, res){
        connection.release();
      }
      customer.getCustomerType(connection,req.user[0],function(data){
-       currentCustomerType = data;
+       currentCustomer.currentCustomerType = data;
      })
    });
    await sleep(500);
@@ -1010,7 +1007,7 @@ app.get('/userinfo', loggedIn, async function(req, res){
        connection.release();
      }
      transaction.getAllTransaction(connection,req.user[0],function(data){
-       totalTransaction = data;
+       currentTransaction.totalTransaction = data;
      })
    });
    pool.acquire(function (err, connection) {
@@ -1019,7 +1016,7 @@ app.get('/userinfo', loggedIn, async function(req, res){
            connection.release();
        }
        transaction.getAllFee(connection,req.user[0],function(data){
-         receiptFee = data;
+         currentReceipt.receiptFee = data;
        })
    });
    pool.acquire(function (err, connection) {
@@ -1028,7 +1025,7 @@ app.get('/userinfo', loggedIn, async function(req, res){
            connection.release();
        }
        transaction.getAllDate(connection,req.user[0],function(data){
-         receiptDate= data;
+         currentReceipt.receiptDate= data;
        })
    });
    pool.acquire(function (err, connection) {
@@ -1037,7 +1034,7 @@ app.get('/userinfo', loggedIn, async function(req, res){
            connection.release();
        }
        transaction.getAllTotalTime(connection,req.user[0],function(data){
-         receiptTotaltime = data;
+         currentReceipt.receiptTotaltime = data;
        })
    });
    await sleep(500);
@@ -1047,31 +1044,31 @@ app.get('/userinfo', loggedIn, async function(req, res){
            connection.release();
        }
        transaction.getAllBuilding(connection,req.user[0],function(data){
-         receiptBuilding = data;
+         currentReceipt.receiptBuilding = data;
          // ====================================================================
          //RENDER USERINFO PAGE
          res.render('userinfo', {
                                  //USER INFO
                                  currentUsername:req.user[0],
-                                 currentPicture:currentPicture,
-                                 currentEmail:currentEmail,
-                                 currentCustomerType:currentCustomerType,
+                                 currentPicture:currentCustomer.currentPicture,
+                                 currentEmail:currentCustomer.currentEmail,
+                                 currentCustomerType:currentCustomer.currentCustomerType,
                                  currentID:customer.getID(req.user),
-                                 currentFirstname:currentFirstname,
-                                 currentLastname:currentLastname,
+                                 currentFirstname:currentCustomer.currentFirstname,
+                                 currentLastname:currentCustomer.currentLastname,
                                  //CAR INFO
-                                 currentCarPicture: currentCarPicture,
-                                 currentBrand:currentBrand,
-                                 currentColor:currentColor,
-                                 currentModel:currentModel,
-                                 currentPlateNumber:currentPlateNumber,
-                                 currentPlateProvince:currentPlateProvince,
+                                 currentCarPicture: currentCar.currentCarPicture,
+                                 currentBrand:currentCar.currentBrand,
+                                 currentColor:currentCar.currentColor,
+                                 currentModel:currentCar.currentModel,
+                                 currentPlateNumber:currentCar.currentPlateNumber,
+                                 currentPlateProvince:currentCar.currentPlateProvince,
                                  //RECEIPT INFO
-                                 totalTransaction:totalTransaction,
-                                 receiptFee:receiptFee,
-                                 receiptDate:receiptDate,
-                                 receiptTotaltime:receiptTotaltime,
-                                 receiptBuilding:receiptBuilding});
+                                 totalTransaction:currentTransaction.totalTransaction,
+                                 receiptFee:currentReceipt.receiptFee,
+                                 receiptDate:currentReceipt.receiptDate,
+                                 receiptTotaltime:currentReceipt.receiptTotaltime,
+                                 receiptBuilding:currentReceipt.receiptBuilding});
           // ====================================================================
        });
    });
@@ -1080,10 +1077,10 @@ app.get('/userinfo', loggedIn, async function(req, res){
 //ROUTE TO EDIT USER
 app.get('/edituserinfo', loggedIn, function(req, res){
       res.render('edituserinfo', {currentUsername: req.user[0],
-                             currentEmail:currentEmail,
-                             currentFirstname:currentFirstname,
-                             currentLastname:currentLastname,
-                             currentPicture:currentPicture
+                             currentEmail:currentCustomer.currentEmail,
+                             currentFirstname:currentCustomer.currentFirstname,
+                             currentLastname:currentCustomer.currentLastname,
+                             currentPicture:currentCustomer.currentPicture
                            });
 
 });
@@ -1099,18 +1096,18 @@ app.get('/receipt',loggedIn, function(req, res){
 //MAKING RESERVATION
 //ADD SENSOR CHECK
 app.post('/reserve',loggedIn,async function(req, res){
-  reservePlatenumber = req.body.plateNumber;
-  reserveBuildingname = req.body.buildingName;
-  console.log(reservePlatenumber);
-  console.log(reserveBuildingname);
+  currentReserve.reservePlatenumber = req.body.plateNumber;
+  currentReserve.reserveBuildingname = req.body.buildingName;
+  console.log(currentReserve.reservePlatenumber);
+  console.log(currentReserve.reserveBuildingname);
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
           connection.release();
       }
       customer.getReservable(connection,req.user[0],function(data){
-        customerReservable = data;
-        console.log(customerReservable);
+        currentCustomer.customerReservable = data;
+        console.log(currentCustomer.customerReservable);
       });
 
   });
@@ -1120,9 +1117,9 @@ app.post('/reserve',loggedIn,async function(req, res){
           connection.release();
           return;
       }
-      parkingspot.getLowestFloor(connection,reserveBuildingname,function(data){
-        reserveFloor = data;
-        console.log(reserveFloor);
+      parkingspot.getLowestFloor(connection,currentReserve.reserveBuildingname,function(data){
+        currentReserve.reserveFloor = data;
+        console.log(currentReserve.reserveFloor);
       });
   });
   pool.acquire(function (err, connection) {
@@ -1131,9 +1128,9 @@ app.post('/reserve',loggedIn,async function(req, res){
           connection.release();
           return;
       }
-      parkingspot.getLowestSlot(connection,reserveBuildingname,function(data){
-        reserveSlot = data;
-        console.log(reserveSlot);
+      parkingspot.getLowestSlot(connection,currentReserve.reserveBuildingname,function(data){
+        currentReserve.reserveSlot = data;
+        console.log(currentReserve.reserveSlot);
       });
   });
   //wait for update request
@@ -1144,12 +1141,12 @@ app.post('/reserve',loggedIn,async function(req, res){
           connection.release();
           return;
       }
-      parkingspot.getIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,function(data){
-        reserveIsfull = data;
-        console.log(reserveIsfull);
+      parkingspot.getIsFull(connection,currentReserve.reserveBuildingname,currentReserve.reserveFloor,currentReserve.reserveSlot,function(data){
+        currentReserve.reserveIsfull = data;
+        console.log(currentReserve.reserveIsfull);
       });
   });
-  if(customerReservable == 0 || reserveIsfull == 1){
+  if(currentCustomer.customerReservable == 0 || currentReserve.reserveIsfull == 1){
     console.log('your accout is decline to reserve');
     req.flash('error', 'Your account cannot reserve.');
     res.redirect('/home');
@@ -1161,10 +1158,10 @@ app.post('/reserve',loggedIn,async function(req, res){
             connection.release();
             return;
         }
-        reserveId = generateTokenID();
-        qrCode = reserveId;
+        currentReserve.reserveId = generateTokenID();
+        currentReserve.qrCode = currentReserve.reserveId;
         obb = {isScan: isScan};
-        reserve.Reserve(connection,reservePlatenumber,req.user[0], reserveFloor, reserveSlot,reserveBuildingname, reserveId);
+        reserve.Reserve(connection,currentReserve.reservePlatenumber,req.user[0], currentReserve.reserveFloor, currentReserve.reserveSlot,currentReserve.reserveBuildingname, currentReserve.reserveId);
         console.log('Reserve finished');
     });
     pool.acquire(function (err, connection) {
@@ -1173,8 +1170,8 @@ app.post('/reserve',loggedIn,async function(req, res){
             connection.release();
             return;
         }
-        reserveIsfull = 1;
-        parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,1);
+        currentReserve.reserveIsfull = 1;
+        parkingspot.setIsFull(connection,currentReserve.reserveBuildingname,currentReserve.reserveFloor,currentReserve.reserveSlot,1);
         console.log('set parking spot occupied');
     });
     await sleep(200);
@@ -1184,14 +1181,14 @@ app.post('/reserve',loggedIn,async function(req, res){
             connection.release();
             return;
         }
-        customerReservable = 0;
+        currentCustomer.customerReservable = 0;
         customer.setReservable(connection, req.user[0],0);
         console.log('set user reservable');
-        reserveStatus = "Reserved";
+        currentReserve.reserveStatus = "Reserved";
         res.render('showqr', {
-            qrCode:qrCode,
+            qrCode:currentReserve.qrCode,
             currentUsername: req.user[0],
-            currentPicture: currentPicture,
+            currentPicture: currentCustomer.currentPicture,
             message: 'You have made a reservation. Use this QR Code to enter the parking lot.'
           });
     });
@@ -1201,18 +1198,18 @@ app.post('/reserve',loggedIn,async function(req, res){
         connection.release();
       }
       customer.getCancel(connection,req.user[0],function(data){
-        cancelTime = data;
+        currentCustomer.cancelTime = data;
       })
     });
     sleep(1000*60*30).then(() => {
-      if(reserveTimein == check){
+      if(currentReserve.reserveTimein == check){
         pool.acquire(function (err, connection) {
           if (err) {
               console.error(err);
               connection.release();
               return;
           }
-          reserve.removeReserve(connection,reserveId);
+          reserve.removeReserve(connection,currentReserve.reserveId);
       });
         pool.acquire(function (err, connection) {
           if (err) {
@@ -1220,7 +1217,7 @@ app.post('/reserve',loggedIn,async function(req, res){
               connection.release();
               return;
           }
-          customerReservable = 1;
+          currentCustomer.customerReservable = 1;
           customer.setReservable(connection,req.user[0],1);
       });
         pool.acquire(function (err, connection) {
@@ -1229,8 +1226,8 @@ app.post('/reserve',loggedIn,async function(req, res){
               connection.release();
               return;
           }
-          cancelTime++;
-          customer.setCancel(connection,req.user[0],cancelTime);
+          currentCustomer.cancelTime++;
+          customer.setCancel(connection,req.user[0],currentCustomer.cancelTime);
       });
         pool.acquire(function (err, connection) {
           if (err) {
@@ -1238,8 +1235,8 @@ app.post('/reserve',loggedIn,async function(req, res){
               connection.release();
               return;
           }
-          reserveIsfull = 0;
-          parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,0);
+          currentReserve.reserveIsfull = 0;
+          parkingspot.setIsFull(connection,currentReserve.reserveBuildingname,currentReserve.reserveFloor,currentReserve.reserveSlot,0);
       });
         pool.acquire(function (err, connection) {
           if (err) {
@@ -1247,14 +1244,14 @@ app.post('/reserve',loggedIn,async function(req, res){
               connection.release();
               return;
           }
-          if(cancelTime > 5){
+          if(currentCustomer.cancelTime > 5){
               console.log('Too much cancellation, you are banned');
-              customerReservable = 0;
+              currentCustomer.customerReservable = 0;
               customer.setReservable(connection,req.user[0],0);
           }
-          reserveStatus = "Cancelled from reserve time out"
-          reservePlatenumber = "--"
-          reserveBuildingname = "--"
+          currentReserve.reserveStatus = "Cancelled from reserve time out"
+          currentReserve.reservePlatenumber = "--"
+          currentReserve.reserveBuildingname = "--"
       });
       }
     });
@@ -1269,10 +1266,10 @@ app.post('/cancel',loggedIn,async function(req,res){
       connection.release();
     }
     customer.getCancel(connection,req.user[0],function(data){
-      cancelTime = data;
+      currentCustomer.cancelTime = data;
     })
   });
-  if(reserveTimein != check){
+  if(currentReserve.reserveTimein != check){
       console.log('You cannot cancel the reservation');
       req.flash('error', 'You cannot cancel the reservation');
       res.redirect('/home');
@@ -1283,7 +1280,7 @@ app.post('/cancel',loggedIn,async function(req,res){
             connection.release();
             return;
         }
-        reserve.removeReserve(connection,reserveId);
+        reserve.removeReserve(connection,currentReserve.reserveId);
     });
     pool.acquire(function (err, connection) {
         if (err) {
@@ -1291,7 +1288,7 @@ app.post('/cancel',loggedIn,async function(req,res){
             connection.release();
             return;
         }
-        customerReservable = 1;
+        currentCustomer.customerReservable = 1;
         customer.setReservable(connection,req.user[0],1);
     });
     pool.acquire(function (err, connection) {
@@ -1300,8 +1297,8 @@ app.post('/cancel',loggedIn,async function(req,res){
             connection.release();
             return;
         }
-        cancelTime++;
-        customer.setCancel(connection,req.user[0],cancelTime);
+        currentCustomer.cancelTime++;
+        customer.setCancel(connection,req.user[0],currentCustomer.cancelTime);
     });
     pool.acquire(function (err, connection) {
         if (err) {
@@ -1309,8 +1306,8 @@ app.post('/cancel',loggedIn,async function(req,res){
             connection.release();
             return;
         }
-        reserveIsfull = 0;
-        parkingspot.setIsFull(connection,reserveBuildingname,reserveFloor,reserveSlot,0);
+        currentReserve.reserveIsfull = 0;
+        parkingspot.setIsFull(connection,currentReserve.reserveBuildingname,currentReserve.reserveFloor,currentReserve.reserveSlot,0);
     });
     await sleep(500);
     pool.acquire(function (err, connection) {
@@ -1318,8 +1315,8 @@ app.post('/cancel',loggedIn,async function(req,res){
         console.error(err);
         connection.release();
       }
-      parkingspot.getTotalFreeSpot(connection,reserveBuildingname,async function(data){
-        if(reserveBuildingname = "buildingArts"){
+      parkingspot.getTotalFreeSpot(connection,currentReserve.reserveBuildingname,async function(data){
+        if(currentReserve.reserveBuildingname = "buildingArts"){
           totalArtsFreeSpot = data;
         }else{
           totalPoliFreeSpot = data;
@@ -1327,18 +1324,18 @@ app.post('/cancel',loggedIn,async function(req,res){
       })
     });
     await sleep(10);
-    reserveStatus = "Cancelled"
-    reservePlatenumber = "--"
-    reserveBuildingname = "--"
+    currentReserve.reserveStatus = "Cancelled"
+    currentReserve.reservePlatenumber = "--"
+    currentReserve.reserveBuildingname = "--"
     pool.acquire(function (err, connection) {
         if (err) {
             console.error(err);
             connection.release();
             return;
         }
-        if(cancelTime > 5){
+        if(currentCustomer.cancelTime > 5){
             console.log('Too much cancel, you are banned');
-            customerReservable = 0;
+            currentCustomer.customerReservable = 0;
             customer.setReservable(connection,req.user[0],0);
             req.flash('error', 'You are banned from resserving because you cancel more than 5 times.');
         }
@@ -1352,10 +1349,10 @@ app.post('/cancel',loggedIn,async function(req,res){
                             totalArtsFreeSpot:totalArtsFreeSpot,
                             totalPoliFreeSpot:totalPoliFreeSpot,
                             currentUsername: req.user[0],
-                            currentPicture: currentPicture,
-                            reservePlatenumber: reservePlatenumber,
-                            reserveBuildingname:reserveBuildingname,
-                            reserveStatus:reserveStatus})
+                            currentPicture: currentCustomer.currentPicture,
+                            reservePlatenumber: currentReserve.reservePlatenumber,
+                            reserveBuildingname:currentReserve.reserveBuildingname,
+                            reserveStatus:currentReserve.reserveStatus})
     });
   }
 });
@@ -1368,20 +1365,20 @@ app.post('/pay',loggedIn,async function(req,res){
       console.error(err);
       connection.release();
     }
-    reserve.getTimeIn(connection,reserveId,function(data){
-      reserveTimein = data;
+    reserve.getTimeIn(connection,currentReserve.reserveId,function(data){
+      currentReserve.reserveTimein = data;
     });
   });
   await sleep(100);
-  if(reserveTimein != check){
+  if(currentReserve.reserveTimein != check){
     pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
           connection.release();
           return;
       }
-      reserve.setHasPaid(connection,reserveId,1);
-      reserveStatus = "Paid"
+      reserve.setHasPaid(connection,currentReserve.reserveId,1);
+      currentReserve.reserveStatus = "Paid"
     });
     pool.acquire(function (err, connection) {
       if (err) {
@@ -1389,33 +1386,33 @@ app.post('/pay',loggedIn,async function(req,res){
           connection.release();
           return;
       }
-      transactionId = generateTokenID();
-      qrCode = transactionId;
+      currentTransaction.transactionId = generateTokenID();
+      currentReserve.qrCode = currentTransaction.transactionId;
       isScan = false;
       obb = {isScan: isScan};
-      totaltime = stopUserTimer();
-      parkingFee = parseInt((totaltime * feeRate) + addedFee);
-      if(exceedCheckoutTime == true){
-        addedFee = 0;
-        exceedCheckoutTime = false;
+      currentTransaction.totaltime = stopUserTimer();
+      currentTransaction.parkingFee = parseInt((currentTransaction.totaltime * feeRate) + currentTransaction.addedFee);
+      if(currentTransaction.exceedCheckoutTime == true){
+        currentTransaction.addedFee = 0;
+        currentTransaction.exceedCheckoutTime = false;
       }
-      paymentmethod = 'Kbank';
-      date = transaction.getCurrentDate();
-      transaction.Transaction(connection,reservePlatenumber,req.user[0],reserveFloor,reserveSlot,reserveBuildingname,transactionId,parkingFee,paymentmethod,totaltime,date);
-      res.render('showqr', {qrCode:qrCode,currentUsername: req.user[0],currentPicture: currentPicture});
+      currentTransaction.paymentmethod = 'Kbank';
+      currentTransaction.date = transaction.getCurrentDate();
+      transaction.Transaction(connection,currentReserve.reservePlatenumber,req.user[0],currentReserve.reserveFloor,currentReserve.reserveSlot,currentReserve.reserveBuildingname,currentTransaction.transactionId,currentTransaction.parkingFee,currentTransaction.paymentmethod,currentTransaction.totaltime,currentTransaction.date);
+      res.render('showqr', {qrCode:currentReserve.qrCode,currentUsername: req.user[0],currentPicture: currentCustomer.currentPicture});
   });
     sleep(1000*60*15).then(() => {
-      exceedCheckoutTime = true;
-      if(reserveTimeout == check){
+      currentTransaction.exceedCheckoutTime = true;
+      if(currentReserve.reserveTimeout == check){
         pool.acquire(function (err, connection) {
           if (err) {
               console.error(err);
               connection.release();
               return;
           }
-          reserveStatus = "Reserve from payment time out"
-          reserveId = generateTokenID();
-          reserve.Reserve(connection,reservePlatenumber,req.user[0], reserveFloor, reserveSlot,reserveBuildingname, reserveId);
+          currentReserve.reserveStatus = "Reserve from payment time out"
+          currentReserve.reserveId = generateTokenID();
+          reserve.Reserve(connection,currentReserve.reservePlatenumber,req.user[0], currentReserve.reserveFloor, currentReserve.reserveSlot,currentReserve.reserveBuildingname, currentReserve.reserveId);
           console.log('re reserved');
         });
         sleep(200).then(() => {
@@ -1425,12 +1422,12 @@ app.post('/pay',loggedIn,async function(req,res){
               connection.release();
               return;
           }
-            reserveTimein = getCurrentTime();
-            reserve.setTimeIn(connection,reserveId,reserveTimein);
+            currentReserve.reserveTimein = getCurrentTime();
+            reserve.setTimeIn(connection,currentReserve.reserveId,currentReserve.reserveTimein);
             console.log('set timein');
           });
         });
-        addedFee = parseInt(15 * feeRate);
+        currentTransaction.addedFee = parseInt(15 * feeRate);
         startUserTimer();
       }
     });
@@ -1466,12 +1463,12 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
       };
       //console.log(car_info);
       car.insert_newCar(connection,car_info,req.user[0]);
-      currentPlateNumber.push(car_info.platenumber);
-      currentBrand.push(car_info.carbrand);
-      currentModel.push(car_info.carmodel);
-      currentColor.push(car_info.carcolor);
-      currentPlateProvince.push(car_info.plateprovince);
-      currentCarPicture.push(car_info.carpicture);
+      currentCar.currentPlateNumber.push(car_info.platenumber);
+      currentCar.currentBrand.push(car_info.carbrand);
+      currentCar.currentModel.push(car_info.carmodel);
+      currentCar.currentColor.push(car_info.carcolor);
+      currentCar.currentPlateProvince.push(car_info.plateprovince);
+      currentCar.currentCarPicture.push(car_info.carpicture);
       res.redirect('/userinfo');
   });
   req.flash('success', 'Your car has been added.')
@@ -1485,29 +1482,29 @@ app.post('/deletecar/:id',loggedIn, function(req,res){
           console.error(err);
           connection.release();
       }
-      car.removeCar(connection,req.user[0],currentPlateNumber[id]);
-      delete currentPlateNumber[id];
-      delete currentBrand[id];
-      delete currentModel[id];
-      delete currentColor[id];
-      delete currentCarPicture[id];
-      delete currentPlateProvince[id];
-      currentPlateNumber = currentPlateNumber.filter(function( element ) {
+      car.removeCar(connection,req.user[0],currentCar.currentPlateNumber[id]);
+      delete currentCar.currentPlateNumber[id];
+      delete currentCar.currentBrand[id];
+      delete currentCar.currentModel[id];
+      delete currentCar.currentColor[id];
+      delete currentCar.currentCarPicture[id];
+      delete currentCar.currentPlateProvince[id];
+      currentCar.currentPlateNumber = currentCar.currentPlateNumber.filter(function( element ) {
         return element !== undefined;
       });
-      currentBrand = currentBrand.filter(function( element ) {
+      currentCar.currentBrand = currentCar.currentBrand.filter(function( element ) {
         return element !== undefined;
       });
-      currentModel = currentModel.filter(function( element ) {
+      currentCar.currentModel = currentCar.currentModel.filter(function( element ) {
         return element !== undefined;
       });
-      currentColor = currentColor.filter(function( element ) {
+      currentCar.currentColor = currentCar.currentColor.filter(function( element ) {
         return element !== undefined;
       });
-      currentCarPicture = currentCarPicture.filter(function( element ) {
+      currentCar.currentCarPicture = currentCar.currentCarPicture.filter(function( element ) {
         return element !== undefined;
       });
-      currentPlateProvince = currentPlateProvince.filter(function( element ) {
+      currentCar.currentPlateProvince = currentCar.currentPlateProvince.filter(function( element ) {
         return element !== undefined;
       });
       req.flash('success', 'Your car has been deleted');
@@ -1525,7 +1522,7 @@ app.post('/receipt/:id',loggedIn,async function(req,res){
           connection.release();
       }
       transaction.getAllPaymentMethod(connection,req.user[0],function(data){
-        receiptPaymentmethod = data;
+        currentReceipt.receiptPaymentmethod = data;
       })
   });
   pool.acquire(function (err, connection) {
@@ -1534,7 +1531,7 @@ app.post('/receipt/:id',loggedIn,async function(req,res){
           connection.release();
       }
       reserve.getAllTimeIn(connection,req.user[0],function(data){
-        receiptTimeIn = data;
+        currentReceipt.receiptTimeIn = data;
       })
   });
   pool.acquire(function (err, connection) {
@@ -1543,7 +1540,7 @@ app.post('/receipt/:id',loggedIn,async function(req,res){
           connection.release();
       }
       reserve.getAllTimeOut(connection,req.user[0],function(data){
-        receiptTimeOut = data;
+        currentReceipt.receiptTimeOut = data;
       })
   });
   await sleep(500);
@@ -1553,18 +1550,18 @@ app.post('/receipt/:id',loggedIn,async function(req,res){
           connection.release();
       }
       transaction.getAllPlateNumber(connection,req.user[0],function(data){
-        receiptPlatenumber = data;
-        res.render('receipt', {currentFirstname:currentFirstname,
-                               currentLastname:currentLastname,
-                               totalTransaction:totalTransaction[id],
-                               receiptFee:receiptFee[id],
-                               receiptDate:receiptDate[id],
-                               receiptTotaltime:receiptTotaltime[id],
-                               receiptBuilding:receiptBuilding[id],
-                               receiptPaymentmethod:receiptPaymentmethod[id],
-                               receiptTimeIn:receiptTimeIn[id],
-                               receiptTimeOut:receiptTimeOut[id],
-                               receiptPlatenumber:receiptPlatenumber[id]
+        currentReceipt.receiptPlatenumber = data;
+        res.render('receipt', {currentFirstname:currentCustomer.currentFirstname,
+                               currentLastname:currentCustomer.currentLastname,
+                               totalTransaction:currentTransaction.totalTransaction[id],
+                               receiptFee:currentReceipt.receiptFee[id],
+                               receiptDate:currentReceipt.receiptDate[id],
+                               receiptTotaltime:currentReceipt.receiptTotaltime[id],
+                               receiptBuilding:currentReceipt.receiptBuilding[id],
+                               receiptPaymentmethod:currentReceipt.receiptPaymentmethod[id],
+                               receiptTimeIn:currentReceipt.receiptTimeIn[id],
+                               receiptTimeOut:currentReceipt.receiptTimeOut[id],
+                               receiptPlatenumber:currentReceipt.receiptPlatenumber[id]
                              });
       })
   });
@@ -1580,7 +1577,7 @@ app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
     }
     var encode_image;
     if(!req.file || !req.file.path){
-      var encode_image = currentPicture;
+      var encode_image = currentCustomer.currentPicture;
     }else{
       var pathName = path.join(__dirname,req.file.path);
       var img = fs.readFileSync(pathName);
@@ -1593,9 +1590,9 @@ app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
       CustomerPicture: encode_image,
     };
     customer.editCustomer(connection,req.user[0],edited_info);
-    currentEmail = edited_info.email;
-    currentFirstname = edited_info.firstname;
-    currentLastname = edited_info.lastname;
+    currentCustomer.currentEmail = edited_info.email;
+    currentCustomer.currentFirstname = edited_info.firstname;
+    currentCustomer.currentLastname = edited_info.lastname;
   });
   pool.acquire(function (err, connection) {
     if (err) {
@@ -1603,7 +1600,7 @@ app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
       connection.release();
     }
     customer.getCustomerPicture(connection,req.user[0],async function(data){
-      currentPicture = data;
+      currentCustomer.currentPicture = data;
         res.redirect('/userinfo');
     })
   });
@@ -1632,14 +1629,14 @@ app.post('/register', upload.single('profilePic'),passport.authenticate('local-s
 app.post('/qrcode', function(req, res){
   var scannedQR = req.body.data;
   console.log(scannedQR);
-  if(scannedQR == reserveId){
+  if(scannedQR == currentReserve.reserveId){
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
         connection.release();
       }
-      reserveQRin = scannedQR;
-      reserve.setQRCodeIn(connection,reserveId,reserveQRin);
+      currentReserve.reserveQRin = scannedQR;
+      reserve.setQRCodeIn(connection,currentReserve.reserveId,currentReserve.reserveQRin);
     });
 
     pool.acquire(function (err, connection) {
@@ -1647,25 +1644,25 @@ app.post('/qrcode', function(req, res){
         console.error(err);
         connection.release();
       }
-      reserveTimein = getCurrentTime();
-      reserve.setTimeIn(connection,reserveId,reserveTimein);
+      currentReserve.reserveTimein = getCurrentTime();
+      reserve.setTimeIn(connection,currentReserve.reserveId,currentReserve.reserveTimein);
     });
-  }else if(scannedQR == transactionId){
+  }else if(scannedQR == currentTransaction.transactionId){
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
         connection.release();
       }
-      reserveQRout = scannedQR;
-      reserve.setQRCodeOut(connection,reserveId,reserveQRout);
+      currentReserve.reserveQRout = scannedQR;
+      reserve.setQRCodeOut(connection,currentReserve.reserveId,currentReserve.reserveQRout);
     });
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
         connection.release();
       }
-      reserveTimeout = getCurrentTime();
-      reserve.setTimeOut(connection,reserveId,reserveTimeout);
+      currentReserve.reserveTimeout = getCurrentTime();
+      reserve.setTimeOut(connection,currentReserve.reserveId,currentReserve.reserveTimeout);
     });
   }
 });
