@@ -61,7 +61,9 @@
                 <!-- </div> -->
                 <div class="method center white-grey">
                   <img src="data:image/png;base64,<%= currentCarPicture[i] %>">
-                  <%=currentPlateNumber[i]%>
+                  <text style="vertical-align: text-bottom">
+                    <%=currentPlateNumber[i]%>
+                  </text>
                   <input type="radio" name="plateNumber" value="<%=currentPlateNumber[i]%>" required />
                 </div>
               </label>

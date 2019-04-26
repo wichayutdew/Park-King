@@ -901,6 +901,16 @@ app.get('/scanner', function(req,res){
   res.render('scanner');
 });
 
+//to payment
+app.get('/payment', function(req,res){
+  res.render('payment');
+});
+
+app.post('/paymentAction', function(req,res){
+  console.log('sadasdasddashfgakdsgfafgjsgfahsdflasdhfalfh');
+  res.redirect('/');
+});
+
 //ROUTE TO STATUS
 app.get('/status', loggedIn,hasReserved, async function(req, res){
   pool.acquire(function (err, connection) {

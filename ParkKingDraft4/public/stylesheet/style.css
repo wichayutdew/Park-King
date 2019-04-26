@@ -4,10 +4,7 @@ body {
   font-family: 'Lato', sans-serif;
 }
 
-.openClose{
-  display:flex;
-  align-items:center;
-}
+
 
 .button {
   color: #707070;
