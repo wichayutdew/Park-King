@@ -91,7 +91,7 @@ exports.getTimeIn = function(connection,reserveid,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue);
+        return Callback(returnedValue[0]);
       }
     });
     request.addParameter('reserveid',TYPES.VarChar,reserveid);
@@ -114,7 +114,7 @@ exports.getTimeOut = function(connection,reserveid,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue);
+        return Callback(returnedValue[0]);
       }
     });
     request.addParameter('reserveid',TYPES.VarChar,reserveid);
@@ -137,7 +137,7 @@ exports.getHasPaid = function(connection,reserveid,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue);
+        return Callback(returnedValue[0]);
       }
     });
     request.addParameter('reserveid',TYPES.VarChar,reserveid);
