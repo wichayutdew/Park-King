@@ -24,7 +24,6 @@
           console.log('scanner');
           let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
           scanner.addListener('scan', function (content) {
-<<<<<<< HEAD
             console.log(content);
             $.post('/qrcode', {data: content});
             $('div#message').css('background', 'green');
@@ -32,16 +31,6 @@
             var slideUpID = setTimeout(function(){
               $('#message').slideUp(500);
             }, 5000);
-=======
-            console.log('Scanned: '+content);
-            $.post('/qrcode', {data: content})
-            .done(function(){
-              console.log('sent post request /qrcode');
-            })
-            .fail(function(err){
-              console.log(err);
-            });
->>>>>>> d62f6871dfb9be5302aa56ebd3d65bc8a39ad2de
           });
           Instascan.Camera.getCameras().then(cameras =>
           {
