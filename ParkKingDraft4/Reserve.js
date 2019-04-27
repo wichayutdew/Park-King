@@ -6,20 +6,20 @@ var TYPES =require('tedious').TYPES;
 
 //*******************************************************Create class object***********************************************
 exports.createReserve = function() {
-   this.reserveStatus = "Not Reserved";
-   this.reservePlatenumber = "--";
+   this.reserveStatus = null;
+   this.reservePlatenumber = null;
    this.reserveBrand = null;
    this.reserveModel = null;
    this.reserveColor = null;
    this.reserveCarPicture = null;
-   this.reserveBuildingname = "--";
+   this.reserveBuildingname = null;
    this.reserveFloor = null;
    this.reserveSlot = null;
    this.reserveMap = null;
    this.reserveId = null;
    this.reserveIsfull = null;
-   this.reserveTimein = "initialize";
-   this.reserveTimeout = "initialize";
+   this.reserveTimein = null;
+   this.reserveTimeout = null;
    this.reserveQRin = null;
    this.reserveQRout = null;
    this.qrCode = null;

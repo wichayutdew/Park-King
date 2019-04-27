@@ -30,11 +30,11 @@
           console.log('scanner');
           let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
           scanner.addListener('scan', function (content) {
-            console.log(content); 
+            console.log(content);
             $.post('/qrcode', {data: content});
             $('div#message').css('background', 'green');
             $('#message p').text('Scanned: '+content);
-            var slideUpID = setTimeOut(function(){
+            var slideUpID = setTimeout(function(){
               $('#message').slideUp(500);
             }, 5000);
           });

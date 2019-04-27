@@ -6,14 +6,14 @@ var TYPES =require('tedious').TYPES;
 
 //*******************************************************Create class object***********************************************
 exports.createTransaction = function() {
-   this.exceedCheckoutTime = false;
+   this.exceedCheckoutTime = null;
    this.transactionId = null;
    this.totaltime = null;
    this.parkingFee = null;
-   this.addedFee = 0;
+   this.addedFee = null;
    this.paymentmethod = null;
    this.date = null;
-   this.totalTransaction=[];
+   this.totalTransaction = null;
    this.qrCode = null;
 }
 
