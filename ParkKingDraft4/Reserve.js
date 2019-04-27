@@ -18,11 +18,13 @@ exports.createReserve = function() {
    this.reserveMap = null;
    this.reserveId = null;
    this.reserveIsfull = null;
-   this.reserveTimein = null;
-   this.reserveTimeout = null;
+   this.reserveTimein = "initialize";
+   this.reserveTimeout = "initialize";
    this.reserveQRin = null;
    this.reserveQRout = null;
    this.qrCode = null;
+   this.currentFee = null;
+   this.currentTime = null;
 }
 
 //*******************************************************Inserting new Reserve into database***********************************************
@@ -356,6 +358,52 @@ exports.getBuildingname = function(connection,reserveid,Callback) {
     });
     connection.execSql(request);
 }
+
+exports.getCurrentFee = function(connection,reserveid,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT currentFee FROM dbo.Reserve WHERE ReserveID = @reserveid',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('reserveid',TYPES.VarChar,reserveid);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getCurrentTime = function(connection,reserveid,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT currentTime FROM dbo.Reserve WHERE ReserveID = @reserveid',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('reserveid',TYPES.VarChar,reserveid);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
 //*******************************************************Reserve's Setter***********************************************
 exports.setQRCodeIn = function(connection,reserveid,qrcodein) {
   var request = new Request("UPDATE dbo.Reserve SET QRCodeIn = @qrcodein WHERE ReserveID = @reserveid",
@@ -471,6 +519,43 @@ exports.setReserveStatus = function(connection,reserveid,reservestatus) {
   connection.execSql(request);
 }
 
+exports.setCurrentFee = function(connection,reserveid,currentfee) {
+  var request = new Request("UPDATE dbo.Reserve SET currentFee = @currentfee WHERE ReserveID = @reserveid",
+  function(err, rowCount, rows) {
+    if (err) {
+      console.log(err);
+      connection.release();
+    } else {
+      connection.release();
+    }
+  });
+  request.addParameter('currentfee',TYPES.Bit,currentfee);
+  request.addParameter('reserveid',TYPES.VarChar,reserveid);
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+}
+
+exports.setCurrentTime = function(connection,reserveid,currenttime) {
+  var request = new Request("UPDATE dbo.Reserve SET currentTime = @currentTime WHERE ReserveID = @reserveid",
+  function(err, rowCount, rows) {
+    if (err) {
+      console.log(err);
+      connection.release();
+    } else {
+      connection.release();
+    }
+  });
+  request.addParameter('currenttime',TYPES.Bit,currenttime);
+  request.addParameter('reserveid',TYPES.VarChar,reserveid);
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+}
 //*******************************************************Reserve's Remover***********************************************
 exports.removeReserve = function(connection,reserveid) {
   var request = new Request("DELETE FROM dbo.Reserve WHERE ReserveID = @reserveid",
