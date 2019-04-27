@@ -14,6 +14,7 @@ exports.createTransaction = function() {
    this.paymentmethod = null;
    this.date = null;
    this.totalTransaction=[];
+   this.qrCode = null;
 }
 
 exports.createReceipt = function() {
@@ -29,7 +30,7 @@ exports.createReceipt = function() {
 
 //*******************************************************Transaction's Adder***********************************************
 exports.Transaction = function(connection,platenumber,username,floor,slot,buildingname,transactionid,fee,paymentmethod,totaltime,date){
-  var request = new Request('INSERT INTO dbo.TransactionReceipt (PlateNumber,Username,Floor,Slot,BuildingName,TransactionID,Fee,PaymentMethod,TotalTime,Date) VALUES (@platenumber,@username,@floor,@slot,@buildingname,@transactionid,@fee,@paymentmethod,@totaltime,@date)',
+  var request = new Request('INSERT INTO dbo.TransactionReceipt (PlateNumber,Username,Floor,Slot,BuildingName,TransactionID,Fee,PaymentMethod,TotalTime,Date,transactionStatus,addedFee) VALUES (@platenumber,@username,@floor,@slot,@buildingname,@transactionid,@fee,@paymentmethod,@totaltime,@date,@transactionstatus,@addedfee)',
       function(err, rowCount, rows){
           if(err){
               console.log(err);
@@ -49,6 +50,8 @@ exports.Transaction = function(connection,platenumber,username,floor,slot,buildi
   request.addParameter('paymentmethod',TYPES.VarChar,paymentmethod);
   request.addParameter('totaltime',TYPES.VarChar,totaltime);
   request.addParameter('date',TYPES.VarChar,date);
+  request.addParameter('transactionstatus',TYPES.VarChar,"Paid");
+  request.addParameter('addedfee',TYPES.VarChar,0);
 
   request.on('Done',function(err, rowCount, rows){
   });
@@ -57,6 +60,76 @@ exports.Transaction = function(connection,platenumber,username,floor,slot,buildi
 }
 
 //*******************************************************Transaction's Getter***********************************************
+exports.getTransactionID = function(connection,username,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT TransactionID FROM dbo.TransactionReceipt WHERE Username = @username AND transactionStatus = @transactionstatus',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.addParameter('transactionstatus',TYPES.VarChar,"Paid");
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getAddedFee = function(connection,transactionid,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT addedFee FROM dbo.TransactionReceipt WHERE TransactionID = @transactionid',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('transactionid',TYPES.VarChar,transactionid);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getExceedCheckouttime = function(connection,transactionid,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT exceedCheckouttime FROM dbo.TransactionReceipt WHERE TransactionID = @transactionid',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('transactionid',TYPES.VarChar,transactionid);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
 exports.getFee = function(connection,transactionid,Callback) {
   var returnedValue  = [];
   var request = new Request(
@@ -68,7 +141,7 @@ exports.getFee = function(connection,transactionid,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue);
+        return Callback(returnedValue[0]);
       }
     });
     request.addParameter('transactionid',TYPES.VarChar,transactionid);
@@ -91,7 +164,7 @@ exports.getPaymentMethod = function(connection,transactionid,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue);
+        return Callback(returnedValue[0]);
       }
     });
     request.addParameter('transactionid',TYPES.VarChar,transactionid);
@@ -114,7 +187,7 @@ exports.getTotalTime = function(connection,transactionid,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue);
+        return Callback(returnedValue[0]);
       }
     });
     request.addParameter('transactionid',TYPES.VarChar,transactionid);
@@ -137,7 +210,7 @@ exports.getDate = function(connection,transactionid,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue);
+        return Callback(returnedValue[0]);
       }
     });
     request.addParameter('transactionid',TYPES.VarChar,transactionid);
@@ -386,6 +459,62 @@ exports.setDate = function(connection,transactionid,fee) {
   connection.execSql(request);
 }
 
+exports.setTransactionStatus = function(connection,transactionid,transactionstatus) {
+  var request = new Request("UPDATE dbo.TransactionReceipt SET transactionStatus = @transactionstatus WHERE TransactionID = @transactionid",
+  function(err, rowCount, rows) {
+    if (err) {
+      console.log(err);
+      connection.release();
+    } else {
+      connection.release();
+    }
+  });
+  request.addParameter('transactionstatus',TYPES.VarChar,transactionstatus);
+  request.addParameter('transactionid',TYPES.VarChar,transactionid);
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+}
+
+exports.setAddedFee = function(connection,transactionid,addedfee) {
+  var request = new Request("UPDATE dbo.TransactionReceipt SET addedFee = @addedfee WHERE TransactionID = @transactionid",
+  function(err, rowCount, rows) {
+    if (err) {
+      console.log(err);
+      connection.release();
+    } else {
+      connection.release();
+    }
+  });
+  request.addParameter('addedfee',TYPES.VarChar,addedfee);
+  request.addParameter('transactionid',TYPES.VarChar,transactionid);
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+}
+
+exports.setExceedCheckoutTime = function(connection,transactionid,exceedcheckouttime) {
+  var request = new Request("UPDATE dbo.TransactionReceipt SET exceedCheckouttime = @exceedcheckouttime WHERE TransactionID = @transactionid",
+  function(err, rowCount, rows) {
+    if (err) {
+      console.log(err);
+      connection.release();
+    } else {
+      connection.release();
+    }
+  });
+  request.addParameter('exceedcheckouttime',TYPES.VarChar,exceedcheckouttime);
+  request.addParameter('transactionid',TYPES.VarChar,transactionid);
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+}
 //*******************************************************Reserve's Remover***********************************************
 exports.removeTransaction = function(connection,transactionid) {
   var request = new Request("DELETE FROM dbo.TransactionReceipt WHERE TransactionID = @transactionid",
