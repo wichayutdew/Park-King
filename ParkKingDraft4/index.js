@@ -2160,7 +2160,7 @@ app.post('/register', upload.single('profilePic'),passport.authenticate('local-s
 
 app.post('/qrcode', function(req, res){
   var scannedQR = req.body.data;
-  console.log(scannedQR);
+  console.log('Scanned: '+scannedQR);
   if(scannedQR == req.user.currentReserve.reserveId){
     pool.acquire(function (err, connection) {
       if (err) {
