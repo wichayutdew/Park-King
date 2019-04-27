@@ -6,7 +6,6 @@ var TYPES =require('tedious').TYPES;
 
 //*******************************************************Create class object***********************************************
 exports.createReserve = function() {
-   this.currentPlateNumber=[];
    this.reserveStatus = "Not Reserved";
    this.reservePlatenumber = "--";
    this.reserveBrand = null;

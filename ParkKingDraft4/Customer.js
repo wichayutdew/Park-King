@@ -12,6 +12,9 @@ exports.createCustomer = function() {
    this.currentFirstname = null;
    this.currentLastname = null;
    this.currentCustomerType = null;
+   this.studentID = null;
+   this.ProfessorID = null;
+   this.nationalID = null;
    this.currentPicture = null;
    this.cancelTime = null;
    this.customerReservable = null;
@@ -60,12 +63,12 @@ exports.insert_newCustomer = function(connection,customer_info,done,newUserMysql
 //*******************************************************Only used in Index.js***********************************************
 exports.getID = function(user) {
   var userID;
-  if(user[5] == "Student"){
-    userID = user[6];
-  }else if(user[5] == "Professor"){
-    userID = user[7];
+  if(user.currentCustomerType == "Student"){
+    userID = user.studentID;
+  }else if(user.currentCustomerType == "Professor"){
+    userID = user.professorID;
   }else{
-    userID = user[8];
+    userID = user.nationalID;
   }
   return userID;
 }
