@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css" integrity="sha384-PDle/QlgIONtM1aqA2Qemk5gPOE7wFq8+Em+G/hmo5Iq0CCmYZLv3fVRDJ4MMwEA" crossorigin="anonymous">
     <title>Instascan</title>
     <script type="text/javascript" src="./js/instascan.min.js"></script>
-    <script type="text/javascript">
+    <style type="text/javascript">
       div#preview-div {
         display: flex;
         justify-content: center;
@@ -19,7 +19,7 @@
         padding: 5px 10px;
         color: white;
       }
-    </script>
+    </style>
   </head>
   <body>
     <div id="preview-div"><video id="preview"></video></div>
@@ -30,6 +30,7 @@
           console.log('scanner');
           let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
           scanner.addListener('scan', function (content) {
+            console.log(content); 
             $.post('/qrcode', {data: content});
             $('div#message').css('background', 'green');
             $('#message p').text('Scanned: '+content);
