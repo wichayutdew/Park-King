@@ -2160,6 +2160,7 @@ app.post('/register', upload.single('profilePic'),passport.authenticate('local-s
 
 app.post('/qrcode', function(req, res){
   var scannedQR = req.body.data;
+<<<<<<< HEAD
   console.log(scannedQR);
   var reserveID, transactionID;
   pool.acquire(function (err, connection) {
@@ -2181,6 +2182,10 @@ app.post('/qrcode', function(req, res){
     })
   });
   if(scannedQR[0] == reserveID){
+=======
+  console.log('Scanned: '+scannedQR);
+  if(scannedQR == req.user.currentReserve.reserveId){
+>>>>>>> d62f6871dfb9be5302aa56ebd3d65bc8a39ad2de
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
