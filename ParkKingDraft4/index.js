@@ -584,11 +584,7 @@ passport.deserializeUser(async function(user, done) {
         deserializing.currentReserve = currentReserve;
         deserializing.currentTransaction = currentTransaction;
         deserializing.currentReceipt = currentReceipt;
-<<<<<<< HEAD
-
-=======
         deserializing.stopwatch = stopwatch;
->>>>>>> c50de7cc476772cdfe838ca98a0d25eaa2688355
         pool.acquire(function (err, connection) {
             if (err) {
               console.error(err);
@@ -602,7 +598,6 @@ passport.deserializeUser(async function(user, done) {
                         connection.release();
                         return done(err);
                     }
-                    //console.log(deserializing);
                     done(err, deserializing);
                     connection.release();
                 }
