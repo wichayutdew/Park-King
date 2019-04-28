@@ -30,13 +30,15 @@
     $('#profileBut').on('click', function(){
         $('.profile-menu').slideToggle(500);
     });
-
-    $.get('/getthisusername')
-    .done(function(d){
-      // console.log(d+'!!!!!!!!!!!!!');
-      reqUser = d;
-    })
-    .fail(function(){
-      console.log('err');
-    });
+    function getThisUserInfo{
+      $.get('/getthisusername')
+      .done(function(d){
+        // console.log(d+'!!!!!!!!!!!!!');
+        reqUser = d;
+      })
+      .fail(function(){
+        console.log('err');
+      });
+    }
+    var getThisUserInfoIntervalID = setInterval(getThisUserInfo, 10000);
 </script>
