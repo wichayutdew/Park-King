@@ -108,7 +108,7 @@ passport.serializeUser(function(user, done) {
     });
 passport.deserializeUser(async function(user, done) {
         console.log('deserializer')
-        var deserializing = new createDeserializer();
+        var deserializing=[];
 
         pool.acquire(function (err, connection) {
             if (err) {
@@ -123,7 +123,7 @@ passport.deserializeUser(async function(user, done) {
                         connection.release();
                         return done(err);
                     }
-                    //console.log(deserializing);
+                    console.log(deserializing);
                     done(err, deserializing);
                     connection.release();
                 }
@@ -311,6 +311,30 @@ passport.use('local-login', new LocalStrategy({
             }));
 
 
+function loggedIn(req, res, next) {
+                if (req.user) {
+                    console.log('user in login state');
+                    //console.log('name : ' +req.user.Customer.Username);
+                    return next();
+                } else {
+                    console.log('user not login');
+                    res.redirect('/login');
+                }
+            }
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './upload-express');
+  },
+  filename: function (req, file, cb) {
+    cb(null, new Date().getTime() + '-' + file.originalname);
+  }
+});
+
+const upload = multer({
+      storage: storage,
+      //limits: {fileSize: 1024 * 1024 * 5}
+});
 
 //------------------------------------------------------------------------------------------------------------//
 //------------------------------------------------------------------------------------------------------------//
@@ -319,295 +343,296 @@ passport.use('local-login', new LocalStrategy({
 //------------------------------------------------------------------------------------------------------------//
 
 app.get('/home',loggedIn, async function(req, res){
-    pool.acquire(function (err, connection) {
-      if (err) {
-          console.error(err);
-          connection.release();
-      }
-      customer.getReservable(connection,req.user.currentCustomer.currentUsername,function(data){
-        req.user.currentCustomer.customerReservable = data;
-      });
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      customer.getCustomerPicture(connection,req.user.currentCustomer.currentUsername,async function(data){
-        req.user.currentCustomer.currentPicture = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      parkingspot.getTotalSpot(connection,'buildingArts',async function(data){
-        artsCapacity = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      parkingspot.getTotalSpot(connection,'buildingPoli',async function(data){
-        poliCapacity = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      parkingspot.getTotalFreeSpot(connection,'buildingArts',async function(data){
-        totalArtsFreeSpot = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      parkingspot.getTotalFreeSpot(connection,'buildingPoli',async function(data){
-        totalPoliFreeSpot = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      parkingspot.getLowestFloor(connection,'buildingArts',async function(data){
-        lowestFloorArts = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      parkingspot.getLowestSlot(connection,'buildingArts',async function(data){
-        lowestSlotArts = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      parkingspot.getLowestFloor(connection,'buildingPoli',async function(data){
-        lowestFloorPoli = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      parkingspot.getLowestSlot(connection,'buildingPoli',async function(data){
-        lowestSlotPoli = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      car.getAllPlateNumber(connection,req.user.currentCustomer.currentUsername,function(data){
-        req.user.currentCar.currentPlateNumber = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      car.getAllCarBrand(connection,req.user.currentCustomer.currentUsername,function(data){
-        req.user.currentCar.currentBrand = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      car.getAllCarModel(connection,req.user.currentCustomer.currentUsername,function(data){
-        req.user.currentCar.currentModel = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      car.getAllCarColor(connection,req.user.currentCustomer.currentUsername,function(data){
-        req.user.currentCar.currentColor = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      car.getAllCarPicture(connection,req.user.currentCustomer.currentUsername,function(data){
-        req.user.currentCar.currentCarPicture = data;
-      });
-    });
-    await sleep(1000);
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      car.getAllPlateProvince(connection,req.user.currentCustomer.currentUsername,function(data){
-        req.user.currentCar.currentPlateProvince = data;
-
-        // ====================================================================
-        // rendering home page
-        res.render('home', {lowestFloorArts:lowestFloorArts,
-                            lowestSlotArts:lowestSlotArts,
-                            artsCapacity:artsCapacity,
-                            poliCapacity:poliCapacity,
-                            lowestFloorPoli:lowestFloorPoli,
-                            lowestSlotPoli:lowestSlotPoli,
-                            totalArtsFreeSpot:totalArtsFreeSpot,
-                            totalPoliFreeSpot:totalPoliFreeSpot,
-                            currentUsername: req.user.currentCustomer.currentUsername,
-                            currentPicture: req.user.currentCustomer.currentPicture,
-                            reservePlatenumber: req.user.currentReserve.reservePlatenumber,
-                            reserveBuildingname:req.user.currentReserve.reserveBuildingname,
-                            reserveStatus:req.user.currentReserve.reserveStatus
-                            });
-        // ====================================================================
-      });
-    });
-
-    feeRate = feeRate(req.user.currentCustomer.currentCustomerType);
-    setInterval(async function() {
-      console.log('Please wait for check-in/check-out');
-      pool.acquire(function (err, connection) {
-        if (err) {
-          console.error(err);
-          connection.release();
-        }
-        reserve.getReserveID(connection,req.user.currentCustomer.currentUsername,function(data){
-          req.user.currentReserve.reserveId = data;
-        });
-      });
-      console.log(req.user.currentReserve.reserveId);
-      pool.acquire(function (err, connection) {
-        if (err) {
-          console.error(err);
-          connection.release();
-        }
-        reserve.getTimeIn(connection,req.user.currentReserve.reserveId,function(data){
-          req.user.currentReserve.reserveTimein = data;
-        });
-      });
-      pool.acquire(function (err, connection) {
-        if (err) {
-          console.error(err);
-          connection.release();
-        }
-        reserve.getTimeOut(connection,req.user.currentReserve.reserveId,function(data){
-          req.user.currentReserve.reserveTimeout= data;
-        });
-      });
-      await sleep(500);
-      if(req.user.currentReserve.reserveTimein != check && req.user.currentReserve.reserveTimeout == check){
-          pool.acquire(function (err, connection) {
-            if (err) {
-              console.error(err);
-              connection.release();
-            }
-            reserve.getQRCodeIn(connection,req.user.currentReserve.reserveId,function(data){
-                req.user.currentReserve.reserveQRin = data;
-                console.log("QR code In =" + req.user.currentReserve.reserveQRin);
-            });
-          });
-          if(req.user.currentReserve.reserveQRin == req.user.currentReserve.reserveId && req.user.currentReserve.reserveStatus != "Checked In"){
-              console.log("Checked IN");
-              // startUserTimer();
-              req.user.stopwatch.start();
-              pool.acquire(function (err, connection) {
-                if (err) {
-                  console.error(err);
-                  connection.release();
-                }
-                req.user.currentReserve.reserveStatus = "Checked In";
-                reserve.setReserveStatus(connection,req.user.currentReserve.reserveId,req.user.currentReserve.reserveStatus);
-              });
-              isScan = true;
-          }
-      }
-      // else if(req.user.currentReserve.reserveTimeout != check){
-      //   pool.acquire(function (err, connection) {
-      //       if (err) {
-      //         console.error(err);
-      //         connection.release();
-      //       }
-      //       reserve.getQRCodeOut(connection,req.user.currentReserve.reserveId,function(data){
-      //           req.user.currentReserve.reserveQRout = data;
-      //       });
-      //   });
-      //   if(req.user.currentReserve.reserveQRout == req.user.currentTransaction.transactionId && req.user.currentReserve.reserveStatus != "Checked Out"){
-      //       pool.acquire(function (err, connection) {
-      //         if (err) {
-      //           console.error(err);
-      //           connection.release();
-      //         }
-      //         req.user.currentReserve.reserveIsfull = 0;
-      //         parkingspot.setIsFull(connection,req.user.currentReserve.reserveBuildingname,req.user.currentReserve.reserveFloor,req.user.currentReserve.reserveSlot,0);
-      //
-      //       });
-      //       pool.acquire(function (err, connection) {
-      //         if (err) {
-      //           console.error(err);
-      //           connection.release();
-      //         }
-      //         req.user.currentCustomer.customerReservable = 1;
-      //         customer.setReservable(connection,req.user.currentCustomer.currentUsername,1);
-      //       });
-      //       pool.acquire(function (err, connection) {
-      //         if (err) {
-      //           console.error(err);
-      //           connection.release();
-      //         }
-      //         req.user.currentReserve.reserveStatus = "Checked Out";
-      //         reserve.setReserveStatus(connection,req.user.currentReserve.reserveId,req.user.currentReserve.reserveStatus);
-      //       });
-      //       pool.acquire(function (err, connection) {
-      //         if (err) {
-      //           console.error(err);
-      //           connection.release();
-      //         }
-      //         transaction.setTransactionStatus(connection,req.user.currentTransaction.transactionId,"Checked Out");
-      //       });
-      //       isScan = false;
-      //     }
-      // }
-      pool.acquire(function (err, connection) {
-        if (err) {
-          console.error(err);
-          connection.release();
-        }
-        req.user.currentReserve.currentTime = parseInt(req.user.stopwatch.read()/1000);
-        reserve.setCurrentTime(connection,req.user.currentReserve.reserveId,req.user.currentReserve.currentTime);
-      });
-      pool.acquire(function (err, connection) {
-        if (err) {
-          console.error(err);
-          connection.release();
-        }
-        req.user.currentReserve.currentFee = parseInt(req.user.currentReserve.currentTime * feeRate);
-        reserve.setCurrentFee(connection,req.user.currentReserve.reserveId,req.user.currentReserve.currentFee);
-      });
-      console.log(req.user.currentReserve.currentTime);
-      console.log(req.user.currentReserve.currentFee);
-      console.log(req.user.currentReserve.reserveTimein);
-      console.log(req.user.currentReserve.reserveTimeout);
-    },5000);
+    // pool.acquire(function (err, connection) {
+    //   if (err) {
+    //       console.error(err);
+    //       connection.release();
+    //   }
+    //   customer.getReservable(connection,req.user.currentCustomer.currentUsername,function(data){
+    //     req.user.currentCustomer.customerReservable = data;
+    //   });
+    // });
+    // pool.acquire(function (err, connection) {
+    //   if (err) {
+    //     console.error(err);
+    //     connection.release();
+    //   }
+    //   customer.getCustomerPicture(connection,req.user.currentCustomer.currentUsername,async function(data){
+    //     req.user.currentCustomer.currentPicture = data;
+    //   })
+    // });
+    // pool.acquire(function (err, connection) {
+    //   if (err) {
+    //     console.error(err);
+    //     connection.release();
+    //   }
+    //   parkingspot.getTotalSpot(connection,'buildingArts',async function(data){
+    //     artsCapacity = data;
+    //   })
+    // });
+    // pool.acquire(function (err, connection) {
+    //   if (err) {
+    //     console.error(err);
+    //     connection.release();
+    //   }
+    //   parkingspot.getTotalSpot(connection,'buildingPoli',async function(data){
+    //     poliCapacity = data;
+    //   })
+    // });
+    // pool.acquire(function (err, connection) {
+    //   if (err) {
+    //     console.error(err);
+    //     connection.release();
+    //   }
+    //   parkingspot.getTotalFreeSpot(connection,'buildingArts',async function(data){
+    //     totalArtsFreeSpot = data;
+    //   })
+    // });
+    // pool.acquire(function (err, connection) {
+    //   if (err) {
+    //     console.error(err);
+    //     connection.release();
+    //   }
+    //   parkingspot.getTotalFreeSpot(connection,'buildingPoli',async function(data){
+    //     totalPoliFreeSpot = data;
+    //   })
+    // });
+    // pool.acquire(function (err, connection) {
+    //   if (err) {
+    //     console.error(err);
+    //     connection.release();
+    //   }
+    //   parkingspot.getLowestFloor(connection,'buildingArts',async function(data){
+    //     lowestFloorArts = data;
+    //   })
+    // });
+    // pool.acquire(function (err, connection) {
+    //   if (err) {
+    //     console.error(err);
+    //     connection.release();
+    //   }
+    //   parkingspot.getLowestSlot(connection,'buildingArts',async function(data){
+    //     lowestSlotArts = data;
+    //   })
+    // });
+    // pool.acquire(function (err, connection) {
+    //   if (err) {
+    //     console.error(err);
+    //     connection.release();
+    //   }
+    //   parkingspot.getLowestFloor(connection,'buildingPoli',async function(data){
+    //     lowestFloorPoli = data;
+    //   })
+    // });
+    // pool.acquire(function (err, connection) {
+    //   if (err) {
+    //     console.error(err);
+    //     connection.release();
+    //   }
+    //   parkingspot.getLowestSlot(connection,'buildingPoli',async function(data){
+    //     lowestSlotPoli = data;
+    //   })
+    // });
+    // pool.acquire(function (err, connection) {
+    //   if (err) {
+    //     console.error(err);
+    //     connection.release();
+    //   }
+    //   car.getAllPlateNumber(connection,req.user.currentCustomer.currentUsername,function(data){
+    //     req.user.currentCar.currentPlateNumber = data;
+    //   })
+    // });
+    // pool.acquire(function (err, connection) {
+    //   if (err) {
+    //     console.error(err);
+    //     connection.release();
+    //   }
+    //   car.getAllCarBrand(connection,req.user.currentCustomer.currentUsername,function(data){
+    //     req.user.currentCar.currentBrand = data;
+    //   })
+    // });
+    // pool.acquire(function (err, connection) {
+    //   if (err) {
+    //     console.error(err);
+    //     connection.release();
+    //   }
+    //   car.getAllCarModel(connection,req.user.currentCustomer.currentUsername,function(data){
+    //     req.user.currentCar.currentModel = data;
+    //   })
+    // });
+    // pool.acquire(function (err, connection) {
+    //   if (err) {
+    //     console.error(err);
+    //     connection.release();
+    //   }
+    //   car.getAllCarColor(connection,req.user.currentCustomer.currentUsername,function(data){
+    //     req.user.currentCar.currentColor = data;
+    //   })
+    // });
+    // pool.acquire(function (err, connection) {
+    //   if (err) {
+    //     console.error(err);
+    //     connection.release();
+    //   }
+    //   car.getAllCarPicture(connection,req.user.currentCustomer.currentUsername,function(data){
+    //     req.user.currentCar.currentCarPicture = data;
+    //   });
+    // });
+    // await sleep(1000);
+    // pool.acquire(function (err, connection) {
+    //   if (err) {
+    //     console.error(err);
+    //     connection.release();
+    //   }
+    //   car.getAllPlateProvince(connection,req.user.currentCustomer.currentUsername,function(data){
+    //     req.user.currentCar.currentPlateProvince = data;
+    //
+    //     // ====================================================================
+    //     // rendering home page
+    //     res.render('home', {lowestFloorArts:lowestFloorArts,
+    //                         lowestSlotArts:lowestSlotArts,
+    //                         artsCapacity:artsCapacity,
+    //                         poliCapacity:poliCapacity,
+    //                         lowestFloorPoli:lowestFloorPoli,
+    //                         lowestSlotPoli:lowestSlotPoli,
+    //                         totalArtsFreeSpot:totalArtsFreeSpot,
+    //                         totalPoliFreeSpot:totalPoliFreeSpot,
+    //                         currentUsername: req.user.currentCustomer.currentUsername,
+    //                         currentPicture: req.user.currentCustomer.currentPicture,
+    //                         reservePlatenumber: req.user.currentReserve.reservePlatenumber,
+    //                         reserveBuildingname:req.user.currentReserve.reserveBuildingname,
+    //                         reserveStatus:req.user.currentReserve.reserveStatus
+    //                         });
+    //     // ====================================================================
+    //   });
+    // });
+    //
+    // feeRate = feeRate(req.user.currentCustomer.currentCustomerType);
+    // setInterval(async function() {
+    //   console.log('Please wait for check-in/check-out');
+    //   pool.acquire(function (err, connection) {
+    //     if (err) {
+    //       console.error(err);
+    //       connection.release();
+    //     }
+    //     reserve.getReserveID(connection,req.user.currentCustomer.currentUsername,function(data){
+    //       req.user.currentReserve.reserveId = data;
+    //     });
+    //   });
+    //   console.log(req.user.currentReserve.reserveId);
+    //   pool.acquire(function (err, connection) {
+    //     if (err) {
+    //       console.error(err);
+    //       connection.release();
+    //     }
+    //     reserve.getTimeIn(connection,req.user.currentReserve.reserveId,function(data){
+    //       req.user.currentReserve.reserveTimein = data;
+    //     });
+    //   });
+    //   pool.acquire(function (err, connection) {
+    //     if (err) {
+    //       console.error(err);
+    //       connection.release();
+    //     }
+    //     reserve.getTimeOut(connection,req.user.currentReserve.reserveId,function(data){
+    //       req.user.currentReserve.reserveTimeout= data;
+    //     });
+    //   });
+    //   await sleep(500);
+    //   if(req.user.currentReserve.reserveTimein != check && req.user.currentReserve.reserveTimeout == check){
+    //       pool.acquire(function (err, connection) {
+    //         if (err) {
+    //           console.error(err);
+    //           connection.release();
+    //         }
+    //         reserve.getQRCodeIn(connection,req.user.currentReserve.reserveId,function(data){
+    //             req.user.currentReserve.reserveQRin = data;
+    //             console.log("QR code In =" + req.user.currentReserve.reserveQRin);
+    //         });
+    //       });
+    //       if(req.user.currentReserve.reserveQRin == req.user.currentReserve.reserveId && req.user.currentReserve.reserveStatus != "Checked In"){
+    //           console.log("Checked IN");
+    //           // startUserTimer();
+    //           req.user.stopwatch.start();
+    //           pool.acquire(function (err, connection) {
+    //             if (err) {
+    //               console.error(err);
+    //               connection.release();
+    //             }
+    //             req.user.currentReserve.reserveStatus = "Checked In";
+    //             reserve.setReserveStatus(connection,req.user.currentReserve.reserveId,req.user.currentReserve.reserveStatus);
+    //           });
+    //           isScan = true;
+    //       }
+    //   }
+    //   // else if(req.user.currentReserve.reserveTimeout != check){
+    //   //   pool.acquire(function (err, connection) {
+    //   //       if (err) {
+    //   //         console.error(err);
+    //   //         connection.release();
+    //   //       }
+    //   //       reserve.getQRCodeOut(connection,req.user.currentReserve.reserveId,function(data){
+    //   //           req.user.currentReserve.reserveQRout = data;
+    //   //       });
+    //   //   });
+    //   //   if(req.user.currentReserve.reserveQRout == req.user.currentTransaction.transactionId && req.user.currentReserve.reserveStatus != "Checked Out"){
+    //   //       pool.acquire(function (err, connection) {
+    //   //         if (err) {
+    //   //           console.error(err);
+    //   //           connection.release();
+    //   //         }
+    //   //         req.user.currentReserve.reserveIsfull = 0;
+    //   //         parkingspot.setIsFull(connection,req.user.currentReserve.reserveBuildingname,req.user.currentReserve.reserveFloor,req.user.currentReserve.reserveSlot,0);
+    //   //
+    //   //       });
+    //   //       pool.acquire(function (err, connection) {
+    //   //         if (err) {
+    //   //           console.error(err);
+    //   //           connection.release();
+    //   //         }
+    //   //         req.user.currentCustomer.customerReservable = 1;
+    //   //         customer.setReservable(connection,req.user.currentCustomer.currentUsername,1);
+    //   //       });
+    //   //       pool.acquire(function (err, connection) {
+    //   //         if (err) {
+    //   //           console.error(err);
+    //   //           connection.release();
+    //   //         }
+    //   //         req.user.currentReserve.reserveStatus = "Checked Out";
+    //   //         reserve.setReserveStatus(connection,req.user.currentReserve.reserveId,req.user.currentReserve.reserveStatus);
+    //   //       });
+    //   //       pool.acquire(function (err, connection) {
+    //   //         if (err) {
+    //   //           console.error(err);
+    //   //           connection.release();
+    //   //         }
+    //   //         transaction.setTransactionStatus(connection,req.user.currentTransaction.transactionId,"Checked Out");
+    //   //       });
+    //   //       isScan = false;
+    //   //     }
+    //   // }
+    //   pool.acquire(function (err, connection) {
+    //     if (err) {
+    //       console.error(err);
+    //       connection.release();
+    //     }
+    //     req.user.currentReserve.currentTime = parseInt(req.user.stopwatch.read()/1000);
+    //     reserve.setCurrentTime(connection,req.user.currentReserve.reserveId,req.user.currentReserve.currentTime);
+    //   });
+    //   pool.acquire(function (err, connection) {
+    //     if (err) {
+    //       console.error(err);
+    //       connection.release();
+    //     }
+    //     req.user.currentReserve.currentFee = parseInt(req.user.currentReserve.currentTime * feeRate);
+    //     reserve.setCurrentFee(connection,req.user.currentReserve.reserveId,req.user.currentReserve.currentFee);
+    //   });
+    //   console.log(req.user.currentReserve.currentTime);
+    //   console.log(req.user.currentReserve.currentFee);
+    //   console.log(req.user.currentReserve.reserveTimein);
+    //   console.log(req.user.currentReserve.reserveTimeout);
+    // },5000);
+    res.render('home');
 });
 
 //LOGIN, LOGOUT, REGISTER
