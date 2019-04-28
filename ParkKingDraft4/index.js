@@ -1265,6 +1265,15 @@ app.get('/home',loggedIn, async function(req, res){
           req.user.currentReserve.reserveTimeout= data;
         });
       });
+      pool.acquire(function (err, connection) {
+        if (err) {
+          console.error(err);
+          connection.release();
+        }
+        reserve.getReserveStatus(connection,req.user.currentReserve.reserveId,function(data){
+          req.user.currentReserve.reserveStatus= data;
+        });
+      });
       await sleep(500);
       if(req.user.currentReserve.reserveTimein != check && req.user.currentReserve.reserveTimeout == check && req.user.currentReserve.reserveStatus == "Reserved"){
           pool.acquire(function (err, connection) {
@@ -1292,7 +1301,7 @@ app.get('/home',loggedIn, async function(req, res){
               isScan = true;
           }
       }
-      else if(req.user.currentReserve.reserveTimeout != check && req.user.currentReserve.reserveTimeout != null && req.user.currentReserve.reserveStatus == "Paid"){
+      else if(req.user.currentReserve.reserveTimeout != check && req.user.currentReserve.reserveStatus == "Paid"){
         pool.acquire(function (err, connection) {
             if (err) {
               console.error(err);
@@ -1326,7 +1335,7 @@ app.get('/home',loggedIn, async function(req, res){
                 connection.release();
               }
               req.user.currentReserve.reserveStatus = "Checked Out";
-              reserve.setReserveStatus(connection,req.us1er.currentReserve.reserveId,req.user.currentReserve.reserveStatus);
+              reserve.setReserveStatus(connection,req.user.currentReserve.reserveId,req.user.currentReserve.reserveStatus);
             });
             pool.acquire(function (err, connection) {
               if (err) {
@@ -1669,14 +1678,6 @@ app.post('/reserve',loggedIn,async function(req, res){
   req.user.currentReserve.reserveBuildingname = req.body.buildingName;
   console.log('reserve Plate number: '+req.user.currentReserve.reservePlatenumber);
   console.log('reserve building: '+req.user.currentReserve.reserveBuildingname);
-<<<<<<< HEAD
-
-  //console.log();
-  // console.log(req.user.currentReserve.reservePlatenumber);
-  // console.log(req.user.currentReserve.reserveBuildingname);
-
-=======
->>>>>>> c794ffa9877fb1213d1626a6ff25588f37ad2eff
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
