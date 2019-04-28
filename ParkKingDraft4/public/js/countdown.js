@@ -66,6 +66,7 @@ function startTimer(){
 function getTimeandFee(){
   $.get('/getTimeandFee')
   .done(function(data){
+    console.log(data.hours+ '  '+data.mins);
     const hoursElement = document.querySelector('.hours');
     const minutesElement = document.querySelector('.minutes');
     const currentFee = document.querySelector('#currentFee');
