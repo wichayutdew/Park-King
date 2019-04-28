@@ -1979,8 +1979,10 @@ app.post('/pay',loggedIn,async function(req,res){
       isScan = false;
       obb = {isScan: isScan};
       req.user.currentTransaction.totaltime = parseInt(req.user.stopwatch.stop()/1000);
+      console.log('Set total time: '+req.user.currentTransaction.totaltime);
       req.user.stopwatch.reset();
       req.user.currentTransaction.parkingFee = parseInt((req.user.currentTransaction.totaltime * feeRate) + req.user.currentTransaction.addedFee);
+      console.log('set parking fee: '+req.user.currentTransaction.parkingFee);
       if(req.user.currentTransaction.exceedCheckoutTime == true){
         req.user.currentTransaction.addedFee = 0;
         req.user.currentTransaction.exceedCheckoutTime = false;
