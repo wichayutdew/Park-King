@@ -29,7 +29,7 @@ exports.createReceipt = function() {
 
 //*******************************************************Transaction's Adder***********************************************
 exports.Transaction = function(connection,platenumber,username,floor,slot,buildingname,transactionid,fee,paymentmethod,totaltime,date){
-  var request = new Request('INSERT INTO dbo.TransactionReceipt (PlateNumber,Username,Floor,Slot,BuildingName,TransactionID,Fee,PaymentMethod,TotalTime,Date) VALUES (@platenumber,@username,@floor,@slot,@buildingname,@transactionid,@fee,@paymentmethod,@totaltime,@date)',
+  var request = new Request('INSERT INTO dbo.TransactionReceipt (PlateNumber,Username,Floor,Slot,BuildingName,TransactionID,Fee,PaymentMethod,TotalTime,Date,transactionStatus,addedFee) VALUES (@platenumber,@username,@floor,@slot,@buildingname,@transactionid,@fee,@paymentmethod,@totaltime,@date,@transactionstatus,@addedfee)',
       function(err, rowCount, rows){
           if(err){
               console.log(err);
@@ -48,6 +48,8 @@ exports.Transaction = function(connection,platenumber,username,floor,slot,buildi
   request.addParameter('fee',TYPES.VarChar,fee);
   request.addParameter('paymentmethod',TYPES.VarChar,paymentmethod);
   request.addParameter('totaltime',TYPES.VarChar,totaltime);
+  request.addParameter('transactionstatus',TYPES.VarChar,"Paid");
+  request.addParameter('addedfee',TYPES.VarChar,0);
   request.addParameter('date',TYPES.VarChar,date);
 
   request.on('Done',function(err, rowCount, rows){

@@ -538,8 +538,6 @@ app.get('/home',loggedIn, async function(req, res){
     currentReserve.feeRate = feeRate(currentCustomer.currentCustomerType);
     setInterval(async function() {
       console.log('Please wait for check-in/check-out');
-      console.log("first loop Status = " + currentReserve.reserveStatus);
-
       pool.acquire(function (err, connection) {
           if (err) {
             console.error(err);
@@ -567,9 +565,9 @@ app.get('/home',loggedIn, async function(req, res){
             currentReserve.reserveStatus = data;
             console.log("Check Status = " + currentReserve.reserveStatus);
           });
-        });
+      });
       await sleep(500);
-      if(currentReserve.reserveTimein != check && currentReserve.reserveTimeout == check ฿฿ currentReserve.reserveTimein != null && currentReserve.reserveTimeout != null){
+      if(currentReserve.reserveTimein != check && currentReserve.reserveTimeout == check && currentReserve.reserveStatus == "Reserved"){
           pool.acquire(function (err, connection) {
               if (err) {
                 console.error(err);
@@ -594,7 +592,7 @@ app.get('/home',loggedIn, async function(req, res){
                 });
                 isScan = true;
             }
-      }else if(currentReserve.reserveTimeout != check && currentReserve.reserveTimeout != null){
+      }else if(currentReserve.reserveTimeout != check && currentReserve.reserveTimeout != null && currentReserve.reserveStatus == "Paid"){
             pool.acquire(function (err, connection) {
               if (err) {
                 console.error(err);
@@ -644,7 +642,7 @@ app.get('/home',loggedIn, async function(req, res){
       console.log(currentReserve.currentFee);
       console.log(currentReserve.reserveTimein);
       console.log(currentReserve.reserveTimeout);
-    },5000);
+    },1000);
 });
 app.get('/getTimeandFee', function(req, res){
   var mins, hours;
@@ -699,9 +697,18 @@ app.get('/reserve',loggedIn, function(req, res){
 
 //ROUTE TO QR CODE PAGE
 app.get('/showqr', loggedIn,hasReserved,function(req, res){
-  res.render('showqr', {currentUsername: req.user[0],
-                        currentPicture: currentCustomer.currentPicture,
-                        isScan: isScan});
+  if(currentReserve.reserveStatus == "Paid"){
+    res.render('showqr', {qrCode: currentTransaction.qrCode,
+                          currentUsername: currentCustomer.currentUsername,
+                          currentPicture: currentCustomer.currentPicture,
+                          isScan: isScan});
+  }else{
+    res.render('showqr', {qrCode: currentReserve.qrCode,
+                          currentUsername: currentCustomer.currentUsername,
+                          currentPicture: currentCustomer.currentPicture,
+                          isScan: isScan});
+  }
+
 });
 
 app.route('/getScan').get(function(req, res, next){
@@ -1486,47 +1493,6 @@ app.post('/register', upload.single('profilePic'),passport.authenticate('local-s
     session: false
 }));
 
-// app.post('/qrcode', function(req, res){
-//   var scannedQR = req.body.data;
-//   console.log(scannedQR);
-//   if(scannedQR == currentReserve.reserveId){
-//     pool.acquire(function (err, connection) {
-//       if (err) {
-//         console.error(err);
-//         connection.release();
-//       }
-//       currentReserve.reserveQRin = scannedQR;
-//       reserve.setQRCodeIn(connection,currentReserve.reserveId,currentReserve.reserveQRin);
-//     });
-//
-//     pool.acquire(function (err, connection) {
-//       if (err) {
-//         console.error(err);
-//         connection.release();
-//       }
-//       currentReserve.reserveTimein = getCurrentTime();
-//       reserve.setTimeIn(connection,currentReserve.reserveId,currentReserve.reserveTimein);
-//     });
-//   }else if(scannedQR == currentTransaction.transactionId){
-//     pool.acquire(function (err, connection) {
-//       if (err) {
-//         console.error(err);
-//         connection.release();
-//       }
-//       currentReserve.reserveQRout = scannedQR;
-//       reserve.setQRCodeOut(connection,currentReserve.reserveId,currentReserve.reserveQRout);
-//     });
-//     pool.acquire(function (err, connection) {
-//       if (err) {
-//         console.error(err);
-//         connection.release();
-//       }
-//       currentReserve.reserveTimeout = getCurrentTime();
-//       reserve.setTimeOut(connection,currentReserve.reserveId,currentReserve.reserveTimeout);
-//     });
-//   }
-// });
-
 app.post('/qrcode',async function(req, res){
   var scannedQR = req.body.data;
   var qr = scannedQR.split(",");
@@ -1567,7 +1533,7 @@ app.post('/qrcode',async function(req, res){
         console.error(err);
         connection.release();
       }
-      reserveTimein = getCurrentTime();
+      var reserveTimein = getCurrentTime();
       reserve.setTimeIn(connection,reserveID,reserveTimein);
     });
   }else if(qr[0]  == transactionID){
@@ -1583,7 +1549,7 @@ app.post('/qrcode',async function(req, res){
         console.error(err);
         connection.release();
       }
-      reserveTimeout = getCurrentTime();
+      var reserveTimeout = getCurrentTime();
       reserve.setTimeOut(connection,reserveID,reserveTimeout);
     });
   }

@@ -1266,7 +1266,7 @@ app.get('/home',loggedIn, async function(req, res){
         });
       });
       await sleep(500);
-      if(req.user.currentReserve.reserveTimein != check && req.user.currentReserve.reserveTimeout == check){
+      if(req.user.currentReserve.reserveTimein != check && req.user.currentReserve.reserveTimeout == check && req.user.currentReserve.reserveStatus == "Reserved"){
           pool.acquire(function (err, connection) {
             if (err) {
               console.error(err);
@@ -1292,7 +1292,7 @@ app.get('/home',loggedIn, async function(req, res){
               isScan = true;
           }
       }
-      else if(req.user.currentReserve.reserveTimeout != check){
+      else if(req.user.currentReserve.reserveTimeout != check && req.user.currentReserve.reserveTimeout != null && req.user.currentReserve.reserveStatus == "Paid"){
         pool.acquire(function (err, connection) {
             if (err) {
               console.error(err);
@@ -1326,7 +1326,7 @@ app.get('/home',loggedIn, async function(req, res){
                 connection.release();
               }
               req.user.currentReserve.reserveStatus = "Checked Out";
-              reserve.setReserveStatus(connection,req.user.currentReserve.reserveId,req.user.currentReserve.reserveStatus);
+              reserve.setReserveStatus(connection,req.us1er.currentReserve.reserveId,req.user.currentReserve.reserveStatus);
             });
             pool.acquire(function (err, connection) {
               if (err) {
@@ -1358,7 +1358,7 @@ app.get('/home',loggedIn, async function(req, res){
       console.log(req.user.currentReserve.currentFee);
       console.log(req.user.currentReserve.reserveTimein);
       console.log(req.user.currentReserve.reserveTimeout);
-    },5000);
+    },1000);
 });
 
 app.get('/getTimeandFee',loggedIn, function(req, res){
@@ -1434,10 +1434,17 @@ app.get('/reserve',loggedIn, function(req, res){
 
 //ROUTE TO QR CODE PAGE
 app.get('/showqr', loggedIn,hasReserved,function(req, res){
-  res.render('showqr', {qrCode: req.user.currentReserve.qrCode,
-                        currentUsername: req.user.currentCustomer.currentUsername,
-                        currentPicture: req.user.currentCustomer.currentPicture,
-                        isScan: isScan});
+  if(currentReserve.reserveStatus == "Paid"){
+    res.render('showqr', {qrCode: req.user.currentTransaction.qrCode,
+                          currentUsername: req.user.currentCustomer.currentUsername,
+                          currentPicture: req.user.currentCustomer.currentPicture,
+                          isScan: isScan});
+  }else{
+    res.render('showqr', {qrCode: req.user.currentReserve.qrCode,
+                          currentUsername: req.user.currentCustomer.currentUsername,
+                          currentPicture: req.user.currentCustomer.currentPicture,
+                          isScan: isScan});
+  }
 });
 
 app.route('/getScan').get(function(req, res, next){
@@ -1660,14 +1667,16 @@ app.post('/reserve',loggedIn,async function(req, res){
   console.log('Reserve Pressed');
   req.user.currentReserve.reservePlatenumber = req.body.plateNumber;
   req.user.currentReserve.reserveBuildingname = req.body.buildingName;
-
   console.log('reserve Plate number: '+req.user.currentReserve.reservePlatenumber);
   console.log('reserve building: '+req.user.currentReserve.reserveBuildingname);
+<<<<<<< HEAD
 
   //console.log();
   // console.log(req.user.currentReserve.reservePlatenumber);
   // console.log(req.user.currentReserve.reserveBuildingname);
 
+=======
+>>>>>>> c794ffa9877fb1213d1626a6ff25588f37ad2eff
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
@@ -1985,6 +1994,13 @@ app.post('/pay',loggedIn,async function(req,res){
       if(req.user.currentReserve.reserveTimeout == check){
         pool.acquire(function (err, connection) {
           if (err) {
+            console.error(err);
+            connection.release();
+          }
+          transaction.setTransactionStatus(connection,req.user.currentTransaction.transactionId,"Time Out");
+        });
+        pool.acquire(function (err, connection) {
+          if (err) {
               console.error(err);
               connection.release();
               return;
@@ -2252,7 +2268,7 @@ app.post('/qrcode',async function(req, res){
         console.error(err);
         connection.release();
       }
-      reserveTimein = getCurrentTime();
+      var reserveTimein = getCurrentTime();
       reserve.setTimeIn(connection,reserveID,reserveTimein);
     });
   }else if(qr[0]  == transactionID){
@@ -2268,7 +2284,7 @@ app.post('/qrcode',async function(req, res){
         console.error(err);
         connection.release();
       }
-      reserveTimeout = getCurrentTime();
+      var reserveTimeout = getCurrentTime();
       reserve.setTimeOut(connection,reserveID,reserveTimeout);
     });
   }
