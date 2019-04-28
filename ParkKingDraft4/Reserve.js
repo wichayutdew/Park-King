@@ -30,7 +30,7 @@ exports.createReserve = function() {
 
 //*******************************************************Inserting new Reserve into database***********************************************
 exports.Reserve = function(connection,platenumber, username, floor, slot, buildingname, reserveid){
-  var request = new Request('INSERT INTO dbo.Reserve (PlateNumber,Username,Floor,Slot,BuildingName,QRCodeIn,QRCodeOut,Time_In,Time_Out,reserveStatus,reserveID,hasPaid,addedFee) VALUES (@platenumber,@username,@floor,@slot,@buildingname,@qrcodein,@qrcodeout,@time_in,@time_out,@reservestatus,@reserveid,@haspaid,@addedFee)',
+  var request = new Request('INSERT INTO dbo.Reserve (PlateNumber,Username,Floor,Slot,BuildingName,QRCodeIn,QRCodeOut,Time_In,Time_Out,reserveStatus,reserveID,hasPaid) VALUES (@platenumber,@username,@floor,@slot,@buildingname,@qrcodein,@qrcodeout,@time_in,@time_out,@reservestatus,@reserveid,@haspaid)',
       function(err, rowCount, rows){
           if(err){
               console.log(err);
@@ -52,7 +52,6 @@ exports.Reserve = function(connection,platenumber, username, floor, slot, buildi
   request.addParameter('reservestatus',TYPES.VarChar,"Reserved");
   request.addParameter('reserveid',TYPES.VarChar,reserveid);
   request.addParameter('haspaid',TYPES.Bit,0);
-  request.addParameter('addedFee',TYPES.VarChar,0);
 
   request.on('Done',function(err, rowCount, rows){
   });
