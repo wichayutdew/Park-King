@@ -1992,12 +1992,7 @@ app.post('/pay',loggedIn,async function(req,res){
       req.user.currentTransaction.qrCode = [req.user.currentTransaction.transactionId,req.user.currentCustomer.currentUsername];
       isScan = false;
       obb = {isScan: isScan};
-<<<<<<< HEAD
-      req.user.currentReserve.feeRate = feeRate(req.user.currentCustomer.currentCustomerType);
-      req.user.currentTransaction.totaltime =  parseInt(req.user.stopwatch.stop()/1000);
-      req.user.currentTransaction.parkingFee = parseInt(req.user.currentTransaction.totaltime * req.user.currentReserve.feeRate);
-      req.user.stopwatch.reset();
-=======
+
 
       req.user.currentReserve.feeRate = feeRate(req.user.currentCustomer.currentCustomerType);
       req.user.currentTransaction.totaltime =  parseInt(req.user.stopwatch.stop()/1000);
@@ -2010,7 +2005,7 @@ app.post('/pay',loggedIn,async function(req,res){
       );
       req.user.stopwatch.reset();
 
->>>>>>> 8901661d4af66490b911be5b48ee3fe172cc9531
+
       if(req.user.currentTransaction.exceedCheckoutTime == true){
         req.user.currentTransaction.addedFee = 0;
         req.user.currentTransaction.exceedCheckoutTime = false;
