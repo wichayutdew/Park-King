@@ -788,7 +788,22 @@ passport.use('local-login', new LocalStrategy({
 
             }));
 
-
+//getter setter2
+function getPlateNumber(user){
+  var temp = [];
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    car.getAllPlateNumber(connection,user,function(data){
+      console.log('data: '+data);
+      temp = data;
+    })
+  });
+  console.log('temp: '+temp);
+  return temp;
+}
 
 
 
@@ -1195,7 +1210,9 @@ app.get('/register', function(req, res){
   res.render('register');
 });
 app.get('/userinfo', async function(req, res){
-  await sleep(5000);
+  var pn = getPlateNumber(req.user.currentCustomer.currentUsername);
+  console.log('Plate Num: '+pn);
+  await sleep(7000);
   res.render('userinfo', {
                           //USER INFO
                           currentUsername:req.user.currentCustomer.currentUsername,

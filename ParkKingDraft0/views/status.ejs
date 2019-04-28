@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Park King</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+  <link rel="stylesheet" href="/stylesheet/style.css">
+  <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+
+  <% include partials/menuBar %>
+  <% include partials/flash %>
+
+  <div class="main-user-info">
+    <div class="infoDiv dark-grey-div-gradient">
+      <h3><Strong>YOUR RESERVATION</Strong></h3>
+      <section class="info-text-div">
+        <span>Status:</span>
+        <span>
+          <%= reserveStatus %></span>
+        <!-- <span>PARKED</span> -->
+      </section>
+      <!-- <section class="info-text-div center">
+                    <li>
+                        <img src="data:image/png;base64,<%= reserveMap %>" style="  width: 70px;
+                        height: 70px;
+                        border-radius: 50%;">
+                    </li>
+            </section> -->
+      <section class="info-text-div">
+        <span>Building:</span>
+        <span>
+          <%= reserveBuildingname %></span>
+      </section>
+      <section class="info-text-div">
+        <span>Floor:</span>
+        <span>
+          <%= reserveFloor %></span>
+      </section>
+      <section class="info-text-div">
+        <span>Slot:</span>
+        <span>
+          <%= reserveSlot %></span>
+      </section>
+    </div>
+
+    <div class="infoDiv dark-grey-div-gradient">
+      <h3><Strong>RESERVED SLOT MAP</Strong></h3>
+
+      <div style="margin-bottom: 20px; margin-top: 40px; z-index: -10;" class="infoDiv">
+        <img src="data:image/png;base64,<%= reserveMap %>" class="img-contain" alt="">
+      </div>
+      <!-- <div style="margin-bottom: 20px; margin-top: 40px; z-index: -10;" class="infoDiv">
+          <img src="data:image/png;base64,<%= reserveCarPicture %>" class="img-fluid" alt=""> -->
+    </div>
+
+
+    <div class="infoDiv dark-grey-div-gradient">
+      <h3><Strong>YOUR CAR</Strong></h3>
+      <section class="info-text-div center">
+        <li>
+          <img src="data:image/png;base64,<%= reserveCarPicture %>" style="  width: 60%;
+                        height: auto;
+                        border-radius: 10px;">
+        </li>
+      </section>
+      <section class="info-text-div">
+        <span>Plate Number:</span>
+        <span>
+          <%= reservePlatenumber %></span>
+      </section>
+      <section class="info-text-div">
+        <span>Brand:</span>
+        <span>
+          <%= reserveBrand %></span>
+      </section>
+      <section class="info-text-div">
+        <span>Model:</span>
+        <span>
+          <%= reserveModel %></span>
+      </section>
+      <section class="info-text-div">
+        <span>Color:</span>
+        <span>
+          <%= reserveColor %></span>
+      </section>
+    </div>
+
+    <div class="infoDiv dark-grey-div-gradient">
+      <h3><strong>PARK TIME</strong></h3>
+      <section class="info-text-div">
+        <span>Current Fee:</span>
+        <span id="currentFee">100 Baht</span>
+      </section>
+      <div class="parking-time">
+        <div class="hours-container">
+          <div class="hours"></div>
+          <div class="hours-label">hours</div>
+        </div>
+        <div class="minutes-container">
+          <div class="minutes"></div>
+          <div class="minutes-label">minutes</div>
+        </div>
+        <!-- <button onclick="startGetTimeandFee()">Click here </button> -->
+      </div>
+    </div>
+  </div>
+  <div class="buttom-border-lg">
+    <form action="/pay" class="pay" enctype="multipart/form-data" method="POST">
+      <li><button type="submit" class="button green">Payment/ Check out</button></li>
+    </form>
+
+
+    <script>
+      $('form.pay').submit(function(event) {
+        var r = confirm("Do you want to go out?");
+        if (r == true) {
+          return;
+        } else {
+          return false;
+        }
+      });
+    </script>
+  </div>
+
+
+
+
+
+
+
+
+
+
+  <script src="/js/countdown.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+</body>
+
+</html>
