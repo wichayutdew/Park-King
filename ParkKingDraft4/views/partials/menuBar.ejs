@@ -30,7 +30,7 @@
     $('#profileBut').on('click', function(){
         $('.profile-menu').slideToggle(500);
     });
-    function getThisUserInfo{
+    function getThisUserInfo() {
       $.get('/getthisusername')
       .done(function(d){
         // console.log(d+'!!!!!!!!!!!!!');
@@ -40,5 +40,5 @@
         console.log('err');
       });
     }
-    var getThisUserInfoIntervalID = setInterval(getThisUserInfo, 10000);
+    setInterval(getThisUserInfo, 10000);
 </script>
