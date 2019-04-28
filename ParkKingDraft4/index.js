@@ -1,5 +1,6 @@
 var isScan;
 var obb = {isScan: isScan};
+var stopwatch = "nothing";
 //require Customer.js file
 const customer = require('./Customer.js');
 // var currentCustomer = new customer.createCustomer();
@@ -20,7 +21,6 @@ function createDeserializer() {
    this.currentReserve = null;
    this.currentTransaction = null;
    this.currentReceipt = null;
-   this.stopwatch = null;
 }
 
 //NPM REQUIRE
@@ -111,7 +111,7 @@ passport.serializeUser(function(user, done) {
         done(null, user[0]);
     });
 passport.deserializeUser(async function(user, done) {
-        console.log('deserializer')
+        console.log('deserializer');
         var deserializing = new createDeserializer();
         var currentCustomer = new customer.createCustomer();
         var currentCar = new car.createCar();
@@ -583,8 +583,15 @@ passport.deserializeUser(async function(user, done) {
         deserializing.currentReserve = currentReserve;
         deserializing.currentTransaction = currentTransaction;
         deserializing.currentReceipt = currentReceipt;
+<<<<<<< HEAD
         if(deserializing.stopwatch == null){
           deserializing.stopwatch = new Stopwatch();
+=======
+        deserializing.stopwatch = stopwatch;
+        if(deserializing.stopwatch == "nothing"){
+          deserializing.stopwatch = new Stopwatch();
+          console.log('Initializing stopwatch');
+>>>>>>> 06a097b0e44d4050546e0b7e76c599232b68e95a
         }
         pool.acquire(function (err, connection) {
             if (err) {
@@ -1990,12 +1997,21 @@ app.post('/pay',loggedIn,async function(req,res){
       req.user.currentTransaction.qrCode = [req.user.currentTransaction.transactionId,req.user.currentCustomer.currentUsername];
       isScan = false;
       obb = {isScan: isScan};
+<<<<<<< HEAD
+=======
+
+>>>>>>> 06a097b0e44d4050546e0b7e76c599232b68e95a
 
       req.user.currentReserve.feeRate = feeRate(req.user.currentCustomer.currentCustomerType);
       req.user.currentTransaction.totaltime =  parseInt(req.user.stopwatch.stop()/1000);
       console.log('SET TOTAL TIME: '+req.user.currentTransaction.totaltime);
       req.user.currentTransaction.parkingFee = parseInt((req.user.currentTransaction.totaltime * req.user.currentReserve.feeRate));
       req.user.stopwatch.reset();
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 06a097b0e44d4050546e0b7e76c599232b68e95a
       if(req.user.currentTransaction.exceedCheckoutTime == true){
         req.user.currentTransaction.addedFee = 0;
         req.user.currentTransaction.exceedCheckoutTime = false;
