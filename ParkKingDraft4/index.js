@@ -1660,14 +1660,10 @@ app.post('/reserve',loggedIn,async function(req, res){
   console.log('Reserve Pressed');
   req.user.currentReserve.reservePlatenumber = req.body.plateNumber;
   req.user.currentReserve.reserveBuildingname = req.body.buildingName;
-<<<<<<< HEAD
+
   console.log('reserve Plate number: '+req.user.currentReserve.reservePlatenumber);
   console.log('reserve building: '+req.user.currentReserve.reserveBuildingname);
-=======
-  //console.log();
-  console.log(req.user.currentReserve.reservePlatenumber);
-  console.log(req.user.currentReserve.reserveBuildingname);
->>>>>>> 4c2c1307a05e0d782b0be8f8bc84c0d28ec6eee2
+
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
@@ -1675,11 +1671,9 @@ app.post('/reserve',loggedIn,async function(req, res){
       }
       customer.getReservable(connection,req.user.currentCustomer.currentUsername,function(data){
         req.user.currentCustomer.customerReservable = data;
-<<<<<<< HEAD
+
         console.log('Customer Reservable: '+req.user.currentCustomer.customerReservable);
-=======
-        console.log('customerReserveable : ' + req.user.currentCustomer.customerReservable);
->>>>>>> 4c2c1307a05e0d782b0be8f8bc84c0d28ec6eee2
+
       });
 
   });
@@ -1715,11 +1709,9 @@ app.post('/reserve',loggedIn,async function(req, res){
       }
       parkingspot.getIsFull(connection,req.user.currentReserve.reserveBuildingname,req.user.currentReserve.reserveFloor,req.user.currentReserve.reserveSlot,function(data){
         req.user.currentReserve.reserveIsfull = data;
-<<<<<<< HEAD
+
         console.log('reserve is full: '+req.user.currentReserve.reserveIsfull);
-=======
-        console.log('reserveIsfull : '+req.user.currentReserve.reserveIsfull);
->>>>>>> 4c2c1307a05e0d782b0be8f8bc84c0d28ec6eee2
+
       });
   });
   if(req.user.currentCustomer.customerReservable == 0 || req.user.currentReserve.reserveIsfull == 1){
