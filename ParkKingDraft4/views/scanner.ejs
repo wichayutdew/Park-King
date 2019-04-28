@@ -30,13 +30,25 @@
   </head>
   <body>
     <video id="preview"></video>
+      <p></p>
+    </div>
     <script type="text/javascript">
+    var reqUser;
+    $.get('/getthisusername')
+    .done(function(d){
+      // console.log(d+'!!!!!!!!!!!!!');
+      reqUser = d;
+    })
           console.log('scanner');
           let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
           scanner.addListener('scan', function (content) {
-            $.post('/qrcode', {data: content});
             console.log(content);
-             try { window.location.hash = new URL(content).hash } catch (e) { console.log(e) }
+            $.post('/qrcode', {data: content});
+            $('div#message').css('background', 'green');
+            $('#message p').text('Scanned: '+content);
+            var slideUpID = setTimeout(function(){
+              $('#message').slideUp(500);
+            }, 5000);
           });
           Instascan.Camera.getCameras().then(cameras =>
           {

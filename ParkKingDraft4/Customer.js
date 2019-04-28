@@ -3,6 +3,23 @@ var ConnectionPool = require('tedious-connection-pool');
 var Request = require('tedious').Request;
 var TYPES =require('tedious').TYPES;
 
+
+
+//*******************************************************Create class object***********************************************
+exports.createCustomer = function() {
+   this.currentUsername = null;
+   this.currentEmail = null;
+   this.currentFirstname = null;
+   this.currentLastname = null;
+   this.currentCustomerType = null;
+   this.studentID = null;
+   this.ProfessorID = null;
+   this.nationalID = null;
+   this.currentPicture = null;
+   this.cancelTime = null;
+   this.customerReservable = null;
+}
+
 //*******************************************************Inserting new customer into database***********************************************
 exports.insert_newCustomer = function(connection,customer_info,done,newUserMysql){
   var request = new Request("INSERT INTO dbo.Customer (FirstName,LastName,Email,Username,Password,customerType,studentID,professorID,NationalID,CustomerPicture,Cancel,Reserveable) values (@firstName,@lastName,@email,@username,@password,@occupation,@studentID,@professorID,@CitizenID,@profilePic,@cancel,@reserveAble)",
@@ -46,12 +63,12 @@ exports.insert_newCustomer = function(connection,customer_info,done,newUserMysql
 //*******************************************************Only used in Index.js***********************************************
 exports.getID = function(user) {
   var userID;
-  if(user[5] == "Student"){
-    userID = user[6];
-  }else if(user[5] == "Professor"){
-    userID = user[7];
+  if(user.currentCustomerType == "Student"){
+    userID = user.studentID;
+  }else if(user.currentCustomerType == "Professor"){
+    userID = user.professorID;
   }else{
-    userID = user[8];
+    userID = user.nationalID;
   }
   return userID;
 }

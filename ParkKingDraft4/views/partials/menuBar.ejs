@@ -26,7 +26,17 @@
     </section>
 </nav>
 <script>
+  var reqUser;
     $('#profileBut').on('click', function(){
         $('.profile-menu').slideToggle(500);
+    });
+
+    $.get('/getthisusername')
+    .done(function(d){
+      // console.log(d+'!!!!!!!!!!!!!');
+      reqUser = d;
+    })
+    .fail(function(){
+      console.log('err');
     });
 </script>

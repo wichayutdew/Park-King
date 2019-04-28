@@ -24,6 +24,7 @@
     div#qrcode {
       background-color: white;
       padding: 30px 0;
+      border-radius: 10px;
     }
   </style>
   <script>
@@ -112,15 +113,14 @@ var mqttSend = function(topic, msg) {
 	client.send(message);
 }
 
-//get reserve Status
 var getReserveStatusID = setInterval(function(){
   $.get('/reserveStatus')
   .done(function(data){
     var reserveStatus = data.reserveStatus;
     console.log(reserveStatus);
     if(reserveStatus == "Checked In"){
-      $.('#qr-flash-p').css('display: block');
-      $.('#qr-flash-text').text("Scan complete!");
+      alert('scanned');
+      clearInterval();
     }
   })
   .fail(function(){
@@ -128,9 +128,7 @@ var getReserveStatusID = setInterval(function(){
   });
 }, 500);
 
-$('.closeB').on('click', function(){
-  $('.flash-message').slideUp(500);
-});
+
 </script>
 
 </head>
@@ -140,10 +138,7 @@ $('.closeB').on('click', function(){
   <% include partials/menuBar %>
   <% include partials/flash %>
 
-  <p id="qr-flash-p" class="flash-message success" style="display: none;">
-    <span id="qr-flash-text"></span>
-    <span><a class="closeB">close</a></span>
-  </p>
+
 
 
 
@@ -160,12 +155,11 @@ $('.closeB').on('click', function(){
     <h3>LED Control : <span id="status" class="connect">Connect...</span></h3>
     <!-- <hr /> -->
 
+    <button class="buttonhalf blue2" type="submit" id="open">OPEN</button>
+    <button class="buttonhalf purple" type="submit" id="close">CLOSE</button>
 
-      <button type="submit" id="open">OPEN</button>
-
-    &nbsp;&nbsp;&nbsp;<button type="submit" id="close">CLOSE</button>
     <form action="/cancel"  class="cancel" method="POST">
-        <button class="button purple" type="submit" id="cancel">Cancel</button>
+        <button class="button pink2" type="submit" id="cancel">Cancel</button>
     </form>
 
     <script>

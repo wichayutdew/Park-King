@@ -46,8 +46,9 @@
       </div>
 
 
-      <div class="infoDiv dark-grey-div-gradient">
-        <h3><strong>Select Your Car</strong></h3>
+      <div class="infoDiv dark-grey-div-gradient center">
+        <h3><strong>Select Your Car</strong>
+        </h3>
         <div class="info-text-div">
           <div class="carSelect">
             <div class="btn-group carBtnGroup" data-toggle="buttons">
@@ -60,7 +61,9 @@
                 <!-- </div> -->
                 <div class="method center white-grey">
                   <img src="data:image/png;base64,<%= currentCarPicture[i] %>">
-                  <%=currentPlateNumber[i]%>
+                  <text style="vertical-align: text-bottom">
+                    <%=currentPlateNumber[i]%>
+                  </text>
                   <input type="radio" name="plateNumber" value="<%=currentPlateNumber[i]%>" required />
                 </div>
               </label>
@@ -72,6 +75,9 @@
             </div>
           </div>
         </div>
+        <li style="margin-top:10px;">
+          <a href="/carregister" class="button purple">Add Car</a>
+        </li>
       </div>
 
       <div class="infoDiv dark-grey-div-gradient">
@@ -81,13 +87,13 @@
           <div class="buildingSelect">
             <div class="btn-group buildingBtnGroup" data-toggle="buttons">
               <label class="btn buildingChoice">
-                <div class="building">
+                <div class="building white-grey">
                   <img class="building-pic" src="/img/artbuilding.jpg" />
                 </div>
                 <input type="radio" name="buildingName" value="buildingArts" required />
               </label>
               <label class="btn buildingChoice">
-                <div class="building">
+                <div class="building white-grey">
                   <img class="building-pic" src="/img/polibuilding.jpg" />
                 </div>
                 <input type="radio" name="buildingName" value="buildingPoli" required />

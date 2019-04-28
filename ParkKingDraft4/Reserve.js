@@ -3,9 +3,33 @@ var ConnectionPool = require('tedious-connection-pool');
 var Request = require('tedious').Request;
 var TYPES =require('tedious').TYPES;
 
+
+//*******************************************************Create class object***********************************************
+exports.createReserve = function() {
+   this.reserveStatus = null;
+   this.reservePlatenumber = null;
+   this.reserveBrand = null;
+   this.reserveModel = null;
+   this.reserveColor = null;
+   this.reserveCarPicture = null;
+   this.reserveBuildingname = null;
+   this.reserveFloor = null;
+   this.reserveSlot = null;
+   this.reserveMap = null;
+   this.reserveId = null;
+   this.reserveIsfull = null;
+   this.reserveTimein = null;
+   this.reserveTimeout = null;
+   this.reserveQRin = null;
+   this.reserveQRout = null;
+   this.qrCode = null;
+   this.currentFee = null;
+   this.currentTime = null;
+}
+
 //*******************************************************Inserting new Reserve into database***********************************************
 exports.Reserve = function(connection,platenumber, username, floor, slot, buildingname, reserveid){
-  var request = new Request('INSERT INTO dbo.Reserve (PlateNumber,Username,Floor,Slot,BuildingName,QRCodeIn,QRCodeOut,Time_In,Time_Out,reserveID,hasPaid) VALUES (@platenumber,@username,@floor,@slot,@buildingname,@qrcodein,@qrcodeout,@time_in,@time_out,@reserveid,@haspaid)',
+  var request = new Request('INSERT INTO dbo.Reserve (PlateNumber,Username,Floor,Slot,BuildingName,QRCodeIn,QRCodeOut,Time_In,Time_Out,reserveStatus,reserveID,hasPaid) VALUES (@platenumber,@username,@floor,@slot,@buildingname,@qrcodein,@qrcodeout,@time_in,@time_out,@reservestatus,@reserveid,@haspaid)',
       function(err, rowCount, rows){
           if(err){
               console.log(err);
@@ -24,6 +48,7 @@ exports.Reserve = function(connection,platenumber, username, floor, slot, buildi
   request.addParameter('qrcodeout',TYPES.VarChar,null);
   request.addParameter('time_in',TYPES.VarChar,"initialize");
   request.addParameter('time_out',TYPES.VarChar,"initialize");
+  request.addParameter('reservestatus',TYPES.VarChar,"Reserved");
   request.addParameter('reserveid',TYPES.VarChar,reserveid);
   request.addParameter('haspaid',TYPES.Bit,0);
 
@@ -34,6 +59,52 @@ exports.Reserve = function(connection,platenumber, username, floor, slot, buildi
 }
 
 //*******************************************************Reserve's Getter***********************************************
+exports.getAllTimeIn = function(connection,username,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT Time_In FROM dbo.Reserve WHERE Username = @username',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue);
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getAllTimeOut = function(connection,username,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT Time_Out FROM dbo.Reserve WHERE Username = @username',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue);
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
 exports.getQRCodeIn = function(connection,reserveid,Callback) {
   var returnedValue  = [];
   var request = new Request(
@@ -45,7 +116,7 @@ exports.getQRCodeIn = function(connection,reserveid,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue);
+        return Callback(returnedValue[0]);
       }
     });
     request.addParameter('reserveid',TYPES.VarChar,reserveid);
@@ -68,7 +139,7 @@ exports.getQRCodeOut = function(connection,reserveid,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue);
+        return Callback(returnedValue[0]);
       }
     });
     request.addParameter('reserveid',TYPES.VarChar,reserveid);
@@ -149,10 +220,10 @@ exports.getHasPaid = function(connection,reserveid,Callback) {
     connection.execSql(request);
 }
 
-exports.getAllTimeIn = function(connection,username,Callback) {
+exports.getReserveStatus = function(connection,reserveid,Callback) {
   var returnedValue  = [];
   var request = new Request(
-    'SELECT Time_In FROM dbo.Reserve WHERE Username = @username',
+    'SELECT reserveStatus FROM dbo.Reserve WHERE ReserveID = @reserveid',
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -160,10 +231,10 @@ exports.getAllTimeIn = function(connection,username,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue);
+        return Callback(returnedValue[0]);
       }
     });
-    request.addParameter('username',TYPES.VarChar,username);
+    request.addParameter('reserveid',TYPES.VarChar,reserveid);
     request.on('row', function (columns) {
         columns.forEach(function(column) {
             returnedValue.push(column.value);
@@ -172,10 +243,10 @@ exports.getAllTimeIn = function(connection,username,Callback) {
     connection.execSql(request);
 }
 
-exports.getAllTimeOut = function(connection,username,Callback) {
+exports.getReserveID = function(connection,username,Callback) {
   var returnedValue  = [];
   var request = new Request(
-    'SELECT Time_Out FROM dbo.Reserve WHERE Username = @username',
+    'SELECT ReserveID FROM dbo.Reserve WHERE username = @username and reserveStatus = @reservestatus',
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -183,10 +254,11 @@ exports.getAllTimeOut = function(connection,username,Callback) {
         returnedValue = null;
       } else {
         connection.release();
-        return Callback(returnedValue);
+        return Callback(returnedValue[0]);
       }
     });
     request.addParameter('username',TYPES.VarChar,username);
+    request.addParameter('reservestatus',TYPES.VarChar,"Reserved");
     request.on('row', function (columns) {
         columns.forEach(function(column) {
             returnedValue.push(column.value);
@@ -195,6 +267,143 @@ exports.getAllTimeOut = function(connection,username,Callback) {
     connection.execSql(request);
 }
 
+exports.getPlateNumber = function(connection,reserveid,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT PlateNumber FROM dbo.Reserve WHERE ReserveID = @reserveid',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('reserveid',TYPES.VarChar,reserveid);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getFloor = function(connection,reserveid,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT Floor FROM dbo.Reserve WHERE ReserveID = @reserveid',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('reserveid',TYPES.VarChar,reserveid);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getSlot = function(connection,reserveid,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT Slot FROM dbo.Reserve WHERE ReserveID = @reserveid',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('reserveid',TYPES.VarChar,reserveid);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getBuildingname = function(connection,reserveid,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT BuildingName FROM dbo.Reserve WHERE ReserveID = @reserveid',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('reserveid',TYPES.VarChar,reserveid);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getCurrentFee = function(connection,reserveid,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT currentFee FROM dbo.Reserve WHERE ReserveID = @reserveid',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('reserveid',TYPES.VarChar,reserveid);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getCurrentTime = function(connection,reserveid,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT currentTime FROM dbo.Reserve WHERE ReserveID = @reserveid',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('reserveid',TYPES.VarChar,reserveid);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
 //*******************************************************Reserve's Setter***********************************************
 exports.setQRCodeIn = function(connection,reserveid,qrcodein) {
   var request = new Request("UPDATE dbo.Reserve SET QRCodeIn = @qrcodein WHERE ReserveID = @reserveid",
@@ -291,6 +500,62 @@ exports.setHasPaid = function(connection,reserveid,haspaid) {
   connection.execSql(request);
 }
 
+exports.setReserveStatus = function(connection,reserveid,reservestatus) {
+  var request = new Request("UPDATE dbo.Reserve SET reserveStatus = @reservestatus WHERE ReserveID = @reserveid",
+  function(err, rowCount, rows) {
+    if (err) {
+      console.log(err);
+      connection.release();
+    } else {
+      connection.release();
+    }
+  });
+  request.addParameter('reservestatus',TYPES.Bit,reservestatus);
+  request.addParameter('reserveid',TYPES.VarChar,reserveid);
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+}
+
+exports.setCurrentFee = function(connection,reserveid,currentfee) {
+  var request = new Request("UPDATE dbo.Reserve SET currentFee = @currentfee WHERE ReserveID = @reserveid",
+  function(err, rowCount, rows) {
+    if (err) {
+      console.log(err);
+      connection.release();
+    } else {
+      connection.release();
+    }
+  });
+  request.addParameter('currentfee',TYPES.Bit,currentfee);
+  request.addParameter('reserveid',TYPES.VarChar,reserveid);
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+}
+
+exports.setCurrentTime = function(connection,reserveid,currenttime) {
+  var request = new Request("UPDATE dbo.Reserve SET currentTime = @currentTime WHERE ReserveID = @reserveid",
+  function(err, rowCount, rows) {
+    if (err) {
+      console.log(err);
+      connection.release();
+    } else {
+      connection.release();
+    }
+  });
+  request.addParameter('currenttime',TYPES.Bit,currenttime);
+  request.addParameter('reserveid',TYPES.VarChar,reserveid);
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+}
 //*******************************************************Reserve's Remover***********************************************
 exports.removeReserve = function(connection,reserveid) {
   var request = new Request("DELETE FROM dbo.Reserve WHERE ReserveID = @reserveid",
