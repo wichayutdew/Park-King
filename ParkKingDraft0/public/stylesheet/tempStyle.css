@@ -1,0 +1,209 @@
+body{
+  background-color: black;
+  color: white;
+  font-family: 'Lato', sans-serif;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 30px 10px 30px;
+}
+
+/* --------------------top menus----------------------- */
+.headerDiv {
+  /* border: 2px solid white; */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 0px;
+}
+.headerDiv a{
+  width: 10%;
+}
+.headerDiv img{
+  max-width: 100%;
+}
+
+.menuDiv{
+  /* border: 2px solid white; */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.mainBut img{
+  width: 96%;
+  height: auto;
+  max-height: 100px;
+  border-radius: 20px;
+}
+
+.mainButSqeeze img{
+  max-height: 20px;
+}
+
+/* @media only screen and (max-width: 420px) {
+  #logoimg {
+    width: 75px;
+    height: 75px;
+  }
+  #userimg {
+    width: 60px;
+    height: 60px;
+  }
+} */
+
+/* ---------------------------Home Page---------------------------- */
+.bodyDiv{
+  /* border: 2px solid white; */
+  display: flex;
+  flex-direction: column;
+}
+
+.infoDiv {
+  padding: 60px 60px 60px 60px;
+  border-radius: 25px;
+  margin: 50px 0px 10px 0px;
+  text-align: center;
+  height: auto;
+  box-shadow: 0 2px 4px 0 rgb(36, 36, 36),0 2px 10px 0 rgb(36, 36, 36);
+}
+
+#infoDiv1 {
+  margin-top: 30px;
+}
+
+
+/* ------------------------------- user info page ---------------------- */
+
+#headArea {
+  height: auto;
+  /* border-top-left-radius: : 25px;
+  border-top-left-radius: : 25px; */
+  border-radius: 25px;
+  background-image: url('../colors/ColorBackGroundOrange.jpg');
+  background-repeat: no-repeat;
+  background-size: 100% 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: black;
+}
+
+.userInfoArea {
+  /* border: 2px solid white; */
+  border-radius: 25px;
+  height: auto;
+  background: white;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  color: black;
+  /* background-image: url('../colors/ColorBackGroundOrange.jpg');
+  background-repeat: no-repeat;
+  background-size: 100% 150px; */
+}
+
+#editLink {
+  margin-bottom: 20px;
+}
+#editLink button {
+  font-size: 15px;
+}
+
+#picAndName {
+  text-align: center;
+}
+
+#nameInfoArea {
+  padding: 0px 20px 20px 20px;
+}
+
+#carInfoArea {
+  /* border: 2px solid black; */
+  display: flex;
+  flex-direction: column;
+  padding: 0px 20px 20px 23px;
+}
+.carInfoBox {
+  border: none;
+  border-radius: 25px;
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+  padding: 0 20px 0 20px;
+  justify-content: space-around;
+  background: #fff;
+  box-shadow: 0 3px 20px 0px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0 3px 20px 0px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 0 3px 20px 0px rgba(0, 0, 0, 0.1);
+  -o-box-shadow: 0 3px 20px 0px rgba(0, 0, 0, 0.1);
+  -ms-box-shadow: 0 3px 20px 0px rgba(0, 0, 0, 0.1);
+}
+.carInfoBox p{
+  color: black;
+  font-size: 1.5em;
+}
+
+#addCarButton {
+  border-radius: 25px;
+  width: 100%;
+  margin-bottom: 20px;
+  background: #fff;
+  color: black;
+  font-size: 2rem;
+  box-shadow: 0 3px 20px 0px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0 3px 20px 0px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 0 3px 20px 0px rgba(0, 0, 0, 0.1);
+  -o-box-shadow: 0 3px 20px 0px rgba(0, 0, 0, 0.1);
+  -ms-box-shadow: 0 3px 20px 0px rgba(0, 0, 0, 0.1);
+}
+#addCarButton:active {
+  font-size: 3rem;
+}
+
+
+
+
+
+
+/* ============================================================
+Set background color using class
+============================================================ */
+.green {
+    background-image: url("../colors/ColorBackGroundGreen.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.green2 {
+    background-image: url("../colors/ColorBackGroundGreen2.jpg");
+    background-size: cover;
+}
+
+.IG {
+    background-image: url("../colors/ColorBackGroundIG.jpg");
+    background-size: cover;
+}
+
+.orange {
+    background-image: url("../colors/ColorBackGroundOrange.jpg");
+    background-size: cover;
+}
+
+.pink {
+    background-image: url("../colors/ColorBackGroundPink.jpg");
+    background-size: cover;
+}
+.purple {
+    background-image: url("../colors/ColorBackGroundPurple.jpg");
+    background-size: cover;
+}
+.white {
+    background-color: white;
+    color: black;
+}
+
+.black {
+    background-color: black;
+    color:white;
+}

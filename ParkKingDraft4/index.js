@@ -578,6 +578,7 @@ passport.deserializeUser(async function(user, done) {
               currentReceipt.receiptBuilding = data;
             });
         });
+
         deserializing.currentCustomer = currentCustomer;
         deserializing.currentCar = currentCar;
         deserializing.currentReserve = currentReserve;
@@ -1663,10 +1664,13 @@ app.post('/reserve',loggedIn,async function(req, res){
   console.log('reserve Plate number: '+req.user.currentReserve.reservePlatenumber);
   console.log('reserve building: '+req.user.currentReserve.reserveBuildingname);
 
+<<<<<<< HEAD
   //console.log();
-  console.log(req.user.currentReserve.reservePlatenumber);
-  console.log(req.user.currentReserve.reserveBuildingname);
+  // console.log(req.user.currentReserve.reservePlatenumber);
+  // console.log(req.user.currentReserve.reserveBuildingname);
 
+=======
+>>>>>>> 9e2f414abf8fba01a2f6bb66477c6871228dd3d1
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
@@ -1674,11 +1678,14 @@ app.post('/reserve',loggedIn,async function(req, res){
       }
       customer.getReservable(connection,req.user.currentCustomer.currentUsername,function(data){
         req.user.currentCustomer.customerReservable = data;
-<<<<<<< HEAD
+
         console.log('Customer Reservable: '+req.user.currentCustomer.customerReservable);
-=======
+
+<<<<<<< HEAD
         console.log('customerReserveable : ' + req.user.currentCustomer.customerReservable);
->>>>>>> 4c2c1307a05e0d782b0be8f8bc84c0d28ec6eee2
+
+=======
+>>>>>>> 9e2f414abf8fba01a2f6bb66477c6871228dd3d1
       });
 
   });
@@ -1715,10 +1722,11 @@ app.post('/reserve',loggedIn,async function(req, res){
       parkingspot.getIsFull(connection,req.user.currentReserve.reserveBuildingname,req.user.currentReserve.reserveFloor,req.user.currentReserve.reserveSlot,function(data){
         req.user.currentReserve.reserveIsfull = data;
 <<<<<<< HEAD
-        console.log('reserve is full: '+req.user.currentReserve.reserveIsfull);
 =======
-        console.log('reserveIsfull : '+req.user.currentReserve.reserveIsfull);
->>>>>>> 4c2c1307a05e0d782b0be8f8bc84c0d28ec6eee2
+
+>>>>>>> 9e2f414abf8fba01a2f6bb66477c6871228dd3d1
+        console.log('reserve is full: '+req.user.currentReserve.reserveIsfull);
+
       });
   });
   if(req.user.currentCustomer.customerReservable == 0 || req.user.currentReserve.reserveIsfull == 1){
