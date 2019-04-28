@@ -1664,10 +1664,15 @@ app.post('/reserve',loggedIn,async function(req, res){
   console.log('reserve Plate number: '+req.user.currentReserve.reservePlatenumber);
   console.log('reserve building: '+req.user.currentReserve.reserveBuildingname);
 
+<<<<<<< HEAD
   //console.log();
   // console.log(req.user.currentReserve.reservePlatenumber);
   // console.log(req.user.currentReserve.reserveBuildingname);
 
+=======
+
+
+>>>>>>> 7c56a29e3c63318be902b9bdb29d46e9b1ecda95
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
@@ -1678,8 +1683,15 @@ app.post('/reserve',loggedIn,async function(req, res){
 
         console.log('Customer Reservable: '+req.user.currentCustomer.customerReservable);
 
+<<<<<<< HEAD
         console.log('customerReserveable : ' + req.user.currentCustomer.customerReservable);
 
+=======
+
+        console.log('customerReserveable : ' + req.user.currentCustomer.customerReservable);
+
+
+>>>>>>> 7c56a29e3c63318be902b9bdb29d46e9b1ecda95
       });
 
   });
@@ -1715,6 +1727,10 @@ app.post('/reserve',loggedIn,async function(req, res){
       }
       parkingspot.getIsFull(connection,req.user.currentReserve.reserveBuildingname,req.user.currentReserve.reserveFloor,req.user.currentReserve.reserveSlot,function(data){
         req.user.currentReserve.reserveIsfull = data;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7c56a29e3c63318be902b9bdb29d46e9b1ecda95
         console.log('reserve is full: '+req.user.currentReserve.reserveIsfull);
 
       });

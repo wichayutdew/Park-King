@@ -119,7 +119,7 @@ var getReserveStatusID = setInterval(function(){
     var reserveStatus = data.reserveStatus;
     console.log(reserveStatus);
     if(reserveStatus == "Checked In"){
-      alert('scanned');
+      console.log('scanned');
       clearInterval();
     }
   })
