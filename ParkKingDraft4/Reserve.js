@@ -510,7 +510,7 @@ exports.setReserveStatus = function(connection,reserveid,reservestatus) {
       connection.release();
     }
   });
-  request.addParameter('reservestatus',TYPES.Bit,reservestatus);
+  request.addParameter('reservestatus',TYPES.VarChar,reservestatus);
   request.addParameter('reserveid',TYPES.VarChar,reserveid);
   request.on('requestCompleted', function() {
     //connection.close();
