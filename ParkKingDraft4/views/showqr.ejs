@@ -77,10 +77,10 @@ $(document).ready(function(e) {
   function checkScan(){
     $.get('/getScan', function(data){
       isScan = data.isScan;
-      console.log('Scan status:'+isScan);
+      console.log('Scan status:'+ isScan);
     });
   }
-  setInterval(checkScan,1000)
+  // setInterval(checkScan,1000)
 
 	$("#open").click(function(e) {
     if(isScan){
@@ -119,7 +119,7 @@ var getReserveStatusID = setInterval(function(){
     var reserveStatus = data.reserveStatus;
     console.log(reserveStatus);
     if(reserveStatus == "Checked In"){
-      console.log('scanned');
+      console.log('scanned complete');
       clearInterval();
     }
   })
