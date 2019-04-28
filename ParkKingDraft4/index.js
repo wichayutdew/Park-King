@@ -1978,8 +1978,8 @@ app.post('/pay',loggedIn,async function(req,res){
       req.user.currentTransaction.qrCode = [req.user.currentTransaction.transactionId,req.user.currentCustomer.currentUsername];
       isScan = false;
       obb = {isScan: isScan};
-      req.user.currentTransaction.totaltime = parseInt(req.user.stopwatch.stop()/1000);
-      console.log('Set total time: '+req.user.currentTransaction.totaltime);
+      // req.user.currentTransaction.totaltime = parseInt(req.user.stopwatch.stop()/1000);
+      console.log('Set total time: '+parseInt(req.user.stopwatch.stop()/1000));
       req.user.stopwatch.reset();
       req.user.currentTransaction.parkingFee = parseInt((req.user.currentTransaction.totaltime * feeRate) + req.user.currentTransaction.addedFee);
       console.log('set parking fee: '+req.user.currentTransaction.parkingFee);
@@ -2259,6 +2259,7 @@ app.post('/qrcode',async function(req, res){
   });
   await sleep(200);
   if(qr[0] == reserveID){
+    console.log('Check in qrCode has been scanned');
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
@@ -2275,6 +2276,7 @@ app.post('/qrcode',async function(req, res){
       reserve.setTimeIn(connection,reserveID,reserveTimein);
     });
   }else if(qr[0]  == transactionID){
+    console.log('Check out qrCode has been scanned');
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
