@@ -1196,6 +1196,60 @@ app.get('/register', function(req, res){
 });
 app.get('/userinfo', async function(req, res){
   await sleep(5000);
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    car.getAllPlateNumber(connection,user,function(data){
+      currentCar.currentPlateNumber = data;
+    })
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    car.getAllCarBrand(connection,user,function(data){
+      currentCar.currentBrand = data;
+    })
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    car.getAllCarModel(connection,user,function(data){
+      currentCar.currentModel = data;
+    })
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    car.getAllCarColor(connection,user,function(data){
+      currentCar.currentColor = data;
+    })
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    car.getAllCarPicture(connection,user,function(data){
+      currentCar.currentCarPicture = data;
+    });
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    car.getAllPlateProvince(connection,user,function(data){
+      currentCar.currentPlateProvince = data;
+    });
+  });
   res.render('userinfo', {
                           //USER INFO
                           currentUsername:req.user.currentCustomer.currentUsername,
