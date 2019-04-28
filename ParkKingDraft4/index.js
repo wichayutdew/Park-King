@@ -578,7 +578,6 @@ passport.deserializeUser(async function(user, done) {
               currentReceipt.receiptBuilding = data;
             });
         });
-
         deserializing.currentCustomer = currentCustomer;
         deserializing.currentCar = currentCar;
         deserializing.currentReserve = currentReserve;
