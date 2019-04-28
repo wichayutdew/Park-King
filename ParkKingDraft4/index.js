@@ -1434,7 +1434,7 @@ app.get('/reserve',loggedIn, function(req, res){
 
 //ROUTE TO QR CODE PAGE
 app.get('/showqr', loggedIn,hasReserved,function(req, res){
-  if(currentReserve.reserveStatus == "Paid"){
+  if(req.user.currentReserve.reserveStatus == "Paid"){
     res.render('showqr', {qrCode: req.user.currentTransaction.qrCode,
                           currentUsername: req.user.currentCustomer.currentUsername,
                           currentPicture: req.user.currentCustomer.currentPicture,
@@ -1669,6 +1669,14 @@ app.post('/reserve',loggedIn,async function(req, res){
   req.user.currentReserve.reserveBuildingname = req.body.buildingName;
   console.log('reserve Plate number: '+req.user.currentReserve.reservePlatenumber);
   console.log('reserve building: '+req.user.currentReserve.reserveBuildingname);
+<<<<<<< HEAD
+
+  //console.log();
+  // console.log(req.user.currentReserve.reservePlatenumber);
+  // console.log(req.user.currentReserve.reserveBuildingname);
+
+=======
+>>>>>>> c794ffa9877fb1213d1626a6ff25588f37ad2eff
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
@@ -1679,9 +1687,7 @@ app.post('/reserve',loggedIn,async function(req, res){
 
         console.log('Customer Reservable: '+req.user.currentCustomer.customerReservable);
 
-
         console.log('customerReserveable : ' + req.user.currentCustomer.customerReservable);
-
 
       });
 
@@ -1718,7 +1724,6 @@ app.post('/reserve',loggedIn,async function(req, res){
       }
       parkingspot.getIsFull(connection,req.user.currentReserve.reserveBuildingname,req.user.currentReserve.reserveFloor,req.user.currentReserve.reserveSlot,function(data){
         req.user.currentReserve.reserveIsfull = data;
-
         console.log('reserve is full: '+req.user.currentReserve.reserveIsfull);
 
       });
