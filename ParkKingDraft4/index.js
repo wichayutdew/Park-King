@@ -1064,7 +1064,7 @@ app.get('/reserveStatus',loggedIn,function(req, res){
       req.user.currentReserve.reserveStatus = data;
     });
   });
-  console.log(req.user.currentReserve.reserveStatus);
+  console.log('Reserve Status: '+req.user.currentReserve.reserveStatus);
   res.send({
     reserveStatus: req.user.currentReserve.reserveStatus
   });
@@ -1265,6 +1265,15 @@ app.get('/home',loggedIn, async function(req, res){
           req.user.currentReserve.reserveTimeout= data;
         });
       });
+      pool.acquire(function (err, connection) {
+        if (err) {
+          console.error(err);
+          connection.release();
+        }
+        reserve.getReserveStatus(connection,req.user.currentReserve.reserveId,function(data){
+          req.user.currentReserve.reserveStatus= data;
+        });
+      });
       await sleep(500);
       if(req.user.currentReserve.reserveTimein != check && req.user.currentReserve.reserveTimeout == check && req.user.currentReserve.reserveStatus == "Reserved"){
           pool.acquire(function (err, connection) {
@@ -1292,7 +1301,7 @@ app.get('/home',loggedIn, async function(req, res){
               isScan = true;
           }
       }
-      else if(req.user.currentReserve.reserveTimeout != check && req.user.currentReserve.reserveTimeout != null && req.user.currentReserve.reserveStatus == "Paid"){
+      else if(req.user.currentReserve.reserveTimeout != check && req.user.currentReserve.reserveStatus == "Paid"){
         pool.acquire(function (err, connection) {
             if (err) {
               console.error(err);
@@ -1326,7 +1335,7 @@ app.get('/home',loggedIn, async function(req, res){
                 connection.release();
               }
               req.user.currentReserve.reserveStatus = "Checked Out";
-              reserve.setReserveStatus(connection,req.us1er.currentReserve.reserveId,req.user.currentReserve.reserveStatus);
+              reserve.setReserveStatus(connection,req.user.currentReserve.reserveId,req.user.currentReserve.reserveStatus);
             });
             pool.acquire(function (err, connection) {
               if (err) {
@@ -1434,7 +1443,7 @@ app.get('/reserve',loggedIn, function(req, res){
 
 //ROUTE TO QR CODE PAGE
 app.get('/showqr', loggedIn,hasReserved,function(req, res){
-  if(currentReserve.reserveStatus == "Paid"){
+  if(req.user.currentReserve.reserveStatus == "Paid"){
     res.render('showqr', {qrCode: req.user.currentTransaction.qrCode,
                           currentUsername: req.user.currentCustomer.currentUsername,
                           currentPicture: req.user.currentCustomer.currentPicture,
@@ -1669,7 +1678,10 @@ app.post('/reserve',loggedIn,async function(req, res){
   req.user.currentReserve.reserveBuildingname = req.body.buildingName;
   console.log('reserve Plate number: '+req.user.currentReserve.reservePlatenumber);
   console.log('reserve building: '+req.user.currentReserve.reserveBuildingname);
+<<<<<<< HEAD
 
+=======
+>>>>>>> ec84c79b08afac04c3db236cb73a2c174a9c6a47
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
@@ -1970,9 +1982,11 @@ app.post('/pay',loggedIn,async function(req,res){
       req.user.currentTransaction.qrCode = [req.user.currentTransaction.transactionId,req.user.currentCustomer.currentUsername];
       isScan = false;
       obb = {isScan: isScan};
-      req.user.currentTransaction.totaltime = parseInt(req.user.stopwatch.stop()/1000);
+      // req.user.currentTransaction.totaltime = parseInt(req.user.stopwatch.stop()/1000);
+      console.log('Set total time: '+parseInt(req.user.stopwatch.stop()/1000));
       req.user.stopwatch.reset();
       req.user.currentTransaction.parkingFee = parseInt((req.user.currentTransaction.totaltime * feeRate) + req.user.currentTransaction.addedFee);
+      console.log('set parking fee: '+req.user.currentTransaction.parkingFee);
       if(req.user.currentTransaction.exceedCheckoutTime == true){
         req.user.currentTransaction.addedFee = 0;
         req.user.currentTransaction.exceedCheckoutTime = false;
@@ -2249,6 +2263,7 @@ app.post('/qrcode',async function(req, res){
   });
   await sleep(200);
   if(qr[0] == reserveID){
+    console.log('Check in qrCode has been scanned');
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
@@ -2265,6 +2280,7 @@ app.post('/qrcode',async function(req, res){
       reserve.setTimeIn(connection,reserveID,reserveTimein);
     });
   }else if(qr[0]  == transactionID){
+    console.log('Check out qrCode has been scanned');
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
