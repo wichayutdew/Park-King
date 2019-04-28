@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Home Page</title>
+  <!-- <link rel="stylesheet" href="/stylesheet/tempStyle.css"> -->
+  <!-- font awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+  <style>
+
+    body {
+      background-color: black;
+    }
+
+    .bodyDiv {
+        display: flex;
+        height: 100vh;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .receiptDiv {
+      background: white;
+      border-radius: 25px;
+      width: 60%;
+      height: 70%;
+      padding: 0px 20px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    #receiptHeader {
+      <!-- background: grey; -->
+    }
+    #dateAndName {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .detailSec{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      padding-bottom: 10px;
+    }
+
+    #receipt-footer {
+      text-align: center;
+      font-size: 11px;
+    }
+
+
+  </style>
+</head>
+
+<body>
+
+  <div class="bodyDiv">
+
+    <div class="receiptDiv">
+
+
+      <div>
+      <section id="receiptHeader">
+        <h3><center>Transaction ID: <%= totalTransaction %></center></h3>
+      </section>
+      <hr>
+      <section id="dateAndName">
+        <span id="date"> <%= receiptDate %> </span>
+        <span id="name"> <%= currentFirstname %> <%= currentLastname %> </span>
+      </section>
+      <hr>
+
+
+        <section class="detailSec">
+          <span>Check-in:</span>
+          <span><%= receiptTimeIn %></span>
+        </section>
+        <section class="detailSec">
+          <span>Check-out:</span>
+          <span><%= receiptTimeOut %></span>
+        </section>
+        <section class="detailSec">
+          <span>Duration:</span>
+          <span><%= receiptTotaltime %> Minutes</span>
+        </section>
+        <section class="detailSec">
+          <span>Building:</span>
+          <span><%= receiptBuilding %></span>
+        </section>
+        <section class="detailSec">
+          <span>Plate Number:</span>
+          <span><%= receiptPlatenumber %></span>
+        </section>
+        <section class="detailSec">
+          <span>Fee:</span>
+          <span><%= receiptFee %> Baht</span>
+        </section>
+        <section class="detailSec">
+          <span>Payment:</span>
+          <span><%= receiptPaymentmethod %></span>
+        </section>
+        </div>
+        <div class="text-center">
+            <a href="/userinfo" class="txt2 hov1">
+                Go Back
+            </a>
+        </div>
+
+        <div id="receipt-footer">
+            Park King Co. Ltd., South Sathorn Road, <br>Silom. Bangrak, 10500, Bangkok
+            <br>Tel: 02675775757 <br>E-mail: noreply@parkking.com
+        </div>
+
+
+    </div>
+
+
+  </div>
+
+</body>
+</html>

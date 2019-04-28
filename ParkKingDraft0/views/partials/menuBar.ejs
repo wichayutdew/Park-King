@@ -1,0 +1,42 @@
+<nav>
+    <section class="menu">
+        <a class="top-menu-item" href="/home"><img src="img/pklogo2.png"></a>
+        <a id="profileBut" class="top-menu-item" href="#"><img src="img/profiledicut.png"></a>
+    </section>
+    <section class="profile-menu">
+        <div class="profile-menu-div">
+                <!-- data:image/png;base64,<%=currentPicture%> -->
+            <li><img src="data:image/png;base64,<%=currentPicture%>" alt=""></li>
+            <li><h4>Welcome <%= currentUsername %> !</h4></li>
+            <div class="notification">
+                <li>Welcome to Park-King <br>
+                    Contact us via <br>
+                    no-reply@parkking.com
+                </li>
+            </div>
+            <li class="button-li"><a href="/userinfo" class="button">View Profile</a></li>
+            <li class="button-li" style="margin-top: 20px;"><a href="/logout" class="button">Logout</a></li>
+        </div>
+    </section>
+
+    <section class="menu">
+        <a class="menu-item blue" href="/status">Status</a>
+        <a class="menu-item orange" href="/showqr">My QR</a>
+        <a class="menu-item green" href="/reserve">Reserve</a>
+    </section>
+</nav>
+<script>
+  var reqUser;
+    $('#profileBut').on('click', function(){
+        $('.profile-menu').slideToggle(500);
+    });
+
+    $.get('/getthisusername')
+    .done(function(d){
+      // console.log(d+'!!!!!!!!!!!!!');
+      reqUser = d;
+    })
+    .fail(function(){
+      console.log('err');
+    });
+</script>

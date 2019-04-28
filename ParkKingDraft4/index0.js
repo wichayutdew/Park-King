@@ -103,7 +103,7 @@ app.use(passport.session());
 //Serializer and Deserializer
 passport.serializeUser(function(user, done) {
         console.log('serializer');
-        console.log(user[0]);
+        //console.log(user[0]);
         done(null, user[0]);
     });
 function createDeserializer() {
@@ -718,7 +718,7 @@ passport.use('local-login', new LocalStrategy({
                 passwordField : 'password',
                 passReqToCallback : true // allows us to pass back the entire request to the callback
             },
-        function(req,username,password,done) {
+            function(req,username,password,done) {
                 // callback with email and password from our form
 
                 console.log('trying to login');
@@ -788,7 +788,22 @@ passport.use('local-login', new LocalStrategy({
 
             }));
 
-
+//getter setter2
+function getPlateNumber(user){
+  var temp = [];
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    car.getAllPlateNumber(connection,user,function(data){
+      console.log('data: '+data);
+      temp = data;
+    })
+  });
+  console.log('temp: '+temp);
+  return temp;
+}
 
 
 
@@ -887,99 +902,6 @@ passport.use('local-login', new LocalStrategy({
                 })
             }
 
-function getPlateNumber(username){
-  var carTemp=[];
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    car.getAllPlateNumber(connection,username,function (data){
-        carTemp = data;
-        console.log(carTemp);
-    });
-
-  });
-  sleep(250);
-  return carTemp;
-}
-function getBrand(username){
-  var carTemp=[];
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-
-    car.getAllCarBrand(connection,username,function(data){
-       carTemp = data;
-       console.log(carTemp);
-    })
-  });
-  console.log(carTemp);
-  sleep(250);
-  return carTemp;
-}
-function getColor(username){
-  var carTemp=[];
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-      car.getAllCarColor(connection,username,function(data){
-         carTemp = data;
-      })
-    });
-    console.log(carTemp);
-    sleep(250);
-    return carTemp;
-}
-function getModel(username){
-  var carTemp=[];
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-      car.getAllCarModel(connection,username,function(data){
-         carTemp = data;
-      })
-    });
-    console.log(carTemp);
-    sleep(250);
-    return carTemp;
-}
-function getCarPic(username){
-  var carTemp=[];
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-      car.getAllCarPicture(connection,username,function(data){
-         carTemp = data;
-      })
-    });
-    sleep(250);
-    return carTemp;
-}
-function getPlateProvince(username){
-
-  var carTemp=[];
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-      car.getAllPlateProvince(connection,username,function(data){
-         carTemp = data;
-      })
-    });
-    console.log(carTemp);
-    sleep(250);
-    return carTemp;
-}
 //------------------------------------------------------------------------------------------------------------//
 //------------------------------------------------------------------------------------------------------------//
 //ROUTES
@@ -1288,8 +1210,9 @@ app.get('/register', function(req, res){
   res.render('register');
 });
 app.get('/userinfo', async function(req, res){
-  await sleep(5000);
-  //console.log('platenumber : '+getPlateNumber(req.user.currentCustomer.currentUsername,carCallBack));
+  var pn = getPlateNumber(req.user.currentCustomer.currentUsername);
+  console.log('Plate Num: '+pn);
+  await sleep(7000);
   res.render('userinfo', {
                           //USER INFO
                           currentUsername:req.user.currentCustomer.currentUsername,
@@ -1300,12 +1223,12 @@ app.get('/userinfo', async function(req, res){
                           currentFirstname:req.user.currentCustomer.currentFirstname,
                           currentLastname:req.user.currentCustomer.currentLastname,
                           //CAR INFO
-                          currentCarPicture:getCarPic(req.user.currentCustomer.currentUsername),
-                          currentBrand:getBrand(req.user.currentCustomer.currentUsername),
-                          currentColor:getColor(req.user.currentCustomer.currentUsername),
-                          currentModel:getModel(req.user.currentCustomer.currentUsername),
-                          currentPlateNumber:getPlateNumber(req.user.currentCustomer.currentUsername),
-                          currentPlateProvince:getPlateProvince(req.user.currentCustomer.currentUsername),
+                          currentCarPicture: req.user.currentCar.currentCarPicture,
+                          currentBrand:req.user.currentCar.currentBrand,
+                          currentColor:req.user.currentCar.currentColor,
+                          currentModel:req.user.currentCar.currentModel,
+                          currentPlateNumber:req.user.currentCar.currentPlateNumber,
+                          currentPlateProvince:req.user.currentCar.currentPlateProvince,
                           //RECEIPT INFO
                           totalTransaction:req.user.currentTransaction.totalTransaction,
                           receiptFee:req.user.currentReceipt.receiptFee,
