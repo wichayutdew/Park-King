@@ -529,7 +529,7 @@ exports.setCurrentFee = function(connection,reserveid,currentfee) {
       connection.release();
     }
   });
-  request.addParameter('currentfee',TYPES.Bit,currentfee);
+  request.addParameter('currentfee',TYPES.VarChar,currentfee);
   request.addParameter('reserveid',TYPES.VarChar,reserveid);
   request.on('requestCompleted', function() {
     //connection.close();
@@ -548,7 +548,7 @@ exports.setCurrentTime = function(connection,reserveid,currenttime) {
       connection.release();
     }
   });
-  request.addParameter('currenttime',TYPES.Bit,currenttime);
+  request.addParameter('currenttime',TYPES.VarChar,currenttime);
   request.addParameter('reserveid',TYPES.VarChar,reserveid);
   request.on('requestCompleted', function() {
     //connection.close();
