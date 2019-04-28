@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Park King</title>
+
+  <link rel="stylesheet" href="/stylesheet/style.css">
+  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+  <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
+
+  <style media="screen">
+    .cancel-div {
+            padding: 10px 10px;
+            border-radius: 15px;
+            text-align: center;
+          }
+          li h1 {
+            font-size: 20px;
+          }
+          li h2 {
+            font-size: 15px;
+          }
+        </style>
+</head>
+
+<body>
+
+  <% include partials/menuBar %>
+  <% include partials/flash %>
+
+  <div class="main-user-info">
+
+    <form class="reserveForm" action="/reserve" method="POST">
+
+      <div class="infoDiv white-grey">
+        <section class="info-text-div">
+          <span class="center" style="color: red;">If you cancel more than five times you will be banned for 1 week!</span>
+        </section>
+        <section class="info-text-div">
+          <span>Cancel Times:</span>
+          <span>
+            <%= cancelTime %></span>
+        </section>
+      </div>
+
+
+      <div class="infoDiv dark-grey-div-gradient">
+        <h3><strong>Select Your Car</strong></h3>
+        <div class="info-text-div">
+          <div class="carSelect">
+            <div class="btn-group carBtnGroup" data-toggle="buttons">
+
+
+              <% for(i=0; i < currentPlateNumber.length; i++){ %>
+              <label class="btn carChoice">
+                <!-- <div class="method" style="background-image: url(data:image/png;base64, currentCarPicture[i] )"> -->
+
+                <!-- </div> -->
+                <div class="method center white-grey">
+                  <img src="data:image/png;base64,<%= currentCarPicture[i] %>">
+                  <%=currentPlateNumber[i]%>
+                  <input type="radio" name="plateNumber" value="<%=currentPlateNumber[i]%>" required />
+                </div>
+              </label>
+              <% } %>
+              <!-- <label class="btn carChoice">
+                                  <div class="method" style="background-image: url(data:image/png;base64,<%= currentCarPicture[i] %>)"><%=currentPlateNumber[i]%></div>
+                                  <input type="radio" name="options">
+                                </label> -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="infoDiv dark-grey-div-gradient">
+        <h3><strong>Select The Building</strong></h3>
+        <div class="info-text-div">
+
+          <div class="buildingSelect">
+            <div class="btn-group buildingBtnGroup" data-toggle="buttons">
+              <label class="btn buildingChoice">
+                <div class="building">
+                  <img class="building-pic" src="/img/artbuilding.jpg" />
+                </div>
+                <input type="radio" name="buildingName" value="buildingArts" required />
+              </label>
+              <label class="btn buildingChoice">
+                <div class="building">
+                  <img class="building-pic" src="/img/polibuilding.jpg" />
+                </div>
+                <input type="radio" name="buildingName" value="buildingPoli" required />
+              </label>
+            </div>
+          </div>
+
+          <!-- <div class="buildingSelect">
+            <div class="btn-group buildingBtnGroup d-flex justify-content-around " data-toggle="buttons">
+
+              <label class="btn buildingChoice">
+                <input type="radio" name="buildingName" value="buildingArts" required>
+                <img class="building-pic" src="/img/artbuilding.jpg">
+              </label>
+              <label class="btn buildingChoice">
+                <input type="radio" name="buildingName" value="buildingPoli" required>
+                <img class="building-pic" src="/img/polibuilding.jpg">
+              </label>
+            </div>
+
+          </div> -->
+        </div>
+      </div>
+
+
+
+      <!-- <div class="card mt-2 mx-1">
+                        <h7 class="card-header">Select The Building</h7>
+                        <div class="card-body">
+                          <div class="buildingSelect">
+                            <div class="btn-group buildingBtnGroup d-flex justify-content-around " data-toggle="buttons">
+                              <label class="btn buildingChoice">
+                                <div class="building arts" ></div>
+                                <input type="radio" name = "buildingName" value="buildingArts" required>
+                              </label>
+                              <label class="btn buildingChoice">
+                                <div class="building poli" ></div>
+                                <input type="radio" name = "buildingName" value="buildingPoli" required>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div> -->
+
+
+
+      <!-- <a href="/showqr" class="btn btn-dark btn-lg btn-block mt-2 mx-1" id="submitBtn">Submit</a> -->
+
+      <!-- <button type="submit" class="button green>
+                          Reserve
+                        </button> -->
+      <button class="button green" type="submit" style="margin-top: 20px;">Submit</button>
+      <div class="center">
+        <span>Once submitted, you will have 30 minutes to arrive at the building before your reservation expires</span>
+      </div>
+
+    </form>
+  </div>
+
+
+
+
+  <script src="/js/reserveScript.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+</body>
+
+</html>

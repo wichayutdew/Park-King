@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Park King</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link rel="stylesheet" href="/stylesheet/style.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+
+</head>
+<body>
+
+
+    <% include partials/menuBar %>
+    <% include partials/flash %>
+
+    <div class="main-user-info">
+      <div class="infoDiv dark-grey-div-gradient">
+          <h3><Strong>ARTS BUILDING</Strong></h3>
+          <section class="info-text-div">
+              <span>Free spot:</span>
+              <span><%= totalArtsFreeSpot %> of <%= artsCapacity %></span>
+          </section>
+          <section class="info-text-div">
+              <span>Lowest Floor Available:</span>
+              <span><%= lowestFloorArts %></span>
+          </section>
+          <section class="info-text-div">
+              <span>Lowest Spot Available</span>
+              <span><%= lowestSlotArts %></span>
+          </section>
+      </div>
+      <div class="infoDiv dark-grey-div-gradient">
+          <h3><Strong>POLITICAL SCIENCE BUILDING</Strong></h3>
+          <section class="info-text-div">
+              <span>Free spot:</span>
+              <span><%= totalPoliFreeSpot %> of <%= poliCapacity %></span>
+          </section>
+          <section class="info-text-div">
+              <span>Lowest Floor Available:</span>
+              <span><%= lowestFloorPoli %></span>
+          </section>
+          <section class="info-text-div">
+              <span>Lowest Spot Available</span>
+              <span><%= lowestSlotPoli %></span>
+          </section>
+      </div>
+        <div class="infoDiv dark-grey-div-gradient">
+            <h3><Strong>YOUR RESERVATION</Strong></h3>
+            <section class="info-text-div">
+                <span>Status:</span>
+                <span><%= reserveStatus %></span>
+                <!-- <span>PARKED</span> -->
+            </section>
+            <section class="info-text-div">
+                <span>Building:</span>
+                <span><%= reserveBuildingname %></span>
+                <!-- <span>Arts</span> -->
+            </section>
+            <section class="info-text-div">
+                <span>Car</span>
+                <span><%= reservePlatenumber %></span>
+                <!-- <span>1234</span> -->
+            </section>
+        </div>
+
+
+        <div class="infoDiv dark-grey-div-gradient">
+            <h3><Strong>RULES</Strong></h3>
+            <section class="info-text-div center">
+                <span>1. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex, atque.</span>
+            </section>
+            <section class="info-text-div center">
+                <span>2. Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus, pariatur?</span>
+            </section>
+            <section class="info-text-div center">
+                <span>3. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Incidunt, quaerat.</span>
+            </section>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+</body>
+</html>
