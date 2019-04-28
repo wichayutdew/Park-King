@@ -25,7 +25,6 @@ exports.createReserve = function() {
    this.qrCode = null;
    this.currentFee = null;
    this.currentTime = null;
-   this.addedFee = null;
 }
 
 //*******************************************************Inserting new Reserve into database***********************************************

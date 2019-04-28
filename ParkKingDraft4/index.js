@@ -441,6 +441,7 @@ passport.deserializeUser(async function(user, done) {
             currentTransaction.transactionId = data;
           })
         });
+        currentTransaction.qrCode = [currentTransaction.transactionId,currentCustomer.currentUsername];
         pool.acquire(function (err, connection) {
           if (err) {
             console.error(err);
@@ -597,7 +598,6 @@ passport.deserializeUser(async function(user, done) {
                         connection.release();
                         return done(err);
                     }
-                    //console.log(deserializing);
                     done(err, deserializing);
                     connection.release();
                 }
@@ -1247,7 +1247,6 @@ app.get('/home',loggedIn, async function(req, res){
           req.user.currentReserve.reserveId = data;
         });
       });
-      console.log(req.user.currentReserve.reserveId);
       pool.acquire(function (err, connection) {
         if (err) {
           console.error(err);
@@ -1288,57 +1287,57 @@ app.get('/home',loggedIn, async function(req, res){
                   connection.release();
                 }
                 req.user.currentReserve.reserveStatus = "Checked In";
-                reserve.setReserveStatus(connection,req.user.currentReserve.reserveId,req.user.currentReserve.reserveStatus);
+                reserve.setReserveStatus(connection,req.user.currentReserve.reserveId,"Checked In");
               });
               isScan = true;
           }
       }
-      // else if(req.user.currentReserve.reserveTimeout != check){
-      //   pool.acquire(function (err, connection) {
-      //       if (err) {
-      //         console.error(err);
-      //         connection.release();
-      //       }
-      //       reserve.getQRCodeOut(connection,req.user.currentReserve.reserveId,function(data){
-      //           req.user.currentReserve.reserveQRout = data;
-      //       });
-      //   });
-      //   if(req.user.currentReserve.reserveQRout == req.user.currentTransaction.transactionId && req.user.currentReserve.reserveStatus != "Checked Out"){
-      //       pool.acquire(function (err, connection) {
-      //         if (err) {
-      //           console.error(err);
-      //           connection.release();
-      //         }
-      //         req.user.currentReserve.reserveIsfull = 0;
-      //         parkingspot.setIsFull(connection,req.user.currentReserve.reserveBuildingname,req.user.currentReserve.reserveFloor,req.user.currentReserve.reserveSlot,0);
-      //
-      //       });
-      //       pool.acquire(function (err, connection) {
-      //         if (err) {
-      //           console.error(err);
-      //           connection.release();
-      //         }
-      //         req.user.currentCustomer.customerReservable = 1;
-      //         customer.setReservable(connection,req.user.currentCustomer.currentUsername,1);
-      //       });
-      //       pool.acquire(function (err, connection) {
-      //         if (err) {
-      //           console.error(err);
-      //           connection.release();
-      //         }
-      //         req.user.currentReserve.reserveStatus = "Checked Out";
-      //         reserve.setReserveStatus(connection,req.user.currentReserve.reserveId,req.user.currentReserve.reserveStatus);
-      //       });
-      //       pool.acquire(function (err, connection) {
-      //         if (err) {
-      //           console.error(err);
-      //           connection.release();
-      //         }
-      //         transaction.setTransactionStatus(connection,req.user.currentTransaction.transactionId,"Checked Out");
-      //       });
-      //       isScan = false;
-      //     }
-      // }
+      else if(req.user.currentReserve.reserveTimeout != check){
+        pool.acquire(function (err, connection) {
+            if (err) {
+              console.error(err);
+              connection.release();
+            }
+            reserve.getQRCodeOut(connection,req.user.currentReserve.reserveId,function(data){
+                req.user.currentReserve.reserveQRout = data;
+            });
+        });
+        if(req.user.currentReserve.reserveQRout == req.user.currentTransaction.transactionId && req.user.currentReserve.reserveStatus != "Checked Out"){
+            pool.acquire(function (err, connection) {
+              if (err) {
+                console.error(err);
+                connection.release();
+              }
+              req.user.currentReserve.reserveIsfull = 0;
+              parkingspot.setIsFull(connection,req.user.currentReserve.reserveBuildingname,req.user.currentReserve.reserveFloor,req.user.currentReserve.reserveSlot,0);
+
+            });
+            pool.acquire(function (err, connection) {
+              if (err) {
+                console.error(err);
+                connection.release();
+              }
+              req.user.currentCustomer.customerReservable = 1;
+              customer.setReservable(connection,req.user.currentCustomer.currentUsername,1);
+            });
+            pool.acquire(function (err, connection) {
+              if (err) {
+                console.error(err);
+                connection.release();
+              }
+              req.user.currentReserve.reserveStatus = "Checked Out";
+              reserve.setReserveStatus(connection,req.user.currentReserve.reserveId,req.user.currentReserve.reserveStatus);
+            });
+            pool.acquire(function (err, connection) {
+              if (err) {
+                console.error(err);
+                connection.release();
+              }
+              transaction.setTransactionStatus(connection,req.user.currentTransaction.transactionId,"Checked Out");
+            });
+            isScan = false;
+          }
+      }
       pool.acquire(function (err, connection) {
         if (err) {
           console.error(err);
@@ -1370,6 +1369,7 @@ app.get('/getTimeandFee',loggedIn, function(req, res){
     }
     reserve.getCurrentFee(connection,req.user.currentReserve.reserveId,function(data){
       req.user.currentReserve.currentFee = data;
+      console.log('Current Fee: '+req.user.currentReserve.currentFee);
     });
   });
   pool.acquire(function (err, connection) {
@@ -1379,6 +1379,7 @@ app.get('/getTimeandFee',loggedIn, function(req, res){
     }
     reserve.getCurrentTime(connection,req.user.currentReserve.reserveId,function(data){
       req.user.currentReserve.currentTime = data;
+      console.log('Current Time: '+req.user.currentReserve.currentTime);
     });
   });
   var mins, hours;
@@ -1656,11 +1657,17 @@ app.get('/receipt',loggedIn, function(req, res){
 //MAKING RESERVATION
 //ADD SENSOR CHECK
 app.post('/reserve',loggedIn,async function(req, res){
+  console.log('Reserve Pressed');
   req.user.currentReserve.reservePlatenumber = req.body.plateNumber;
   req.user.currentReserve.reserveBuildingname = req.body.buildingName;
+<<<<<<< HEAD
+  console.log('reserve Plate number: '+req.user.currentReserve.reservePlatenumber);
+  console.log('reserve building: '+req.user.currentReserve.reserveBuildingname);
+=======
   //console.log();
   console.log(req.user.currentReserve.reservePlatenumber);
   console.log(req.user.currentReserve.reserveBuildingname);
+>>>>>>> 4c2c1307a05e0d782b0be8f8bc84c0d28ec6eee2
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
@@ -1668,7 +1675,11 @@ app.post('/reserve',loggedIn,async function(req, res){
       }
       customer.getReservable(connection,req.user.currentCustomer.currentUsername,function(data){
         req.user.currentCustomer.customerReservable = data;
+<<<<<<< HEAD
+        console.log('Customer Reservable: '+req.user.currentCustomer.customerReservable);
+=======
         console.log('customerReserveable : ' + req.user.currentCustomer.customerReservable);
+>>>>>>> 4c2c1307a05e0d782b0be8f8bc84c0d28ec6eee2
       });
 
   });
@@ -1680,7 +1691,7 @@ app.post('/reserve',loggedIn,async function(req, res){
       }
       parkingspot.getLowestFloor(connection,req.user.currentReserve.reserveBuildingname,function(data){
         req.user.currentReserve.reserveFloor = data;
-        console.log(req.user.currentReserve.reserveFloor);
+        console.log('reserve floor: '+req.user.currentReserve.reserveFloor);
       });
   });
   pool.acquire(function (err, connection) {
@@ -1691,7 +1702,7 @@ app.post('/reserve',loggedIn,async function(req, res){
       }
       parkingspot.getLowestSlot(connection,req.user.currentReserve.reserveBuildingname,function(data){
         req.user.currentReserve.reserveSlot = data;
-        console.log(req.user.currentReserve.reserveSlot);
+        console.log('reserve slot: '+req.user.currentReserve.reserveSlot);
       });
   });
   //wait for update request
@@ -1704,7 +1715,11 @@ app.post('/reserve',loggedIn,async function(req, res){
       }
       parkingspot.getIsFull(connection,req.user.currentReserve.reserveBuildingname,req.user.currentReserve.reserveFloor,req.user.currentReserve.reserveSlot,function(data){
         req.user.currentReserve.reserveIsfull = data;
+<<<<<<< HEAD
+        console.log('reserve is full: '+req.user.currentReserve.reserveIsfull);
+=======
         console.log('reserveIsfull : '+req.user.currentReserve.reserveIsfull);
+>>>>>>> 4c2c1307a05e0d782b0be8f8bc84c0d28ec6eee2
       });
   });
   if(req.user.currentCustomer.customerReservable == 0 || req.user.currentReserve.reserveIsfull == 1){
@@ -1953,7 +1968,7 @@ app.post('/pay',loggedIn,async function(req,res){
           return;
       }
       req.user.currentTransaction.transactionId = generateTokenID();
-      req.user.currentTransaction.qrCode = req.user.currentTransaction.transactionId;
+      req.user.currentTransaction.qrCode = [req.user.currentTransaction.transactionId,req.user.currentCustomer.currentUsername];
       isScan = false;
       obb = {isScan: isScan};
       req.user.currentTransaction.totaltime = parseInt(req.user.stopwatch.stop()/1000);
