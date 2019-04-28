@@ -25,6 +25,7 @@ exports.createReserve = function() {
    this.qrCode = null;
    this.currentFee = null;
    this.currentTime = null;
+   this.addedFee = null;
 }
 
 //*******************************************************Inserting new Reserve into database***********************************************
@@ -246,7 +247,7 @@ exports.getReserveStatus = function(connection,reserveid,Callback) {
 exports.getReserveID = function(connection,username,Callback) {
   var returnedValue  = [];
   var request = new Request(
-    'SELECT ReserveID FROM dbo.Reserve WHERE username = @username and reserveStatus = @reservestatus',
+    'SELECT ReserveID FROM dbo.Reserve WHERE username = @username and reserveStatus != @reservestatus',
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -258,7 +259,7 @@ exports.getReserveID = function(connection,username,Callback) {
       }
     });
     request.addParameter('username',TYPES.VarChar,username);
-    request.addParameter('reservestatus',TYPES.VarChar,"Reserved");
+    request.addParameter('reservestatus',TYPES.VarChar,"Checked Out");
     request.on('row', function (columns) {
         columns.forEach(function(column) {
             returnedValue.push(column.value);
