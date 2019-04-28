@@ -1434,7 +1434,7 @@ app.get('/reserve',loggedIn, function(req, res){
 
 //ROUTE TO QR CODE PAGE
 app.get('/showqr', loggedIn,hasReserved,function(req, res){
-  if(currentReserve.reserveStatus == "Paid"){
+  if(req.user.currentReserve.reserveStatus == "Paid"){
     res.render('showqr', {qrCode: req.user.currentTransaction.qrCode,
                           currentUsername: req.user.currentCustomer.currentUsername,
                           currentPicture: req.user.currentCustomer.currentPicture,
