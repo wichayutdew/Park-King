@@ -834,11 +834,15 @@ function hasReserved(req, res, next) {
 //Calculate the fee rate
 var check = "initialize";
 function feeRate(customerType){
+  console.log('calculating fee rate');
   if(customerType = 'Student'){
+    console.log('calculating fee rate for student');
     return (10/60);
   }else if(customerType = 'Professor'){
+    console.log('calculating fee rate for Professor');
     return (5/60);
   }else{
+    console.log('calculating fee rate for Others');
     return (15/60);
   }
 }
@@ -1985,10 +1989,25 @@ app.post('/pay',loggedIn,async function(req,res){
       req.user.currentTransaction.qrCode = [req.user.currentTransaction.transactionId,req.user.currentCustomer.currentUsername];
       isScan = false;
       obb = {isScan: isScan};
+<<<<<<< HEAD
       req.user.currentReserve.feeRate = feeRate(req.user.currentCustomer.currentCustomerType);
       req.user.currentTransaction.totaltime =  parseInt(req.user.stopwatch.stop()/1000);
       req.user.currentTransaction.parkingFee = parseInt(req.user.currentTransaction.totaltime * req.user.currentReserve.feeRate);
       req.user.stopwatch.reset();
+=======
+
+      req.user.currentReserve.feeRate = feeRate(req.user.currentCustomer.currentCustomerType);
+      req.user.currentTransaction.totaltime =  parseInt(req.user.stopwatch.stop()/1000);
+      console.log('SET TOTAL TIME: '+req.user.currentTransaction.totaltime);
+      req.user.currentTransaction.parkingFee = parseInt((req.user.currentTransaction.totaltime * req.user.currentReserve.feeRate));
+      console.log(
+      'SET PARKING FEE: '+req.user.currentTransaction.parkingFee+
+      ' feeRate: '+ req.user.currentReserve.feeRate+
+      ' addedFee: '+req.user.currentTransaction.addedFee
+      );
+      req.user.stopwatch.reset();
+
+>>>>>>> 8901661d4af66490b911be5b48ee3fe172cc9531
       if(req.user.currentTransaction.exceedCheckoutTime == true){
         req.user.currentTransaction.addedFee = 0;
         req.user.currentTransaction.exceedCheckoutTime = false;
