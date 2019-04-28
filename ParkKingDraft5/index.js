@@ -565,7 +565,7 @@ app.get('/home',loggedIn, async function(req, res){
             currentReserve.reserveStatus = data;
             console.log("Check Status = " + currentReserve.reserveStatus);
           });
-        });
+      });
       await sleep(500);
       if(currentReserve.reserveTimein != check && currentReserve.reserveTimeout == check && currentReserve.reserveStatus == "Reserved"){
           pool.acquire(function (err, connection) {
