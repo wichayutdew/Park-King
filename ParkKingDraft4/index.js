@@ -1370,6 +1370,7 @@ app.get('/getTimeandFee',loggedIn, function(req, res){
     }
     reserve.getCurrentFee(connection,req.user.currentReserve.reserveId,function(data){
       req.user.currentReserve.currentFee = data;
+      console.log('Current Fee: '+req.user.currentReserve.currentFee);
     });
   });
   pool.acquire(function (err, connection) {
@@ -1379,6 +1380,7 @@ app.get('/getTimeandFee',loggedIn, function(req, res){
     }
     reserve.getCurrentTime(connection,req.user.currentReserve.reserveId,function(data){
       req.user.currentReserve.currentTime = data;
+      console.log('Current Time: '+req.user.currentReserve.currentTime);
     });
   });
   var mins, hours;
@@ -1656,10 +1658,11 @@ app.get('/receipt',loggedIn, function(req, res){
 //MAKING RESERVATION
 //ADD SENSOR CHECK
 app.post('/reserve',loggedIn,async function(req, res){
+  console.log('Reserve Pressed');
   req.user.currentReserve.reservePlatenumber = req.body.plateNumber;
   req.user.currentReserve.reserveBuildingname = req.body.buildingName;
-  console.log(req.user.currentReserve.reservePlatenumber);
-  console.log(req.user.currentReserve.reserveBuildingname);
+  console.log('reserve Plate number: '+req.user.currentReserve.reservePlatenumber);
+  console.log('reserve building: '+req.user.currentReserve.reserveBuildingname);
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
@@ -1667,7 +1670,7 @@ app.post('/reserve',loggedIn,async function(req, res){
       }
       customer.getReservable(connection,req.user.currentCustomer.currentUsername,function(data){
         req.user.currentCustomer.customerReservable = data;
-        console.log(req.user.currentCustomer.customerReservable);
+        console.log('Customer Reservable: '+req.user.currentCustomer.customerReservable);
       });
 
   });
@@ -1679,7 +1682,7 @@ app.post('/reserve',loggedIn,async function(req, res){
       }
       parkingspot.getLowestFloor(connection,req.user.currentReserve.reserveBuildingname,function(data){
         req.user.currentReserve.reserveFloor = data;
-        console.log(req.user.currentReserve.reserveFloor);
+        console.log('reserve floor: '+req.user.currentReserve.reserveFloor);
       });
   });
   pool.acquire(function (err, connection) {
@@ -1690,7 +1693,7 @@ app.post('/reserve',loggedIn,async function(req, res){
       }
       parkingspot.getLowestSlot(connection,req.user.currentReserve.reserveBuildingname,function(data){
         req.user.currentReserve.reserveSlot = data;
-        console.log(req.user.currentReserve.reserveSlot);
+        console.log('reserve slot: '+req.user.currentReserve.reserveSlot);
       });
   });
   //wait for update request
@@ -1703,7 +1706,7 @@ app.post('/reserve',loggedIn,async function(req, res){
       }
       parkingspot.getIsFull(connection,req.user.currentReserve.reserveBuildingname,req.user.currentReserve.reserveFloor,req.user.currentReserve.reserveSlot,function(data){
         req.user.currentReserve.reserveIsfull = data;
-        console.log(req.user.currentReserve.reserveIsfull);
+        console.log('reserve is full: '+req.user.currentReserve.reserveIsfull);
       });
   });
   if(req.user.currentCustomer.customerReservable == 0 || req.user.currentReserve.reserveIsfull == 1){
