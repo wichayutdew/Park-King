@@ -118,7 +118,6 @@ passport.deserializeUser(async function(user, done) {
         var currentReserve = new reserve.createReserve();
         var currentTransaction = new transaction.createTransaction();
         var currentReceipt = new transaction.createReceipt();
-        var stopwatch = new Stopwatch();
         //CUSTOMER INFORMATION
         currentCustomer.currentUsername = user;
         pool.acquire(function (err, connection) {
@@ -791,7 +790,7 @@ passport.use('local-login', new LocalStrategy({
 //===================================================================================================================================================
 // ALL TIMER IS IN SECOND(TO CHANGE TO MINUTES CHANGE /1000 TO /60000)
 var Stopwatch = require('statman-stopwatch');
-
+var stopwatch = new Stopwatch();
 //start user's timer
 function startUserTimer(){
   req.user.stopwatch.start();
@@ -833,7 +832,6 @@ function hasReserved(req, res, next) {
 }
 
 //Calculate the fee rate
-var feeRate
 var check = "initialize";
 function feeRate(customerType){
   if(customerType = 'Student'){
@@ -1235,7 +1233,7 @@ app.get('/home',loggedIn, async function(req, res){
       });
     });
 
-    feeRate = feeRate(req.user.currentCustomer.currentCustomerType);
+    req.user.currentReserve.feeRate = feeRate(req.user.currentCustomer.currentCustomerType);
     setInterval(async function() {
       console.log('Please wait for check-in/check-out');
       pool.acquire(function (err, connection) {
@@ -1245,6 +1243,15 @@ app.get('/home',loggedIn, async function(req, res){
         }
         reserve.getReserveID(connection,req.user.currentCustomer.currentUsername,function(data){
           req.user.currentReserve.reserveId = data;
+        });
+      });
+      pool.acquire(function (err, connection) {
+        if (err) {
+          console.error(err);
+          connection.release();
+        }
+        transaction.getTransactionID(connection,req.user.currentCustomer.currentUsername,function(data){
+          req.user.currentTransaction.transactionId = data;
         });
       });
       pool.acquire(function (err, connection) {
@@ -1360,7 +1367,7 @@ app.get('/home',loggedIn, async function(req, res){
           console.error(err);
           connection.release();
         }
-        req.user.currentReserve.currentFee = parseInt(req.user.currentReserve.currentTime * feeRate);
+        req.user.currentReserve.currentFee = parseInt(req.user.currentReserve.currentTime * req.user.currentReserve.feeRate);
         reserve.setCurrentFee(connection,req.user.currentReserve.reserveId,req.user.currentReserve.currentFee);
       });
       console.log(req.user.currentReserve.currentTime);
@@ -1978,9 +1985,9 @@ app.post('/pay',loggedIn,async function(req,res){
       req.user.currentTransaction.qrCode = [req.user.currentTransaction.transactionId,req.user.currentCustomer.currentUsername];
       isScan = false;
       obb = {isScan: isScan};
-      req.user.currentTransaction.totaltime = parseInt(req.user.stopwatch.stop()/1000);
+      req.user.currentTransaction.totaltime =  parseInt(req.user.stopwatch.stop()/1000);
       req.user.stopwatch.reset();
-      req.user.currentTransaction.parkingFee = parseInt((req.user.currentTransaction.totaltime * feeRate) + req.user.currentTransaction.addedFee);
+      req.user.currentTransaction.parkingFee = parseInt((req.user.currentTransaction.totaltime * req.user.currentReserve.feeRate) + req.user.currentTransaction.addedFee);
       if(req.user.currentTransaction.exceedCheckoutTime == true){
         req.user.currentTransaction.addedFee = 0;
         req.user.currentTransaction.exceedCheckoutTime = false;
@@ -2027,7 +2034,7 @@ app.post('/pay',loggedIn,async function(req,res){
             console.error(err);
             connection.release();
           }
-          req.user.currentTransaction.addedFee = parseInt(15 * feeRate);
+          req.user.currentTransaction.addedFee = parseInt(15 * req.user.currentReserve.feeRate);
           transaction.setAddedFee(connection,req.user.currentTransaction.transactionId,req.user.currentTransaction.addedFee);
         });
         // startUserTimer();
