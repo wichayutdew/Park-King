@@ -644,7 +644,6 @@ app.get('/home',loggedIn, async function(req, res){
       console.log(currentReserve.reserveTimeout);
     },1000);
 });
-
 app.get('/getTimeandFee', function(req, res){
   var mins, hours;
   if(currentReserve.currentTime/60>=1){
