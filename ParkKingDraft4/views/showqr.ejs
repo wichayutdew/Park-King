@@ -117,7 +117,7 @@ var getReserveStatusID = setInterval(function(){
   $.get('/reserveStatus')
   .done(function(data){
     var reserveStatus = data.reserveStatus;
-    console.log(reserveStatus);
+    console.log('Reserve Status: '+reserveStatus);
     if(reserveStatus == "Checked In"){
       console.log('scanned complete');
       clearInterval();
