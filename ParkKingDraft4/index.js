@@ -1266,7 +1266,7 @@ app.get('/home',loggedIn, async function(req, res){
         });
       });
       await sleep(500);
-      if(req.user.currentReserve.reserveTimein != check && req.user.currentReserve.reserveTimeout == check && req.usercurrentReserve.reserveStatus == "Reserved"){
+      if(req.user.currentReserve.reserveTimein != check && req.user.currentReserve.reserveTimeout == check && req.user.currentReserve.reserveStatus == "Reserved"){
           pool.acquire(function (err, connection) {
             if (err) {
               console.error(err);
@@ -1987,6 +1987,13 @@ app.post('/pay',loggedIn,async function(req,res){
     sleep(1000*60*15).then(() => {
       req.user.currentTransaction.exceedCheckoutTime = true;
       if(req.user.currentReserve.reserveTimeout == check){
+        pool.acquire(function (err, connection) {
+          if (err) {
+            console.error(err);
+            connection.release();
+          }
+          transaction.setTransactionStatus(connection,req.user.currentTransaction.transactionId,"Time Out");
+        });
         pool.acquire(function (err, connection) {
           if (err) {
               console.error(err);

@@ -63,7 +63,7 @@ exports.Transaction = function(connection,platenumber,username,floor,slot,buildi
 exports.getTransactionID = function(connection,username,Callback) {
   var returnedValue  = [];
   var request = new Request(
-    'SELECT TransactionID FROM dbo.TransactionReceipt WHERE Username = @username AND transactionStatus != @transactionstatus',
+    'SELECT TransactionID FROM dbo.TransactionReceipt WHERE Username = @username AND transactionStatus = @transactionstatus',
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -75,7 +75,7 @@ exports.getTransactionID = function(connection,username,Callback) {
       }
     });
     request.addParameter('username',TYPES.VarChar,username);
-    request.addParameter('transactionstatus',TYPES.VarChar,"Checked Out");
+    request.addParameter('transactionstatus',TYPES.VarChar,"Paid");
     request.on('row', function (columns) {
         columns.forEach(function(column) {
             returnedValue.push(column.value);
