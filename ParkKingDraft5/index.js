@@ -567,7 +567,7 @@ app.get('/home',loggedIn, async function(req, res){
                 currentReserve.reserveQRin = data;
             });
           });
-          if(currentReserve.reserveQRin == currentReserve.reserveId && currentReserve.reserveStatus != "Checked In" && currentReserve.qrCode == currentReserve.reserveQRin){
+          if(currentReserve.reserveQRin == currentReserve.reserveId && currentReserve.reserveStatus != "Checked In"){
               stopwatch.start();
               pool.acquire(function (err, connection) {
                   if (err) {
@@ -590,7 +590,7 @@ app.get('/home',loggedIn, async function(req, res){
                 currentReserve.reserveQRout = data;
             });
           });
-          if(currentReserve.reserveQRout == currentTransaction.transactionId && currentReserve.reserveStatus != "Checked Out" && currentTransaction.qrCode == currentReserve.reserveQRout){
+          if(currentReserve.reserveQRout == currentTransaction.transactionId && currentReserve.reserveStatus != "Checked Out"){
             pool.acquire(function (err, connection) {
               if (err) {
                 console.error(err);
@@ -615,7 +615,7 @@ app.get('/home',loggedIn, async function(req, res){
                     return;
                 }
                 currentReserve.reserveStatus = "Checked Out";
-                reserve.setReserveStatus(connection,currentReserve.reserveId,currentReserve.reserveStatus);
+                reserve.setReserveStatus(connection,currentReserve.reserveId,"Checked Out");
             });
             isScan = false;
           }
@@ -1192,7 +1192,6 @@ app.post('/pay',loggedIn,async function(req,res){
           return;
       }
       reserve.setHasPaid(connection,currentReserve.reserveId,1);
-
     });
     pool.acquire(function (err, connection) {
         if (err) {
@@ -1201,7 +1200,7 @@ app.post('/pay',loggedIn,async function(req,res){
             return;
         }
         currentReserve.reserveStatus = "Paid"
-        reserve.setReserveStatus(connection,currentReserve.reserveId,currentReserve.reserveStatus);
+        reserve.setReserveStatus(connection,currentReserve.reserveId,"Paid");
     });
     pool.acquire(function (err, connection) {
       if (err) {
