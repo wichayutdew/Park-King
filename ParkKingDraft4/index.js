@@ -1,5 +1,6 @@
 var isScan;
 var obb = {isScan: isScan};
+var stopwatch = "nothing";
 //require Customer.js file
 const customer = require('./Customer.js');
 // var currentCustomer = new customer.createCustomer();
@@ -20,7 +21,6 @@ function createDeserializer() {
    this.currentReserve = null;
    this.currentTransaction = null;
    this.currentReceipt = null;
-   this.stopwatch = null;
 }
 
 //NPM REQUIRE
@@ -111,7 +111,7 @@ passport.serializeUser(function(user, done) {
         done(null, user[0]);
     });
 passport.deserializeUser(async function(user, done) {
-        console.log('deserializer')
+        console.log('deserializer');
         var deserializing = new createDeserializer();
         var currentCustomer = new customer.createCustomer();
         var currentCar = new car.createCar();
@@ -584,6 +584,10 @@ passport.deserializeUser(async function(user, done) {
         deserializing.currentTransaction = currentTransaction;
         deserializing.currentReceipt = currentReceipt;
         deserializing.stopwatch = stopwatch;
+        if(deserializing.stopwatch == "nothing"){
+          deserializing.stopwatch = new Stopwatch();
+          console.log('Initializing stopwatch');
+        }
         pool.acquire(function (err, connection) {
             if (err) {
               console.error(err);
@@ -790,7 +794,6 @@ passport.use('local-login', new LocalStrategy({
 //===================================================================================================================================================
 // ALL TIMER IS IN SECOND(TO CHANGE TO MINUTES CHANGE /1000 TO /60000)
 var Stopwatch = require('statman-stopwatch');
-var stopwatch = new Stopwatch();
 //start user's timer
 function startUserTimer(){
   req.user.stopwatch.start();
