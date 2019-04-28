@@ -1064,7 +1064,7 @@ app.get('/reserveStatus',loggedIn,function(req, res){
       req.user.currentReserve.reserveStatus = data;
     });
   });
-  console.log(req.user.currentReserve.reserveStatus);
+  console.log('Reserve Status: '+req.user.currentReserve.reserveStatus);
   res.send({
     reserveStatus: req.user.currentReserve.reserveStatus
   });
