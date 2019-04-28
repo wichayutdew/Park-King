@@ -1352,7 +1352,7 @@ app.get('/home',loggedIn, async function(req, res){
           console.error(err);
           connection.release();
         }
-        req.user.currentReserve.currentFee = parseInt((req.user.currentReserve.currentTime * feeRate) + req.user.currentTransaction.addedFee);
+        req.user.currentReserve.currentFee = parseInt(req.user.currentReserve.currentTime * feeRate);
         reserve.setCurrentFee(connection,req.user.currentReserve.reserveId,req.user.currentReserve.currentFee);
       });
       console.log(req.user.currentReserve.currentTime);
