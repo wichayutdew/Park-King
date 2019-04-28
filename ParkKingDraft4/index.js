@@ -1992,6 +1992,12 @@ app.post('/pay',loggedIn,async function(req,res){
       req.user.currentTransaction.qrCode = [req.user.currentTransaction.transactionId,req.user.currentCustomer.currentUsername];
       isScan = false;
       obb = {isScan: isScan};
+<<<<<<< HEAD
+      req.user.currentReserve.feeRate = feeRate(req.user.currentCustomer.currentCustomerType);
+      req.user.currentTransaction.totaltime =  parseInt(req.user.stopwatch.stop()/1000);
+      req.user.currentTransaction.parkingFee = parseInt(req.user.currentTransaction.totaltime * req.user.currentReserve.feeRate);
+      req.user.stopwatch.reset();
+=======
 
       req.user.currentReserve.feeRate = feeRate(req.user.currentCustomer.currentCustomerType);
       req.user.currentTransaction.totaltime =  parseInt(req.user.stopwatch.stop()/1000);
@@ -2004,6 +2010,7 @@ app.post('/pay',loggedIn,async function(req,res){
       );
       req.user.stopwatch.reset();
 
+>>>>>>> 8901661d4af66490b911be5b48ee3fe172cc9531
       if(req.user.currentTransaction.exceedCheckoutTime == true){
         req.user.currentTransaction.addedFee = 0;
         req.user.currentTransaction.exceedCheckoutTime = false;
@@ -2011,8 +2018,26 @@ app.post('/pay',loggedIn,async function(req,res){
       req.user.currentTransaction.paymentmethod = 'Kbank';
       req.user.currentTransaction.date = transaction.getCurrentDate();
       transaction.Transaction(connection,req.user.currentReserve.reservePlatenumber,req.user.currentCustomer.currentUsername,req.user.currentReserve.reserveFloor,req.user.currentReserve.reserveSlot,req.user.currentReserve.reserveBuildingname,req.user.currentTransaction.transactionId,req.user.currentTransaction.parkingFee,req.user.currentTransaction.paymentmethod,req.user.currentTransaction.totaltime,req.user.currentTransaction.date);
+    });
+    await sleep(100);
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+    }
+      transaction.getAddedFee(connection,req.user.currentCustomer.currentUsername,function(data){
+        req.user.currentTransaction.addedFee = data;
+      });
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      req.user.currentTransaction.parkingFee = parseInt((req.user.currentTransaction.totaltime * req.user.currentReserve.feeRate) + req.user.currentTransaction.addedFee)
+      transaction.setFee(connection,req.user.currentTransaction.transactionId,req.user.currentTransaction.parkingFee);
       res.render('showqr', {qrCode:req.user.currentTransaction.qrCode,currentUsername: req.user.currentCustomer.currentUsername,currentPicture: req.user.currentCustomer.currentPicture});
-  });
+    });
     sleep(1000*60*15).then(() => {
       req.user.currentTransaction.exceedCheckoutTime = true;
       if(req.user.currentReserve.reserveTimeout == check){
