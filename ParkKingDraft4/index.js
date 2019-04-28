@@ -1985,10 +1985,18 @@ app.post('/pay',loggedIn,async function(req,res){
       req.user.currentTransaction.qrCode = [req.user.currentTransaction.transactionId,req.user.currentCustomer.currentUsername];
       isScan = false;
       obb = {isScan: isScan};
+<<<<<<< HEAD
       req.user.currentReserve.feeRate = feeRate(req.user.currentCustomer.currentCustomerType);
       req.user.currentTransaction.totaltime =  parseInt(req.user.stopwatch.stop()/1000);
       req.user.currentTransaction.parkingFee = parseInt((req.user.currentTransaction.totaltime * req.user.currentReserve.feeRate) + req.user.currentTransaction.addedFee);
       req.user.stopwatch.reset();
+=======
+      // req.user.currentTransaction.totaltime = parseInt(req.user.stopwatch.stop()/1000);
+      console.log('Set total time: '+parseInt(req.user.stopwatch.stop()/1000));
+      req.user.stopwatch.reset();
+      req.user.currentTransaction.parkingFee = parseInt((req.user.currentTransaction.totaltime * feeRate) + req.user.currentTransaction.addedFee);
+      console.log('set parking fee: '+req.user.currentTransaction.parkingFee);
+>>>>>>> ec84c79b08afac04c3db236cb73a2c174a9c6a47
       if(req.user.currentTransaction.exceedCheckoutTime == true){
         req.user.currentTransaction.addedFee = 0;
         req.user.currentTransaction.exceedCheckoutTime = false;
@@ -2265,6 +2273,7 @@ app.post('/qrcode',async function(req, res){
   });
   await sleep(200);
   if(qr[0] == reserveID){
+    console.log('Check in qrCode has been scanned');
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
@@ -2281,6 +2290,7 @@ app.post('/qrcode',async function(req, res){
       reserve.setTimeIn(connection,reserveID,reserveTimein);
     });
   }else if(qr[0]  == transactionID){
+    console.log('Check out qrCode has been scanned');
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
