@@ -1660,17 +1660,8 @@ app.post('/reserve',loggedIn,async function(req, res){
   console.log('Reserve Pressed');
   req.user.currentReserve.reservePlatenumber = req.body.plateNumber;
   req.user.currentReserve.reserveBuildingname = req.body.buildingName;
-
   console.log('reserve Plate number: '+req.user.currentReserve.reservePlatenumber);
   console.log('reserve building: '+req.user.currentReserve.reserveBuildingname);
-
-<<<<<<< HEAD
-  //console.log();
-  // console.log(req.user.currentReserve.reservePlatenumber);
-  // console.log(req.user.currentReserve.reserveBuildingname);
-
-=======
->>>>>>> 9e2f414abf8fba01a2f6bb66477c6871228dd3d1
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);

@@ -382,6 +382,29 @@ exports.getAllPaymentMethod = function(connection,username,Callback) {
     });
     connection.execSql(request);
 }
+
+exports.getTransactionStatus = function(connection,transactionid,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT transactionStatus FROM dbo.Reserve WHERE TransactionID = @transactionid',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('transactionid',TYPES.VarChar,transactionid);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
 //*******************************************************Reserve's Setter***********************************************
 exports.setFee = function(connection,transactionid,fee) {
   var request = new Request("UPDATE dbo.TransactionReceipt SET Fee = @fee WHERE TransactionID = @transactionid",
