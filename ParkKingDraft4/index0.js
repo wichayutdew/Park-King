@@ -103,7 +103,7 @@ app.use(passport.session());
 //Serializer and Deserializer
 passport.serializeUser(function(user, done) {
         console.log('serializer');
-        //console.log(user[0]);
+        console.log(user[0]);
         done(null, user[0]);
     });
 passport.deserializeUser(async function(user, done) {
@@ -240,7 +240,7 @@ passport.use('local-login', new LocalStrategy({
                 passwordField : 'password',
                 passReqToCallback : true // allows us to pass back the entire request to the callback
             },
-            function(req,username,password,done) {
+        function(req,username,password,done) {
                 // callback with email and password from our form
 
                 console.log('trying to login');
