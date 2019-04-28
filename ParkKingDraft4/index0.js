@@ -887,6 +887,99 @@ passport.use('local-login', new LocalStrategy({
                 })
             }
 
+function getPlateNumber(username){
+  var carTemp=[];
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    car.getAllPlateNumber(connection,username,function (data){
+        carTemp = data;
+        console.log(carTemp);
+    });
+
+  });
+  sleep(250);
+  return carTemp;
+}
+function getBrand(username){
+  var carTemp=[];
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+
+    car.getAllCarBrand(connection,username,function(data){
+       carTemp = data;
+       console.log(carTemp);
+    })
+  });
+  console.log(carTemp);
+  sleep(250);
+  return carTemp;
+}
+function getColor(username){
+  var carTemp=[];
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+      car.getAllCarColor(connection,username,function(data){
+         carTemp = data;
+      })
+    });
+    console.log(carTemp);
+    sleep(250);
+    return carTemp;
+}
+function getModel(username){
+  var carTemp=[];
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+      car.getAllCarModel(connection,username,function(data){
+         carTemp = data;
+      })
+    });
+    console.log(carTemp);
+    sleep(250);
+    return carTemp;
+}
+function getCarPic(username){
+  var carTemp=[];
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+      car.getAllCarPicture(connection,username,function(data){
+         carTemp = data;
+      })
+    });
+    sleep(250);
+    return carTemp;
+}
+function getPlateProvince(username){
+
+  var carTemp=[];
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+      car.getAllPlateProvince(connection,username,function(data){
+         carTemp = data;
+      })
+    });
+    console.log(carTemp);
+    sleep(250);
+    return carTemp;
+}
 //------------------------------------------------------------------------------------------------------------//
 //------------------------------------------------------------------------------------------------------------//
 //ROUTES
@@ -1196,60 +1289,7 @@ app.get('/register', function(req, res){
 });
 app.get('/userinfo', async function(req, res){
   await sleep(5000);
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    car.getAllPlateNumber(connection,user,function(data){
-      currentCar.currentPlateNumber = data;
-    })
-  });
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    car.getAllCarBrand(connection,user,function(data){
-      currentCar.currentBrand = data;
-    })
-  });
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    car.getAllCarModel(connection,user,function(data){
-      currentCar.currentModel = data;
-    })
-  });
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    car.getAllCarColor(connection,user,function(data){
-      currentCar.currentColor = data;
-    })
-  });
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    car.getAllCarPicture(connection,user,function(data){
-      currentCar.currentCarPicture = data;
-    });
-  });
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    car.getAllPlateProvince(connection,user,function(data){
-      currentCar.currentPlateProvince = data;
-    });
-  });
+  //console.log('platenumber : '+getPlateNumber(req.user.currentCustomer.currentUsername,carCallBack));
   res.render('userinfo', {
                           //USER INFO
                           currentUsername:req.user.currentCustomer.currentUsername,
@@ -1260,12 +1300,12 @@ app.get('/userinfo', async function(req, res){
                           currentFirstname:req.user.currentCustomer.currentFirstname,
                           currentLastname:req.user.currentCustomer.currentLastname,
                           //CAR INFO
-                          currentCarPicture: req.user.currentCar.currentCarPicture,
-                          currentBrand:req.user.currentCar.currentBrand,
-                          currentColor:req.user.currentCar.currentColor,
-                          currentModel:req.user.currentCar.currentModel,
-                          currentPlateNumber:req.user.currentCar.currentPlateNumber,
-                          currentPlateProvince:req.user.currentCar.currentPlateProvince,
+                          currentCarPicture:getCarPic(req.user.currentCustomer.currentUsername),
+                          currentBrand:getBrand(req.user.currentCustomer.currentUsername),
+                          currentColor:getColor(req.user.currentCustomer.currentUsername),
+                          currentModel:getModel(req.user.currentCustomer.currentUsername),
+                          currentPlateNumber:getPlateNumber(req.user.currentCustomer.currentUsername),
+                          currentPlateProvince:getPlateProvince(req.user.currentCustomer.currentUsername),
                           //RECEIPT INFO
                           totalTransaction:req.user.currentTransaction.totalTransaction,
                           receiptFee:req.user.currentReceipt.receiptFee,
