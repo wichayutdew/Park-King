@@ -14,14 +14,15 @@ const reserve = require('./Reserve.js');
 //require TransactionReceipt.js file
 const transaction = require('./TransactionReceipt.js');
 
+var Stopwatch = require('statman-stopwatch');
+var stopwatch = new Stopwatch();
 function createDeserializer() {
    this.currentCustomer = null;
    this.currentCar = null;
    this.currentReserve = null;
    this.currentTransaction = null;
    this.currentReceipt = null;
-   const stopwatch = new Stopwatch()
-   this.stopwatch = stopwatch;
+   this.stopwatch = null;
 }
 
 //NPM REQUIRE
@@ -583,6 +584,7 @@ passport.deserializeUser(async function(user, done) {
         deserializing.currentReserve = currentReserve;
         deserializing.currentTransaction = currentTransaction;
         deserializing.currentReceipt = currentReceipt;
+        deserializing.stopwatch = stopwatch;
         pool.acquire(function (err, connection) {
             if (err) {
               console.error(err);
@@ -788,7 +790,6 @@ passport.use('local-login', new LocalStrategy({
 // Operation
 //===================================================================================================================================================
 // ALL TIMER IS IN SECOND(TO CHANGE TO MINUTES CHANGE /1000 TO /60000)
-var Stopwatch = require('statman-stopwatch');
 
 // //check log-in state
 function loggedInBoolean(req) {
@@ -1469,11 +1470,6 @@ app.get('/payment', function(req,res){
   res.render('payment');
 });
 
-app.post('/paymentAction', function(req,res){
-  console.log('sadasdasddashfgakdsgfafgjsgfahsdflasdhfalfh');
-  res.redirect('/');
-});
-
 //ROUTE TO STATUS
 app.get('/status', loggedIn,hasReserved, async function(req, res){
   pool.acquire(function (err, connection) {
@@ -1978,7 +1974,6 @@ app.post('/pay',loggedIn,async function(req,res){
       req.user.currentTransaction.qrCode = [req.user.currentTransaction.transactionId,req.user.currentCustomer.currentUsername];
       isScan = false;
       obb = {isScan: isScan};
-
       req.user.currentReserve.feeRate = feeRate(req.user.currentCustomer.currentCustomerType);
       req.user.currentTransaction.totaltime =  parseInt(req.user.stopwatch.stop()/1000);
       console.log('SET TOTAL TIME: '+req.user.currentTransaction.totaltime);
@@ -2025,6 +2020,7 @@ app.post('/pay',loggedIn,async function(req,res){
         transaction.setExceedCheckouttime(connection,req.user.currentTransaction.transactionId,req.user.currentTransaction.exceedCheckoutTime);
       });
     }
+    await sleep(100);
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
@@ -2037,7 +2033,8 @@ app.post('/pay',loggedIn,async function(req,res){
       ' feeRate: '+ req.user.currentReserve.feeRate+
       ' addedFee: '+req.user.currentTransaction.addedFee
       );
-      res.render('showqr', {qrCode:req.user.currentTransaction.qrCode,currentUsername: req.user.currentCustomer.currentUsername,currentPicture: req.user.currentCustomer.currentPicture});
+      // res.render('showqr', {qrCode:req.user.currentTransaction.qrCode,currentUsername: req.user.currentCustomer.currentUsername,currentPicture: req.user.currentCustomer.currentPicture});
+      res.redirect("/payment");
     });
     sleep(1000*60*15).then(() => {
       pool.acquire(function (err, connection) {
@@ -2093,6 +2090,19 @@ app.post('/pay',loggedIn,async function(req,res){
   }else{
     res.redirect('status');
   }
+});
+
+app.post('/paymentAction',loggedIn, function(req,res){
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    req.user.currentTransaction.paymentmethod = req.body.paymentChoice;
+    transaction.setPaymentMethod(connection,req.user.currentTransaction.transactionId,req.user.currentTransaction.paymentmethod);
+  });
+  req.user.currentTransaction.qrCode = [req.user.currentTransaction.transactionId,req.user.currentCustomer.currentUsername];
+  res.render('showqr', {qrCode:req.user.currentTransaction.qrCode,currentUsername: req.user.currentCustomer.currentUsername,currentPicture: req.user.currentCustomer.currentPicture});
 });
 
 //CAR REGISTER POST REQUEST
