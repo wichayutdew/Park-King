@@ -1300,6 +1300,8 @@ app.get('/home',loggedIn, async function(req, res){
               });
               isScan = true;
           }
+          
+          if(stopwatch==null)
       }
       else if(req.user.currentReserve.reserveTimeout != check && req.user.currentReserve.reserveStatus == "Paid"){
         pool.acquire(function (err, connection) {
@@ -1678,10 +1680,7 @@ app.post('/reserve',loggedIn,async function(req, res){
   req.user.currentReserve.reserveBuildingname = req.body.buildingName;
   console.log('reserve Plate number: '+req.user.currentReserve.reservePlatenumber);
   console.log('reserve building: '+req.user.currentReserve.reserveBuildingname);
-<<<<<<< HEAD
 
-=======
->>>>>>> ec84c79b08afac04c3db236cb73a2c174a9c6a47
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
