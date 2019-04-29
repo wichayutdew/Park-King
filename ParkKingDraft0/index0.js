@@ -78,12 +78,12 @@ app.use(passport.session());
 var Stopwatch = require('statman-stopwatch');
 //start user's timer
 function startUserTimer(){
-  req.user.stopwatch[req.user.currentCustomer.currentHasStopWatch].start();
+  stopwatch[req.user.currentCustomer.customerHasStopWatch].start();
 }
 //stop the stopwatch
 function stopUserTimer(){
-  var totalTime = parseInt(req.user.stopwatch[req.user.currentCustomer.currentHasStopWatch].stop()/1000);
-  req.user.stopwatch[req.user.currentCustomer.currentHasStopWatch].reset();
+  var totalTime = parseInt(stopwatch[req.user.currentCustomer.customerHasStopWatch].stop()/1000);
+  stopwatch[req.user.currentCustomer.customerHasStopWatch].reset();
   return totalTime;
 }
 // //check log-in state
@@ -1045,8 +1045,8 @@ app.get('/home',loggedIn, async function(req, res){
             connection.release();
             return;
         }
-        req.user.currentCustomer.currentHasStopWatch = tempIndex;
-        customer.setHasStopWatch(connection,req.user.currentCustomer.currentUsername,req.user.currentCustomer.currentHasStopWatch);
+        req.user.currentCustomer.customerHasStopWatch = tempIndex;
+        customer.setHasStopWatch(connection,req.user.currentCustomer.currentUsername,req.user.currentCustomer.customerHasStopWatch);
       });
     }
     req.user.currentReserve.feeRate = feeRate(req.user.currentCustomer.currentCustomerType);
@@ -1112,7 +1112,7 @@ app.get('/home',loggedIn, async function(req, res){
           if(req.user.currentReserve.reserveQRin == req.user.currentReserve.reserveId && req.user.currentReserve.reserveStatus != "Checked In"){
               console.log("Checked IN");
               // startUserTimer();
-              req.user.stopwatch[req.user.currentCustomer.currentHasStopWatch].start();
+              stopwatch[req.user.currentCustomer.customerHasStopWatch].start();
               pool.acquire(function (err, connection) {
                 if (err) {
                   console.error(err);
@@ -1175,7 +1175,7 @@ app.get('/home',loggedIn, async function(req, res){
           console.error(err);
           connection.release();
         }
-        req.user.currentReserve.currentTime = parseInt(req.user.stopwatch[req.user.currentCustomer.currentHasStopWatch].read()/1000);
+        req.user.currentReserve.currentTime = parseInt(stopwatch[req.user.currentCustomer.customerHasStopWatch].read()/1000);
         reserve.setCurrentTime(connection,req.user.currentReserve.reserveId,req.user.currentReserve.currentTime);
       });
       pool.acquire(function (err, connection) {
@@ -1480,6 +1480,9 @@ app.get('/getTimeandFee',loggedIn, function(req, res){
     hours: hours,
     parkingFee: req.user.currentReserve.currentFee
   });
+});
+app.get('/getStopwatch', function(req, res){
+  res.send(stopwatch);
 });
 app.route('/getScan').get(function(req, res, next){
   res.json(obb);
@@ -1794,10 +1797,10 @@ app.post('/pay',loggedIn,async function(req,res){
 
 
       req.user.currentReserve.feeRate = feeRate(req.user.currentCustomer.currentCustomerType);
-      req.user.currentTransaction.totaltime =  parseInt(req.user.stopwatch[req.user.currentCustomer.currentHasStopWatch].stop()/1000);
+      req.user.currentTransaction.totaltime =  parseInt(stopwatch[req.user.currentCustomer.customerHasStopWatch].stop()/1000);
       console.log('SET TOTAL TIME: '+req.user.currentTransaction.totaltime);
       req.user.currentTransaction.parkingFee = parseInt((req.user.currentTransaction.totaltime * req.user.currentReserve.feeRate));
-      req.user.stopwatch[req.user.currentCustomer.currentHasStopWatch].reset();
+      stopwatch[req.user.currentCustomer.customerHasStopWatch].reset();
 
       if(req.user.currentTransaction.exceedCheckoutTime == true){
         req.user.currentTransaction.addedFee = 0;
@@ -1872,7 +1875,7 @@ app.post('/pay',loggedIn,async function(req,res){
           transaction.setAddedFee(connection,req.user.currentTransaction.transactionId,req.user.currentTransaction.addedFee);
         });
         // startUserTimer();
-        req.user.stopwatch[req.user.currentCustomer.currentHasStopWatch].start();
+        stopwatch[req.user.currentCustomer.customerHasStopWatch].start();
       }
     });
   }else{
