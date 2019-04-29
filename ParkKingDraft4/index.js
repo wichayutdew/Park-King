@@ -2006,6 +2006,18 @@ app.post('/pay',loggedIn,async function(req,res){
       req.user.currentTransaction.totaltime =  parseInt(stopwatch[req.user.currentCustomer.customerHasStopWatch].stop()/1000);
       console.log('SET TOTAL TIME: '+req.user.currentTransaction.totaltime);
       stopwatch[req.user.currentCustomer.customerHasStopWatch].reset();
+      //for now hai hasstopwatch กลับไปเป็น null ========================================
+      pool.acquire(function (err, connection) {
+        if (err) {
+            console.error(err);
+            connection.release();
+            return;
+        }
+        req.user.currentCustomer.customerHasStopWatch = null;
+        customer.setHasStopWatch(connection,req.user.currentCustomer.currentUsername,req.user.currentCustomer.customerHasStopWatch);
+      });
+      console.log('SET HASSTOPWATCH=null');
+      //===============================================================================
       req.user.currentTransaction.date = transaction.getCurrentDate();
       transaction.Transaction(connection,req.user.currentReserve.reservePlatenumber,req.user.currentCustomer.currentUsername,req.user.currentReserve.reserveFloor,req.user.currentReserve.reserveSlot,req.user.currentReserve.reserveBuildingname,req.user.currentTransaction.transactionId,null,null,req.user.currentTransaction.totaltime,req.user.currentTransaction.date);
     });
