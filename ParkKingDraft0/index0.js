@@ -1810,7 +1810,7 @@ app.post('/pay',loggedIn,async function(req,res){
       req.user.currentTransaction.date = transaction.getCurrentDate();
       transaction.Transaction(connection,req.user.currentReserve.reservePlatenumber,req.user.currentCustomer.currentUsername,req.user.currentReserve.reserveFloor,req.user.currentReserve.reserveSlot,req.user.currentReserve.reserveBuildingname,req.user.currentTransaction.transactionId,req.user.currentTransaction.parkingFee,req.user.currentTransaction.paymentmethod,req.user.currentTransaction.totaltime,req.user.currentTransaction.date);
     });
-    await sleep(100);
+    await sleep(500);
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
