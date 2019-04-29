@@ -569,7 +569,7 @@ exports.setHasStopWatch = function(connection, username, hasStopWatch) {
         connection.release();
       }
     });
-    request.addParameter('hasStopWatch',TYPES.Int,hasStopWatch);
+    request.addParameter('cancel',TYPES.Int,hasStopWatch);
     request.addParameter('username',TYPES.VarChar,username);
   request.on('requestCompleted', function() {
     //connection.close();
