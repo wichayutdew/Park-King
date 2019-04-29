@@ -1,33 +1,19 @@
+//VARIABLES
 var isScan;
 var obb = {isScan: isScan};
 var stopwatch = [];
-//require Customer.js file
-const customer = require('./Customer.js');
-// var currentCustomer = new customer.createCustomer();
-var car = require('./Car.js');
-//require ParkingSpot.js file
 var totalArtsFreeSpot,totalPoliFreeSpot,lowestFloorArts,lowestSlotArts,lowestFloorPoli,lowestSlotPoli;
-const parkingspot = require('./ParkingSpot.js');
-//require Building.js file
 var artsCapacity, poliCapacity;
-//require Reserve.js file
+var check = "initialize";
+
+//REQUIRES
+const customer = require('./Customer.js');
+var car = require('./Car.js');
+const parkingspot = require('./ParkingSpot.js');
 const reserve = require('./Reserve.js');
-//require TransactionReceipt.js file
 const transaction = require('./TransactionReceipt.js');
-
 var Stopwatch = require('statman-stopwatch');
-function createDeserializer() {
-   this.currentCustomer = null;
-   this.currentCar = null;
-   this.currentReserve = null;
-   this.currentTransaction = null;
-   this.currentReceipt = null;
-   // this.stopwatch = null;
-}
-
-//NPM REQUIRE
 const express = require('express');
-const app = express();
 const bodyParser = require('body-parser');
 var session = require('express-session');
 //create temp storage
@@ -38,24 +24,22 @@ const autoReap  = require('multer-autoreap');
 const fs = require('fs');
 const path = require('path');
 var flash = require('connect-flash-plus');
-
 //tedious section
 const Connection = require('tedious').Connection;
 const ConnectionPool = require('tedious-connection-pool');
 const Request = require('tedious').Request;
 const TYPES =require('tedious').TYPES;
-
 //authentication section
 passport = require('passport');
 LocalStrategy = require('passport-local');
 
-//===================================================================================================================================================
+//APP config
+const app = express();
 var poolConfig = {
     min: 0,
     max: 64,
     log: true,
 };
-//azure database connection config
 var config = {
     server: 'parking.database.windows.net',
       //useColumnNames: true,
@@ -69,44 +53,120 @@ var config = {
       rowCollectionOnDone: true
     },
   };
-
-//var connection = new Connection(config);
 var pool = new ConnectionPool(poolConfig, config);
-
 pool.on('error', function(err) {
     console.error(err);
 });
-
-//===================================================================================================================================================
-
-//APP CONFIG
 app.set('view engine', 'ejs');
 app.use(autoReap);
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
-
 app.use(session({
     secret: "Fuck You",
     resave: false,
     saveUninitialized: true
 }));
-
 app.use(flash());
-
-//Send shits to all pages
 app.use(function(req, res, next){
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     // res.locals.failure = req.flash('failure');
     next();
 });
-
 app.use(passport.initialize());
 app.use(passport.session());
-//===================================================================================================================================================
-// Passport Module
-//===================================================================================================================================================
-//for login session
+
+
+//FUNCTIONS AND MIDDLEWARE
+function createDeserializer() {
+   this.currentCustomer = null;
+   this.currentCar = null;
+   this.currentReserve = null;
+   this.currentTransaction = null;
+   this.currentReceipt = null;
+   // this.stopwatch = null;
+}
+// //check log-in state
+function loggedInBoolean(req) {
+    if (req.user) {
+        return true;
+    } else {
+        return false;
+    }
+}
+//Middlware check if the user is loggedIn
+function loggedIn(req, res, next) {
+    if (req.user) {
+        console.log('user in login state');
+        console.log('name : ' + req.user.currentCustomer.currentUsername);
+        return next();
+    } else {
+        console.log('user not login');
+        res.redirect('/login');
+    }
+}
+// Middleware Check if the user has already reaserved return next()
+function hasReserved(req, res, next) {
+    if (req.user.currentCustomer.customerReservable == 1) {
+      res.redirect('/reserve');
+    }else{
+      return next();
+    }
+}
+//Calculate the fee rate
+function feeRate(customerType){
+  console.log('calculating fee rate');
+  if(customerType = 'Student'){
+    console.log('calculating fee rate for student');
+    return (10/60);
+  }else if(customerType = 'Professor'){
+    console.log('calculating fee rate for Professor');
+    return (5/60);
+  }else{
+    console.log('calculating fee rate for Others');
+    return (15/60);
+  }
+}
+// SET STORAGE
+const storage = multer.diskStorage({
+destination: function (req, file, cb) {
+    cb(null, './upload-express');
+},
+filename: function (req, file, cb) {
+    cb(null, new Date().getTime() + '-' + file.originalname);
+}
+});
+const upload = multer({
+storage: storage,
+//limits: {fileSize: 1024 * 1024 * 5}
+});
+//UUID GENERATOR
+function generateTokenID(){
+  const uuidv4 = require('uuid/v4');
+  var tokenID = uuidv4();
+  return tokenID;
+}
+//GET CURRENT TIME
+function getCurrentTime(){
+  var today = new Date();
+  var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+  return time;
+}
+//TIMEOUT FUNCTION
+function sleep(ms){
+    return new Promise(resolve=>{
+        setTimeout(resolve,ms);
+    })
+}
+//Create new stopwatch, push in to array, return array index
+function createStopWatch(){
+  var temp = new Stopwatch();
+  var stopwatchLength = stopwatch.push(temp);
+  return stopwatchLength-1;
+}
+
+
+//PASSPORT
 passport.serializeUser(function(user, done) {
         console.log('serializer');
         //console.log(user[0]);
@@ -621,462 +681,184 @@ passport.deserializeUser(async function(user, done) {
             connection.execSql(request);
           });
     });
-
 //passport model use for registeration
 passport.use('local-signup', new LocalStrategy({
-        // by default, local strategy uses username and password, we will override with email
-        //console.log('check 00');
-        usernameField : 'username',
-        passwordField : 'password',
-        passReqToCallback : true // allows us to pass back the entire request to the callback
-    },
-    function(req,username,password,done) {
-        //console.log('check 01');
-        // find a user whose email is the same as the forms email
-        // we are checking to see if the user trying to login already exists
-        pool.acquire(function (err, connection) {
-            if (err) {
-              console.error(err);
-              return;
-            }
-            console.log('Sign-up requested')
-            //var IMG = base64_encode(req.body.profilePic);
-            var encode_image;
-            if(!req.file || !req.file.path){
-              var encode_image = null;
-            }else{
-              var pathName = path.join(__dirname,req.file.path);
-              var img = fs.readFileSync(pathName);
-              encode_image = img.toString('base64');
-            }
-            //console.log(encode_image);
-
-            // var finalImg = {
-            //      contentType: req.file.mimetype,
-            //      image:  new Buffer(encode_image, 'base64')
-            // };
-            var customer_info = {
-              username :req.body.username,
-              password : req.body.password,
-              passwordCheck : req.body.passwordConfirmation,
-              email : req.body.email,
-              fname : req.body.firstName,
-              lname : req.body.lastName,
-              occupation: req.body.occupation,
-              studentID: req.body.studentID,
-              professorID: req.body.professorID,
-              guestID: req.body.NationalID,
-              CustomerPicture: encode_image,
-              Cancel:0,
-              Reserveable: 1,
-            };
-            var request = new Request(
-                "SELECT * FROM dbo.Customer WHERE Username = @username",
-                function (err, rowCount, rows){
-                    //console.log(rows);
-                    //console.log("above row object");
-                    if (err){
-                        console.log("signup error");
-                        connection.release();
-                        return done(err);
-                    }
-                    if (customer_info.password!=customer_info.passwordCheck){
-                        console.log('password does not match');
-                        connection.release();
-                        return done(null,false);
-                    }
-                    if (rows.length != 0) {
-                        console.log('this username is already taken');
-                        connection.release();
-                        return done(null, false);
-                    }else {
-
-                        console.log('this username doesnot taken')
-                        // if there is no user with that email
-                        // create the use
-                        var newUserMysql = new Object();
-
-                        newUserMysql.username = username;
-                        newUserMysql.password = password;
-
-                        customer.insert_newCustomer(connection,customer_info,done,newUserMysql);
-                         // use the generateHash function in our user model
-                    }
-
+            // by default, local strategy uses username and password, we will override with email
+            //console.log('check 00');
+            usernameField : 'username',
+            passwordField : 'password',
+            passReqToCallback : true // allows us to pass back the entire request to the callback
+        },
+        function(req,username,password,done) {
+            //console.log('check 01');
+            // find a user whose email is the same as the forms email
+            // we are checking to see if the user trying to login already exists
+            pool.acquire(function (err, connection) {
+                if (err) {
+                  console.error(err);
+                  return;
                 }
-            );
-            //set parameterized query
-            request.addParameter('username',TYPES.VarChar,customer_info.username);
-            request.addParameter('password',TYPES.VarChar,customer_info.password);
+                console.log('Sign-up requested')
+                //var IMG = base64_encode(req.body.profilePic);
+                var encode_image;
+                if(!req.file || !req.file.path){
+                  var encode_image = null;
+                }else{
+                  var pathName = path.join(__dirname,req.file.path);
+                  var img = fs.readFileSync(pathName);
+                  encode_image = img.toString('base64');
+                }
+                //console.log(encode_image);
 
-            request.on('requestCompleted', function () {
+                // var finalImg = {
+                //      contentType: req.file.mimetype,
+                //      image:  new Buffer(encode_image, 'base64')
+                // };
+                var customer_info = {
+                  username :req.body.username,
+                  password : req.body.password,
+                  passwordCheck : req.body.passwordConfirmation,
+                  email : req.body.email,
+                  fname : req.body.firstName,
+                  lname : req.body.lastName,
+                  occupation: req.body.occupation,
+                  studentID: req.body.studentID,
+                  professorID: req.body.professorID,
+                  guestID: req.body.NationalID,
+                  CustomerPicture: encode_image,
+                  Cancel:0,
+                  Reserveable: 1,
+                };
+                var request = new Request(
+                    "SELECT * FROM dbo.Customer WHERE Username = @username",
+                    function (err, rowCount, rows){
+                        //console.log(rows);
+                        //console.log("above row object");
+                        if (err){
+                            console.log("signup error");
+                            connection.release();
+                            return done(err);
+                        }
+                        if (customer_info.password!=customer_info.passwordCheck){
+                            console.log('password does not match');
+                            connection.release();
+                            return done(null,false);
+                        }
+                        if (rows.length != 0) {
+                            console.log('this username is already taken');
+                            connection.release();
+                            return done(null, false);
+                        }else {
+
+                            console.log('this username doesnot taken')
+                            // if there is no user with that email
+                            // create the use
+                            var newUserMysql = new Object();
+
+                            newUserMysql.username = username;
+                            newUserMysql.password = password;
+
+                            customer.insert_newCustomer(connection,customer_info,done,newUserMysql);
+                             // use the generateHash function in our user model
+                        }
+
+                    }
+                );
+                //set parameterized query
+                request.addParameter('username',TYPES.VarChar,customer_info.username);
+                request.addParameter('password',TYPES.VarChar,customer_info.password);
+
+                request.on('requestCompleted', function () {
+                });
+
+                connection.execSql(request);
             });
+            //_signup(req,username,password,done);
 
-            connection.execSql(request);
-        });
-        //_signup(req,username,password,done);
-
-        //res.redirect('/login');
-    }));
+            //res.redirect('/login');
+        }));
 //passport model use for login
 passport.use('local-login', new LocalStrategy({
-        // by default, local strategy uses username and password, we will override with email
-        usernameField : 'username',
-        passwordField : 'password',
-        passReqToCallback : true // allows us to pass back the entire request to the callback
-    },
-    function(req,username,password,done) {
-        // callback with email and password from our form
+            // by default, local strategy uses username and password, we will override with email
+            usernameField : 'username',
+            passwordField : 'password',
+            passReqToCallback : true // allows us to pass back the entire request to the callback
+        },
+        function(req,username,password,done) {
+            // callback with email and password from our form
 
-        console.log('trying to login');
-        pool.acquire(function (err, connection) {
-            if (err) {
-              console.error(err);
-              return;
-            }
-            console.log('log-in requested');
-            var request = new Request(
-                'SELECT * FROM dbo.Customer WHERE Username = @username',
-                function(err, rowCount, rows){
-                    console.log(username);
-                    console.log(rowCount);
-                    console.log('number of row returned')
+            console.log('trying to login');
+            pool.acquire(function (err, connection) {
+                if (err) {
+                  console.error(err);
+                  return;
+                }
+                console.log('log-in requested');
+                var request = new Request(
+                    'SELECT * FROM dbo.Customer WHERE Username = @username',
+                    function(err, rowCount, rows){
+                        console.log(username);
+                        console.log(rowCount);
+                        console.log('number of row returned')
 
-                    if(err){
-                        //connection.release();
-                        connection.release();
-                        return done(err);
-                    }
-                    if(rows == null){
-                        console.log('loginMessage', 'No user found.');
-                        connection.release();
-                        //connection.release();
-                        return done(null, false);
-                          // req.flash is the way to set flashdata using connect-flash
-                    }else if (!(login_request[1] == password)){
-                        console.log('loginMessage', 'Oops! Wrong password.');
-                        connection.release();
-                        //connection.release();
-                        return done(null, false);
-                         // create the loginMessage and save it to session as flashdata
-                    }else{
-                        console.log('logged in!!!');
+                        if(err){
+                            //connection.release();
+                            connection.release();
+                            return done(err);
+                        }
+                        if(rows == null){
+                            console.log('loginMessage', 'No user found.');
+                            connection.release();
+                            //connection.release();
+                            return done(null, false);
+                              // req.flash is the way to set flashdata using connect-flash
+                        }else if (!(login_request[1] == password)){
+                            console.log('loginMessage', 'Oops! Wrong password.');
+                            connection.release();
+                            //connection.release();
+                            return done(null, false);
+                             // create the loginMessage and save it to session as flashdata
+                        }else{
+                            console.log('logged in!!!');
 
-                        console.log(login_request[0])
-                        // var UserImage = new Image();
-                        //  UserImage.src = 'data:image/png;base64,'+imgPhase;
-                        connection.release();
-                        return done(null, login_request);
-                    }
-            });
-            request.addParameter('username',TYPES.VarChar,req.body.username);
-            var login_request = [];
-            request.on('row', function (columns) {
-                columns.forEach(function(column) {
-                    login_request.push(column.value);
+                            console.log(login_request[0])
+                            // var UserImage = new Image();
+                            //  UserImage.src = 'data:image/png;base64,'+imgPhase;
+                            connection.release();
+                            return done(null, login_request);
+                        }
                 });
-                //console.log(login_request + 'info');
+                request.addParameter('username',TYPES.VarChar,req.body.username);
+                var login_request = [];
+                request.on('row', function (columns) {
+                    columns.forEach(function(column) {
+                        login_request.push(column.value);
+                    });
+                    //console.log(login_request + 'info');
+                });
+
+                request.on('Done',function(err, rowCount, rows){
+                    console.log(loggedInBoolean());
+                });
+
+                connection.execSql(request);
+                //_login(req, username, password, done, );
             });
 
-            request.on('Done',function(err, rowCount, rows){
-                console.log(loggedInBoolean());
-            });
+            // connection.on('connect',function(err){
+            //     if(err){
+            //         console.log(err);
+            //     }else{
+            //     }
+            // });
 
-            connection.execSql(request);
-            //_login(req, username, password, done, );
-        });
+        }));
 
-        // connection.on('connect',function(err){
-        //     if(err){
-        //         console.log(err);
-        //     }else{
-        //     }
-        // });
 
-    }));
-
-//===================================================================================================================================================
-// Operation
-//===================================================================================================================================================
-// ALL TIMER IS IN SECOND(TO CHANGE TO MINUTES CHANGE /1000 TO /60000)
-
-// //check log-in state
-function loggedInBoolean(req) {
-    if (req.user) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-//Middlware check if the user is loggedIn
-function loggedIn(req, res, next) {
-    if (req.user) {
-        console.log('user in login state');
-        console.log('name : ' + req.user.currentCustomer.currentUsername);
-        return next();
-    } else {
-        console.log('user not login');
-        res.redirect('/login');
-    }
-}
-
-// Middleware Check if the user has already reaserved return next()
-function hasReserved(req, res, next) {
-    if (req.user.currentCustomer.customerReservable == 1) {
-      res.redirect('/reserve');
-    }else{
-      return next();
-    }
-}
-
-//Calculate the fee rate
-var check = "initialize";
-function feeRate(customerType){
-  console.log('calculating fee rate');
-  if(customerType = 'Student'){
-    console.log('calculating fee rate for student');
-    return (10/60);
-  }else if(customerType = 'Professor'){
-    console.log('calculating fee rate for Professor');
-    return (5/60);
-  }else{
-    console.log('calculating fee rate for Others');
-    return (15/60);
-  }
-}
-
-// SET STORAGE
-const storage = multer.diskStorage({
-destination: function (req, file, cb) {
-    cb(null, './upload-express');
-},
-filename: function (req, file, cb) {
-    cb(null, new Date().getTime() + '-' + file.originalname);
-}
+//ROUTES
+app.get('/login', function(req, res){
+    res.render('login');
 });
-
-const upload = multer({
-storage: storage,
-//limits: {fileSize: 1024 * 1024 * 5}
-});
-
-//UUID GENERATOR
-function generateTokenID(){
-  const uuidv4 = require('uuid/v4');
-  var tokenID = uuidv4();
-  return tokenID;
-}
-
-//GET CURRENT TIME
-function getCurrentTime(){
-  var today = new Date();
-  var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-  return time;
-}
-
-//TIMEOUT FUNCTION
-function sleep(ms){
-    return new Promise(resolve=>{
-        setTimeout(resolve,ms);
-    })
-}
-
-function createStopWatch(){
-  var temp = new Stopwatch();
-  var stopwatchLength = stopwatch.push(temp);
-  return stopwatchLength-1;
-}
-
-//=======================================================
-// ROUTES
-//=======================================================
-//ROUTE TO HOME PAGE
-app.get('/',loggedIn, function(req, res){
-    res.redirect('/home');
-});
-//LOGGING OUT
-app.get('/logout',loggedIn,function(req, res){
-  req.logout();
-  req.flash('success', 'You are logged out.');
-  res.redirect('/login');
-});
-
-app.get('/getthisusername', function(req, res){
-  res.send(req.user);
-});
-
-//ROUTES TO HOME2
-app.get('/home2',loggedIn, function(req, res){
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      customer.getCustomerPicture(connection,req.user.currentCustomer.currentUsername,async function(data){
-        req.user.currentCustomer.currentPicture = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      parkingspot.getTotalSpot(connection,'buildingArts',async function(data){
-        artsCapacity = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      parkingspot.getTotalSpot(connection,'buildingPoli',async function(data){
-        poliCapacity = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      parkingspot.getTotalFreeSpot(connection,'buildingArts',async function(data){
-        totalArtsFreeSpot = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      parkingspot.getTotalFreeSpot(connection,'buildingPoli',async function(data){
-        totalPoliFreeSpot = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      parkingspot.getLowestFloor(connection,'buildingArts',async function(data){
-        lowestFloorArts = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      parkingspot.getLowestSlot(connection,'buildingArts',async function(data){
-        lowestSlotArts = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      parkingspot.getLowestFloor(connection,'buildingPoli',async function(data){
-        lowestFloorPoli = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      parkingspot.getLowestSlot(connection,'buildingPoli',async function(data){
-        lowestSlotPoli = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      car.getAllPlateNumber(connection,req.user.currentCustomer.currentUsername,function(data){
-        req.user.currentCar.currentPlateNumber = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      car.getAllCarBrand(connection,req.user.currentCustomer.currentUsername,function(data){
-        req.user.currentCar.currentBrand = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      car.getAllCarModel(connection,req.user.currentCustomer.currentUsername,function(data){
-        req.user.currentCar.currentModel = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      car.getAllCarColor(connection,req.user.currentCustomer.currentUsername,function(data){
-        req.user.currentCar.currentColor = data;
-      })
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      car.getAllCarPicture(connection,req.user.currentCustomer.currentUsername,function(data){
-        req.user.currentCar.currentCarPicture = data;
-      });
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      car.getAllPlateProvince(connection,req.user.currentCustomer.currentUsername,function(data){
-        req.user.currentCar.currentPlateProvince = data;
-
-        // ====================================================================
-        // rendering home page
-        res.render('home2', {lowestFloorArts:lowestFloorArts,
-                            lowestSlotArts:lowestSlotArts,
-                            artsCapacity:artsCapacity,
-                            poliCapacity:poliCapacity,
-                            lowestFloorPoli:lowestFloorPoli,
-                            lowestSlotPoli:lowestSlotPoli,
-                            totalArtsFreeSpot:totalArtsFreeSpot,
-                            totalPoliFreeSpot:totalPoliFreeSpot,
-                            currentUsername: req.user.currentCustomer.currentUsername,
-                            currentPicture: req.user.currentCustomer.currentPicture,
-                            reservePlatenumber: req.user.currentReserve.reservePlatenumber});
-        // ====================================================================
-      });
-    });
-});
-
-//ROUTE TO HOME
-app.get('/reserveStatus',loggedIn,function(req, res){
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    reserve.getReserveStatus(connection,req.user.currentReserve.reserveId,function(data){
-      req.user.currentReserve.reserveStatus = data;
-    });
-  });
-  console.log('Reserve Status: '+req.user.currentReserve.reserveStatus);
-  res.send({
-    reserveStatus: req.user.currentReserve.reserveStatus
-  });
-});
-
 app.get('/home',loggedIn, async function(req, res){
     pool.acquire(function (err, connection) {
       if (err) {
@@ -1398,61 +1180,15 @@ app.get('/home',loggedIn, async function(req, res){
       console.log(req.user.currentReserve.reserveTimeout);
     },1000);
 });
-
-app.get('/getTimeandFee',loggedIn, function(req, res){
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    reserve.getCurrentFee(connection,req.user.currentReserve.reserveId,function(data){
-      req.user.currentReserve.currentFee = data;
-      console.log('Current Fee: '+req.user.currentReserve.currentFee);
-    });
-  });
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    reserve.getCurrentTime(connection,req.user.currentReserve.reserveId,function(data){
-      req.user.currentReserve.currentTime = data;
-      console.log('Current Time: '+req.user.currentReserve.currentTime);
-    });
-  });
-  var mins, hours;
-  if(req.user.currentReserve.currentTime/60>=1){
-    hours = Math.floor(req.user.currentReserve.currentTime/60);
-    mins = req.user.currentReserve.currentTime-(hours*60);
-  } else {
-    hours = 0;
-    mins = req.user.currentReserve.currentTime;
-  }
-  res.send({
-    mins: mins,
-    hours: hours,
-    parkingFee: req.user.currentReserve.currentFee
-  });
+app.get('/',loggedIn, function(req, res){
+    res.redirect('/home');
 });
-
-//------------------------------------------------------------------------------------------------------------//
-//------------------------------------------------------------------------------------------------------------//
-//ROUTES TO REGISTER PAGE
 app.get('/register', function(req, res){
     res.render('register');
 });
-
-//ROUTE TO LOGIN PAGE
-app.get('/login', function(req, res){
-    res.render('login');
-});
-
-//ROUTE TO CAR REGISTER PAGE
 app.get('/carregister',loggedIn, function(req, res){
     res.render('carregister');
 });
-
-//ROUTE TO RESERVE PAGE
 app.get('/reserve',loggedIn, function(req, res){
   pool.acquire(function (err, connection) {
     if (err) {
@@ -1469,8 +1205,6 @@ app.get('/reserve',loggedIn, function(req, res){
     });
   });
 });
-
-//ROUTE TO QR CODE PAGE
 app.get('/showqr', loggedIn,hasReserved,function(req, res){
   if(req.user.currentReserve.reserveStatus == "Paid"){
     res.render('showqr', {qrCode: req.user.currentTransaction.qrCode,
@@ -1484,21 +1218,12 @@ app.get('/showqr', loggedIn,hasReserved,function(req, res){
                           isScan: isScan});
   }
 });
-
-app.route('/getScan').get(function(req, res, next){
-  res.json(obb);
-});
-
 app.get('/scanner', function(req,res){
   res.render('scanner');
 });
-
-//to payment
 app.get('/payment', function(req,res){
   res.render('payment');
 });
-
-//ROUTE TO STATUS
 app.get('/status', loggedIn,hasReserved, async function(req, res){
   pool.acquire(function (err, connection) {
     if (err) {
@@ -1562,8 +1287,6 @@ app.get('/status', loggedIn,hasReserved, async function(req, res){
     });
   });
 });
-
-//ROUTE TO USER INFO
 app.get('/userinfo', loggedIn, async function(req, res){
    pool.acquire(function (err, connection) {
      if (err) {
@@ -1674,8 +1397,6 @@ app.get('/userinfo', loggedIn, async function(req, res){
        });
    });
 });
-
-//ROUTE TO EDIT USER
 app.get('/edituserinfo', loggedIn, function(req, res){
       res.render('edituserinfo', {currentUsername: req.user.currentCustomer.currentUsername,
                              currentEmail:req.user.currentCustomer.currentEmail,
@@ -1685,17 +1406,88 @@ app.get('/edituserinfo', loggedIn, function(req, res){
                            });
 
 });
-
-//ROUTE TO RECEIPT PAGE
 app.get('/receipt',loggedIn, function(req, res){
     res.render('receipt');
 });
 
-// ====================================================================
-//POST ROUTES
-// ====================================================================
-//MAKING RESERVATION
-//ADD SENSOR CHECK
+//GET Request
+app.get('/logout',loggedIn,function(req, res){
+  req.logout();
+  req.flash('success', 'You are logged out.');
+  res.redirect('/login');
+});
+app.get('/getthisusername', function(req, res){
+  res.send(req.user);
+});
+app.get('/reserveStatus',loggedIn,function(req, res){
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    reserve.getReserveStatus(connection,req.user.currentReserve.reserveId,function(data){
+      req.user.currentReserve.reserveStatus = data;
+    });
+  });
+  console.log('Reserve Status: '+req.user.currentReserve.reserveStatus);
+  res.send({
+    reserveStatus: req.user.currentReserve.reserveStatus
+  });
+});
+app.get('/getTimeandFee',loggedIn, function(req, res){
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    reserve.getCurrentFee(connection,req.user.currentReserve.reserveId,function(data){
+      req.user.currentReserve.currentFee = data;
+      console.log('Current Fee: '+req.user.currentReserve.currentFee);
+    });
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    reserve.getCurrentTime(connection,req.user.currentReserve.reserveId,function(data){
+      req.user.currentReserve.currentTime = data;
+      console.log('Current Time: '+req.user.currentReserve.currentTime);
+    });
+  });
+  var mins, hours;
+  if(req.user.currentReserve.currentTime/60>=1){
+    hours = Math.floor(req.user.currentReserve.currentTime/60);
+    mins = req.user.currentReserve.currentTime-(hours*60);
+  } else {
+    hours = 0;
+    mins = req.user.currentReserve.currentTime;
+  }
+  res.send({
+    mins: mins,
+    hours: hours,
+    parkingFee: req.user.currentReserve.currentFee
+  });
+});
+app.route('/getScan').get(function(req, res, next){
+  res.json(obb);
+});
+
+//POST REQUEST
+app.post('/login',passport.authenticate('local-login', {
+    successRedirect: '/home',
+    successFlash: 'Successfully logged in',
+    failureRedirect: '/login',
+    failureFlash: 'Invalid username or password',
+    session: true
+}));
+app.post('/register', upload.single('profilePic'),passport.authenticate('local-signup' ,{
+    successRedirect: '/login',
+    // successFlash: 'You are registered! Please login.',
+    failureRedirect: '/register',
+    failureFlash: true,
+    session: false
+}));
 app.post('/reserve',loggedIn,async function(req, res){
   console.log('Reserve Pressed');
   req.user.currentReserve.reservePlatenumber = req.body.plateNumber;
@@ -1862,8 +1654,69 @@ app.post('/reserve',loggedIn,async function(req, res){
     });
   }
 });
-
-//CANCELING THE RESERVATION
+app.post('/qrcode',async function(req, res){
+  var scannedQR = req.body.data;
+  var qr = scannedQR.split(",");
+  console.log("Scanned QR " + qr[0]);
+  console.log("Username " + qr[1]);
+  var reserveID, transactionID;
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    reserve.getReserveID(connection,qr[1],function(data){
+      reserveID = data;
+      console.log("Reserve ID" +reserveID);
+    });
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    transaction.getTransactionID(connection,qr[1],function(data){
+      transactionID = data;
+      console.log("TransactionID" + transactionID);
+    })
+  });
+  await sleep(200);
+  if(qr[0] == reserveID){
+    console.log('Check in qrCode has been scanned');
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      reserve.setQRCodeIn(connection,reserveID,qr[0]);
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      var reserveTimein = getCurrentTime();
+      reserve.setTimeIn(connection,reserveID,reserveTimein);
+    });
+  }else if(qr[0]  == transactionID){
+    console.log('Check out qrCode has been scanned');
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      reserve.setQRCodeOut(connection,reserveID,qr[0]);
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      var reserveTimeout = getCurrentTime();
+      reserve.setTimeOut(connection,reserveID,reserveTimeout);
+    });
+  }
+});
 app.post('/cancel',loggedIn,async function(req,res){
   pool.acquire(function (err, connection) {
     if (err) {
@@ -1960,9 +1813,6 @@ app.post('/cancel',loggedIn,async function(req,res){
     });
   }
 });
-
-//SENSORCHECK
-//PAY POST REQUEST
 app.post('/pay',loggedIn,async function(req,res){
   pool.acquire(function (err, connection) {
     if (err) {
@@ -2130,7 +1980,6 @@ app.post('/pay',loggedIn,async function(req,res){
     res.redirect('status');
   }
 });
-
 app.post('/paymentAction',loggedIn, function(req,res){
   pool.acquire(function (err, connection) {
     if (err) {
@@ -2143,8 +1992,6 @@ app.post('/paymentAction',loggedIn, function(req,res){
   req.user.currentTransaction.qrCode = [req.user.currentTransaction.transactionId,req.user.currentCustomer.currentUsername];
   res.render('showqr', {qrCode:req.user.currentTransaction.qrCode,currentUsername: req.user.currentCustomer.currentUsername,currentPicture: req.user.currentCustomer.currentPicture});
 });
-
-//CAR REGISTER POST REQUEST
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
   pool.acquire(function (err, connection) {
@@ -2181,8 +2028,6 @@ app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   });
   req.flash('success', 'Your car has been added.')
 },autoReap);
-
-//DELETE CAR POST REQUEST
 app.post('/deletecar/:id',loggedIn, function(req,res){
   var id = req.params.id;
   pool.acquire(async function (err, connection) {
@@ -2220,8 +2065,6 @@ app.post('/deletecar/:id',loggedIn, function(req,res){
   });
 
 },autoReap);
-
-//RECEIPT POST REQUEST
 app.post('/receipt/:id',loggedIn,async function(req,res){
   var id = req.params.id;
   pool.acquire(function (err, connection) {
@@ -2274,8 +2117,6 @@ app.post('/receipt/:id',loggedIn,async function(req,res){
       })
   });
 });
-
-//EDIT USER POST REQUEST
 app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
   console.log('Trying to edit profile');
   pool.acquire(function (err, connection) {
@@ -2316,87 +2157,8 @@ app.post('/edituserinfo',loggedIn,upload.single('profilePic'),function(req,res){
 
 },autoReap);
 
-//LOGIN
-app.post('/login',passport.authenticate('local-login', {
-    successRedirect: '/home',
-    successFlash: 'Successfully logged in',
-    failureRedirect: '/login',
-    failureFlash: 'Invalid username or password',
-    session: true
-}));
 
-//REGISTER
-app.post('/register', upload.single('profilePic'),passport.authenticate('local-signup' ,{
-    successRedirect: '/login',
-    // successFlash: 'You are registered! Please login.',
-    failureRedirect: '/register',
-    failureFlash: true,
-    session: false
-}));
 
-app.post('/qrcode',async function(req, res){
-  var scannedQR = req.body.data;
-  var qr = scannedQR.split(",");
-  console.log("Scanned QR " + qr[0]);
-  console.log("Username " + qr[1]);
-  var reserveID, transactionID;
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    reserve.getReserveID(connection,qr[1],function(data){
-      reserveID = data;
-      console.log("Reserve ID" +reserveID);
-    });
-  });
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      connection.release();
-    }
-    transaction.getTransactionID(connection,qr[1],function(data){
-      transactionID = data;
-      console.log("TransactionID" + transactionID);
-    })
-  });
-  await sleep(200);
-  if(qr[0] == reserveID){
-    console.log('Check in qrCode has been scanned');
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      reserve.setQRCodeIn(connection,reserveID,qr[0]);
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      var reserveTimein = getCurrentTime();
-      reserve.setTimeIn(connection,reserveID,reserveTimein);
-    });
-  }else if(qr[0]  == transactionID){
-    console.log('Check out qrCode has been scanned');
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      reserve.setQRCodeOut(connection,reserveID,qr[0]);
-    });
-    pool.acquire(function (err, connection) {
-      if (err) {
-        console.error(err);
-        connection.release();
-      }
-      var reserveTimeout = getCurrentTime();
-      reserve.setTimeOut(connection,reserveID,reserveTimeout);
-    });
-  }
-});
 
 app.listen(3000, process.env.IP, function(){
     console.log('Park King Server is running on port 3000.....');
