@@ -1977,11 +1977,9 @@ app.post('/pay',loggedIn,async function(req,res){
       req.user.currentReserve.feeRate = feeRate(req.user.currentCustomer.currentCustomerType);
       req.user.currentTransaction.totaltime =  parseInt(req.user.stopwatch.stop()/1000);
       console.log('SET TOTAL TIME: '+req.user.currentTransaction.totaltime);
-      req.user.currentTransaction.parkingFee = parseInt((req.user.currentTransaction.totaltime * req.user.currentReserve.feeRate));
       req.user.stopwatch.reset();
-      req.user.currentTransaction.paymentmethod = 'Kbank';
       req.user.currentTransaction.date = transaction.getCurrentDate();
-      transaction.Transaction(connection,req.user.currentReserve.reservePlatenumber,req.user.currentCustomer.currentUsername,req.user.currentReserve.reserveFloor,req.user.currentReserve.reserveSlot,req.user.currentReserve.reserveBuildingname,req.user.currentTransaction.transactionId,req.user.currentTransaction.parkingFee,req.user.currentTransaction.paymentmethod,req.user.currentTransaction.totaltime,req.user.currentTransaction.date);
+      transaction.Transaction(connection,req.user.currentReserve.reservePlatenumber,req.user.currentCustomer.currentUsername,req.user.currentReserve.reserveFloor,req.user.currentReserve.reserveSlot,req.user.currentReserve.reserveBuildingname,req.user.currentTransaction.transactionId,null,null,req.user.currentTransaction.totaltime,req.user.currentTransaction.date);
     });
     await sleep(100);
     pool.acquire(function (err, connection) {
