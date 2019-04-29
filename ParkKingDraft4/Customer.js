@@ -619,6 +619,25 @@ exports.setReservable = function(connection, username, reservable) {
   connection.execSql(request);
 }
 
+exports.setHasStopWatch = function(connection, username, hasStopWatch) {
+  var request = new Request("UPDATE dbo.Customer SET hasStopWatch =  @hasStopWatch WHERE Username = @username",
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+      } else {
+        connection.release();
+      }
+    });
+    request.addParameter('cancel',TYPES.Int,hasStopWatch);
+    request.addParameter('username',TYPES.VarChar,username);
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+}
+
 //*******************************************************Customer's Remover***********************************************
 exports.removeUser = function(connection, username) {
   var request = new Request("DELETE FROM dbo.Customer WHERE Username = @username",
