@@ -1,5 +1,6 @@
 var isScan;
 var obb = {isScan: isScan};
+var stopwatch = "nothing";
 //require Customer.js file
 const customer = require('./Customer.js');
 // var currentCustomer = new customer.createCustomer();
@@ -20,7 +21,6 @@ function createDeserializer() {
    this.currentReserve = null;
    this.currentTransaction = null;
    this.currentReceipt = null;
-   this.stopwatch = null;
 }
 
 //NPM REQUIRE
@@ -111,14 +111,13 @@ passport.serializeUser(function(user, done) {
         done(null, user[0]);
     });
 passport.deserializeUser(async function(user, done) {
-        console.log('deserializer')
+        console.log('deserializer');
         var deserializing = new createDeserializer();
         var currentCustomer = new customer.createCustomer();
         var currentCar = new car.createCar();
         var currentReserve = new reserve.createReserve();
         var currentTransaction = new transaction.createTransaction();
         var currentReceipt = new transaction.createReceipt();
-        var stopwatch = new Stopwatch();
         //CUSTOMER INFORMATION
         currentCustomer.currentUsername = user;
         pool.acquire(function (err, connection) {
@@ -584,7 +583,16 @@ passport.deserializeUser(async function(user, done) {
         deserializing.currentReserve = currentReserve;
         deserializing.currentTransaction = currentTransaction;
         deserializing.currentReceipt = currentReceipt;
+<<<<<<< HEAD
+        if(deserializing.stopwatch == null){
+          deserializing.stopwatch = new Stopwatch();
+=======
         deserializing.stopwatch = stopwatch;
+        if(deserializing.stopwatch == "nothing"){
+          deserializing.stopwatch = new Stopwatch();
+          console.log('Initializing stopwatch');
+>>>>>>> 06a097b0e44d4050546e0b7e76c599232b68e95a
+        }
         pool.acquire(function (err, connection) {
             if (err) {
               console.error(err);
@@ -791,7 +799,6 @@ passport.use('local-login', new LocalStrategy({
 //===================================================================================================================================================
 // ALL TIMER IS IN SECOND(TO CHANGE TO MINUTES CHANGE /1000 TO /60000)
 var Stopwatch = require('statman-stopwatch');
-
 //start user's timer
 function startUserTimer(){
   req.user.stopwatch.start();
@@ -833,14 +840,17 @@ function hasReserved(req, res, next) {
 }
 
 //Calculate the fee rate
-var feeRate
 var check = "initialize";
 function feeRate(customerType){
+  console.log('calculating fee rate');
   if(customerType = 'Student'){
+    console.log('calculating fee rate for student');
     return (10/60);
   }else if(customerType = 'Professor'){
+    console.log('calculating fee rate for Professor');
     return (5/60);
   }else{
+    console.log('calculating fee rate for Others');
     return (15/60);
   }
 }
@@ -1235,7 +1245,7 @@ app.get('/home',loggedIn, async function(req, res){
       });
     });
 
-    feeRate = feeRate(req.user.currentCustomer.currentCustomerType);
+    req.user.currentReserve.feeRate = feeRate(req.user.currentCustomer.currentCustomerType);
     setInterval(async function() {
       console.log('Please wait for check-in/check-out');
       pool.acquire(function (err, connection) {
@@ -1245,6 +1255,15 @@ app.get('/home',loggedIn, async function(req, res){
         }
         reserve.getReserveID(connection,req.user.currentCustomer.currentUsername,function(data){
           req.user.currentReserve.reserveId = data;
+        });
+      });
+      pool.acquire(function (err, connection) {
+        if (err) {
+          console.error(err);
+          connection.release();
+        }
+        transaction.getTransactionID(connection,req.user.currentCustomer.currentUsername,function(data){
+          req.user.currentTransaction.transactionId = data;
         });
       });
       pool.acquire(function (err, connection) {
@@ -1362,7 +1381,7 @@ app.get('/home',loggedIn, async function(req, res){
           console.error(err);
           connection.release();
         }
-        req.user.currentReserve.currentFee = parseInt(req.user.currentReserve.currentTime * feeRate);
+        req.user.currentReserve.currentFee = parseInt(req.user.currentReserve.currentTime * req.user.currentReserve.feeRate);
         reserve.setCurrentFee(connection,req.user.currentReserve.reserveId,req.user.currentReserve.currentFee);
       });
       console.log(req.user.currentReserve.currentTime);
@@ -1981,11 +2000,21 @@ app.post('/pay',loggedIn,async function(req,res){
       req.user.currentTransaction.qrCode = [req.user.currentTransaction.transactionId,req.user.currentCustomer.currentUsername];
       isScan = false;
       obb = {isScan: isScan};
-      // req.user.currentTransaction.totaltime = parseInt(req.user.stopwatch.stop()/1000);
-      console.log('Set total time: '+parseInt(req.user.stopwatch.stop()/1000));
+<<<<<<< HEAD
+=======
+
+>>>>>>> 06a097b0e44d4050546e0b7e76c599232b68e95a
+
+      req.user.currentReserve.feeRate = feeRate(req.user.currentCustomer.currentCustomerType);
+      req.user.currentTransaction.totaltime =  parseInt(req.user.stopwatch.stop()/1000);
+      console.log('SET TOTAL TIME: '+req.user.currentTransaction.totaltime);
+      req.user.currentTransaction.parkingFee = parseInt((req.user.currentTransaction.totaltime * req.user.currentReserve.feeRate));
       req.user.stopwatch.reset();
-      req.user.currentTransaction.parkingFee = parseInt((req.user.currentTransaction.totaltime * feeRate) + req.user.currentTransaction.addedFee);
-      console.log('set parking fee: '+req.user.currentTransaction.parkingFee);
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 06a097b0e44d4050546e0b7e76c599232b68e95a
       if(req.user.currentTransaction.exceedCheckoutTime == true){
         req.user.currentTransaction.addedFee = 0;
         req.user.currentTransaction.exceedCheckoutTime = false;
@@ -1993,8 +2022,31 @@ app.post('/pay',loggedIn,async function(req,res){
       req.user.currentTransaction.paymentmethod = 'Kbank';
       req.user.currentTransaction.date = transaction.getCurrentDate();
       transaction.Transaction(connection,req.user.currentReserve.reservePlatenumber,req.user.currentCustomer.currentUsername,req.user.currentReserve.reserveFloor,req.user.currentReserve.reserveSlot,req.user.currentReserve.reserveBuildingname,req.user.currentTransaction.transactionId,req.user.currentTransaction.parkingFee,req.user.currentTransaction.paymentmethod,req.user.currentTransaction.totaltime,req.user.currentTransaction.date);
+    });
+    await sleep(100);
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+    }
+      transaction.getAddedFee(connection,req.user.currentCustomer.currentUsername,function(data){
+        req.user.currentTransaction.addedFee = data;
+      });
+    });
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      req.user.currentTransaction.parkingFee = parseInt((req.user.currentTransaction.totaltime * req.user.currentReserve.feeRate) + req.user.currentTransaction.addedFee)
+      transaction.setFee(connection,req.user.currentTransaction.transactionId,req.user.currentTransaction.parkingFee);
+      console.log(
+      'SET PARKING FEE: '+req.user.currentTransaction.parkingFee+
+      ' feeRate: '+ req.user.currentReserve.feeRate+
+      ' addedFee: '+req.user.currentTransaction.addedFee
+      );
       res.render('showqr', {qrCode:req.user.currentTransaction.qrCode,currentUsername: req.user.currentCustomer.currentUsername,currentPicture: req.user.currentCustomer.currentPicture});
-  });
+    });
     sleep(1000*60*15).then(() => {
       req.user.currentTransaction.exceedCheckoutTime = true;
       if(req.user.currentReserve.reserveTimeout == check){
@@ -2032,7 +2084,7 @@ app.post('/pay',loggedIn,async function(req,res){
             console.error(err);
             connection.release();
           }
-          req.user.currentTransaction.addedFee = parseInt(15 * feeRate);
+          req.user.currentTransaction.addedFee = parseInt(15 * req.user.currentReserve.feeRate);
           transaction.setAddedFee(connection,req.user.currentTransaction.transactionId,req.user.currentTransaction.addedFee);
         });
         // startUserTimer();
