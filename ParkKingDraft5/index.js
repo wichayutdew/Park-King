@@ -766,7 +766,7 @@ app.get('/getTimeandFee', function(req, res){
   });
 });
 
-app.get('/getReserveStatus', function(req, res){
+app.get('/getReserveStatus',async function(req, res){
   pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
@@ -776,6 +776,7 @@ app.get('/getReserveStatus', function(req, res){
       currentReserve[req.user[0]].reserveId = data;
     });
   });
+  await sleep(200);
   pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
@@ -851,7 +852,8 @@ app.get('/showqr', loggedIn,hasReserved,function(req, res){
 app.route('/getScan').get(function(req, res, next){
   res.json(obb);
 });
-app.route('/getUser').get(function(req, res, next){
+
+app.route('/getUser').get(async function(req, res, next){
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
@@ -882,6 +884,7 @@ app.route('/getUser').get(function(req, res, next){
         currentReserve[req.user[0]].reserveMqttPort = data;
       });
   });
+  await sleep(100);
   var mqtt = {
   	mqtt_websockets_port:currentReserve[req.user[0]].reserveMqttPort,
   	mqtt_user:currentReserve[req.user[0]].reserveMqttUser,

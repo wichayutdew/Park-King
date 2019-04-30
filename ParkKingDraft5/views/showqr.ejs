@@ -41,14 +41,14 @@ var config = {
 	mqtt_password:null
 };
 function checkUser(){
-  $.get('/getMqttUser', function(data){
-    config.mqtt_user = data.MqttUser;
+  $.get('/getUser', function(data){
+    config.mqtt_user = data.mqtt_user;
     console.log('Mqtt User: '+ config.mqtt_user);
-    config.mqtt_password = data.MqttPass;
+    config.mqtt_password = data.mqtt_password;
     console.log('Mqtt Password: '+ config.mqtt_password);
-    config.mqtt_uwebsockets_port = data.MqttPort;
-    console.log('Mqtt Port: '+ config.mqtt_uwebsockets_port);
-    console.log('Mqtt Server: '+ config.mqtt_server );
+    config.mqtt_websockets_port = data.mqtt_websockets_port;
+    console.log('Mqtt Port: '+ config.mqtt_websockets_port);
+    console.log('Mqtt Server: '+ config.mqtt_server);
   });
 }
 setInterval(checkUser,1000);
