@@ -22,7 +22,6 @@ function createDeserializer() {
    this.currentReserve = null;
    this.currentTransaction = null;
    this.currentReceipt = null;
-   // this.stopwatch = null;
 }
 
 //NPM REQUIRE
@@ -593,7 +592,6 @@ passport.deserializeUser(async function(user, done) {
         deserializing.currentReserve = currentReserve;
         deserializing.currentTransaction = currentTransaction;
         deserializing.currentReceipt = currentReceipt;
-        deserializing.stopwatch = stopwatch;
         pool.acquire(function (err, connection) {
             if (err) {
               console.error(err);
