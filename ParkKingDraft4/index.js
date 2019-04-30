@@ -1204,13 +1204,44 @@ app.get('/reserve',loggedIn, function(req, res){
     });
   });
 });
-app.get('/showqr', loggedIn,hasReserved,function(req, res){
+app.get('/showqr', loggedIn,hasReserved,async function(req, res){
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    reserve.getReserveID(connection,req.user.currentCustomer.currentUsername,function(data){
+      req.user.currentReserve.reserveId = data;
+    });
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    transaction.getTransactionID(connection,req.user.currentCustomer.currentUsername,function(data){
+      req.user.currentTransaction.transactionId = data;
+    });
+  });
+  await sleep(200);
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    reserve.getReserveStatus(connection,req.user.currentReserve.reserveStatus,function(data){
+      req.user.currentReserve.reserveId = data;
+    });
+  });
+  await sleep(200);
   if(req.user.currentReserve.reserveStatus == "Paid"){
+    req.user.currentTransaction.qrCode = [req.user.currentTransaction.transactionId,req.user.currentCustomer.currentUsername];
     res.render('showqr', {qrCode: req.user.currentTransaction.qrCode,
                           currentUsername: req.user.currentCustomer.currentUsername,
                           currentPicture: req.user.currentCustomer.currentPicture,
                           isScan: isScan});
   }else{
+    req.user.currentTransaction.qrCode = [req.user.currentReserve.reserveId,req.user.currentCustomer.currentUsername];
     res.render('showqr', {qrCode: req.user.currentReserve.qrCode,
                           currentUsername: req.user.currentCustomer.currentUsername,
                           currentPicture: req.user.currentCustomer.currentPicture,
@@ -1679,7 +1710,7 @@ app.post('/qrcode',async function(req, res){
       console.log("TransactionID" + transactionID);
     })
   });
-  await sleep(200);
+  await sleep(500);
   if(qr[0] == reserveID){
     console.log('Check in qrCode has been scanned');
     pool.acquire(function (err, connection) {
@@ -1856,21 +1887,30 @@ app.post('/pay',loggedIn,async function(req,res){
       console.log('SET TOTAL TIME: '+req.user.currentTransaction.totaltime);
       stopwatch[req.user.currentCustomer.customerHasStopWatch].reset();
       //for now hai hasstopwatch กลับไปเป็น null ========================================
-      pool.acquire(function (err, connection) {
-        if (err) {
-            console.error(err);
-            connection.release();
-            return;
-        }
-        req.user.currentCustomer.customerHasStopWatch = null;
-        customer.setHasStopWatch(connection,req.user.currentCustomer.currentUsername,req.user.currentCustomer.customerHasStopWatch);
-      });
-      console.log('SET HASSTOPWATCH=null');
+      // pool.acquire(function (err, connection) {
+      //   if (err) {
+      //       console.error(err);
+      //       connection.release();
+      //       return;
+      //   }
+      //   req.user.currentCustomer.customerHasStopWatch = null;
+      //   customer.setHasStopWatch(connection,req.user.currentCustomer.currentUsername,req.user.currentCustomer.customerHasStopWatch);
+      // });
+      // console.log('SET HASSTOPWATCH=null');
       //===============================================================================
       req.user.currentTransaction.date = transaction.getCurrentDate();
       transaction.Transaction(connection,req.user.currentReserve.reservePlatenumber,req.user.currentCustomer.currentUsername,req.user.currentReserve.reserveFloor,req.user.currentReserve.reserveSlot,req.user.currentReserve.reserveBuildingname,req.user.currentTransaction.transactionId,null,null,req.user.currentTransaction.totaltime,req.user.currentTransaction.date);
     });
-    await sleep(100);
+    await sleep(300);
+    pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+    }
+      transaction.getTotalTime(connection,req.user.currentTransaction.transactionId,function(data){
+        req.user.currentTransaction.totaltime = data;
+      });
+    });
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
@@ -1907,7 +1947,7 @@ app.post('/pay',loggedIn,async function(req,res){
         transaction.setExceedCheckouttime(connection,req.user.currentTransaction.transactionId,req.user.currentTransaction.exceedCheckoutTime);
       });
     }
-    await sleep(100);
+    await sleep(300);
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
@@ -1979,7 +2019,17 @@ app.post('/pay',loggedIn,async function(req,res){
     res.redirect('status');
   }
 });
-app.post('/paymentAction',loggedIn, function(req,res){
+app.post('/paymentAction',loggedIn,async function(req,res){
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    transaction.getTransactionID(connection,req.user.currentCustomer.currentUsername,function(data){
+      req.user.currentTransaction.transactionId = data;
+    });
+  });
+  await sleep(500);
   pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
