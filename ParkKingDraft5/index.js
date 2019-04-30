@@ -912,6 +912,10 @@ app.get('/receipt',loggedIn, function(req, res){
     res.render('receipt');
 });
 
+app.get('/payment',loggedIn,function(req,res){
+  res.render('payment');
+})
+
 // ====================================================================
 //POST ROUTES
 // ====================================================================
@@ -1243,15 +1247,10 @@ app.post('/pay',loggedIn,async function(req,res){
         currentTransaction.addedFee = 0;
         currentTransaction.exceedCheckoutTime = false;
       }
-      currentTransaction.paymentmethod = 'Kbank';
+
       currentTransaction.date = transaction.getCurrentDate();
-
-      transaction.Transaction(connection,currentReserve.reservePlatenumber,req.user[0],currentReserve.reserveFloor,currentReserve.reserveSlot,currentReserve.reserveBuildingname,currentTransaction.transactionId,currentTransaction.parkingFee,currentTransaction.paymentmethod,currentTransaction.totaltime,currentTransaction.date);
-
-      res.render('showqr', {qrCode:currentTransaction.qrCode,
-                            currentUsername: req.user[0],
-                            currentPicture: currentCustomer.currentPicture
-                          });
+      transaction.Transaction(connection,currentReserve.reservePlatenumber,req.user[0],currentReserve.reserveFloor,currentReserve.reserveSlot,currentReserve.reserveBuildingname,currentTransaction.transactionId,currentTransaction.parkingFee,null,currentTransaction.totaltime,currentTransaction.date);
+      res.redirect('/payment');
     });
     sleep(1000*60*15).then(() => {
       currentTransaction.exceedCheckoutTime = true;
@@ -1305,6 +1304,20 @@ app.post('/pay',loggedIn,async function(req,res){
   }
 });
 
+app.post('/paymentaction',loggedIn,async function(req, res){
+  ool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    currentTransaction.paymentmethod = req.body.paymentChoice;
+    transaction.setPaymentMethod(connection,currentTransaction.transactionId,currentTransaction.paymentmethod);
+    res.render('showqr', {qrCode:currentTransaction.qrCode,
+                          currentUsername: req.user[0],
+                          currentPicture: currentCustomer.currentPicture
+                        });
+  });
+})
 //CAR REGISTER POST REQUEST
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');
@@ -1381,6 +1394,7 @@ app.post('/deletecar/:id',loggedIn, function(req,res){
   });
 
 },autoReap);
+
 
 //RECEIPT POST REQUEST
 app.post('/receipt/:id',loggedIn,async function(req,res){
