@@ -35,11 +35,23 @@
 // 	mqtt_password: "VQ5vPZMpOmrc"
 // };
 var config = {
-	mqtt_server: "m24.cloudmqtt.com",
-	mqtt_websockets_port: <%= MqttPort %>,
-	mqtt_user: "<%= MqttUser %>",
-	mqtt_password: "<%= MqttPass %>"
+	mqtt_server:"m24.cloudmqtt.com",
+	mqtt_websockets_port:null,
+	mqtt_user:null,
+	mqtt_password:null
 };
+function checkUser(){
+  $.get('/getMqttUser', function(data){
+    config.mqtt_user = data.MqttUser;
+    console.log('Mqtt User: '+ config.mqtt_user);
+    config.mqtt_password = data.MqttPass;
+    console.log('Mqtt Password: '+ config.mqtt_password);
+    config.mqtt_uwebsockets_port = data.MqttPort;
+    console.log('Mqtt Port: '+ config.mqtt_uwebsockets_port);
+    console.log('Mqtt Server: '+ config.mqtt_server );
+  });
+}
+setInterval(checkUser,1000);
 
 $(document).ready(function(e) {
 	// Create a client instance

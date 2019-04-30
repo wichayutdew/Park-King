@@ -834,6 +834,24 @@ app.get('/showqr', loggedIn,hasReserved,function(req, res){
         currentReserve[req.user[0]].reserveStatus = data;
       });
   });
+  if(currentReserve[req.user[0]].reserveStatus == "Paid"){
+    res.render('showqr', {qrCode: currentTransaction[req.user[0]].qrCode,
+                          currentUsername: currentCustomer[req.user[0]].currentUsername,
+                          currentPicture: currentCustomer[req.user[0]].currentPicture,
+                          isScan: currentReserve[req.user[0]].isScan});
+  }else{
+    res.render('showqr', {qrCode: currentReserve[req.user[0]].qrCode,
+                          currentUsername: currentCustomer[req.user[0]].currentUsername,
+                          currentPicture: currentCustomer[req.user[0]].currentPicture,
+                          isScan: currentReserve[req.user[0]].isScan});
+  }
+
+});
+
+app.route('/getScan').get(function(req, res, next){
+  res.json(obb);
+});
+app.route('/getUser').get(function(req, res, next){
   pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
@@ -864,28 +882,12 @@ app.get('/showqr', loggedIn,hasReserved,function(req, res){
         currentReserve[req.user[0]].reserveMqttPort = data;
       });
   });
-  if(currentReserve[req.user[0]].reserveStatus == "Paid"){
-    res.render('showqr', {qrCode: currentTransaction[req.user[0]].qrCode,
-                          currentUsername: currentCustomer[req.user[0]].currentUsername,
-                          currentPicture: currentCustomer[req.user[0]].currentPicture,
-                          isScan: currentReserve[req.user[0]].isScan,
-                          MqttUser:currentReserve[req.user[0]].reserveMqttUser,
-                          MqttPass:currentReserve[req.user[0]].reserveMqttPass,
-                          MqttPort:currentReserve[req.user[0]].reserveMqttPort});
-  }else{
-    res.render('showqr', {qrCode: currentReserve[req.user[0]].qrCode,
-                          currentUsername: currentCustomer[req.user[0]].currentUsername,
-                          currentPicture: currentCustomer[req.user[0]].currentPicture,
-                          isScan: currentReserve[req.user[0]].isScan,
-                          MqttUser:currentReserve[req.user[0]].reserveMqttUser,
-                          MqttPass:currentReserve[req.user[0]].reserveMqttPass,
-                          MqttPort:currentReserve[req.user[0]].reserveMqttPort});
+  var mqtt = {
+  	mqtt_websockets_port:currentReserve[req.user[0]].reserveMqttPort,
+  	mqtt_user:currentReserve[req.user[0]].reserveMqttUser,
+  	mqtt_password:currentReserve[req.user[0]].reserveMqttPass
   }
-
-});
-
-app.route('/getScan').get(function(req, res, next){
-  res.json(obb);
+  res.json(mqtt);
 });
 
 app.get('/scanner', function(req,res){
@@ -1227,10 +1229,7 @@ app.post('/reserve',loggedIn,async function(req, res){
             qrCode:currentReserve[req.user[0]].qrCode,
             currentUsername: req.user[1],
             currentPicture: currentCustomer[req.user[0]].currentPicture,
-            message: 'You have made a reservation. Use this QR Code to enter the parking lot.',
-            MqttUser:currentReserve[req.user[0]].reserveMqttUser,
-            MqttPass:currentReserve[req.user[0]].reserveMqttPass,
-            MqttPort:currentReserve[req.user[0]].reserveMqttPort
+            message: 'You have made a reservation. Use this QR Code to enter the parking lot.'
           });
     });
     pool.acquire(function (err, connection) {
@@ -1559,10 +1558,7 @@ app.post('/paymentaction',loggedIn,async function(req, res){
                         res.render('showqr', {
                             qrCode:currentTransaction[req.user[0]].qrCode,
                             currentUsername: req.user[1],
-                            currentPicture: currentCustomer[req.user[0]].currentPicture,ฃ
-                            MqttUser:currentReserve[req.user[0]].reserveMqttUser,
-                            MqttPass:currentReserve[req.user[0]].reserveMqttPass,
-                            MqttPort:currentReserve[req.user[0]].reserveMqttPort
+                            currentPicture: currentCustomer[req.user[0]].currentPicture
                           });
   });
 })
