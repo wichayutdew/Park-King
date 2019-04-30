@@ -1305,7 +1305,7 @@ app.post('/pay',loggedIn,async function(req,res){
 });
 
 app.post('/paymentaction',loggedIn,async function(req, res){
-  ool.acquire(function (err, connection) {
+  pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
       connection.release();
