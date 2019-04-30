@@ -113,20 +113,27 @@ var mqttSend = function(topic, msg) {
 	client.send(message);
 }
 
-var getReserveStatusID = setInterval(function(){
+var getReserveStatusID = setInterval(getReserveStatus, 500);
+
+function getReserveStatus() {
   $.get('/reserveStatus')
   .done(function(data){
     var reserveStatus = data.reserveStatus;
     console.log('Reserve Status: '+reserveStatus);
     if(reserveStatus == "Checked In"){
       console.log('scanned complete');
-      clearInterval();
+      alert('You have checked in!');
+      clearInterval(getReserveStatusID);
+    } else if (reserveStatus == "Checked Out"){
+        console.log('scanned complete');
+        alert('You have checked out');
+        clearInterval(getReserveStatusID);
     }
   })
   .fail(function(){
     console.log('err on getting reserve status!');
   });
-}, 500);
+}
 
 
 </script>
