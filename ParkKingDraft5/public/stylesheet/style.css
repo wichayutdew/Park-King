@@ -213,7 +213,7 @@ div.card-body {
 }
 
 .carChoice.active .method {
-  border-color: black;
+  border-color: #04f735;
   border-radius: 10px;
   outline: none !important;
   box-shadow: 0px 3px 22px 0px #7b7b7b;
