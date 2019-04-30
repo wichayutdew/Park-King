@@ -854,37 +854,6 @@ app.route('/getScan').get(function(req, res, next){
 });
 
 app.route('/getUser').get(async function(req, res, next){
-  pool.acquire(function (err, connection) {
-      if (err) {
-          console.error(err);
-          connection.release();
-          return;
-      }
-      parkingspot.getMqttUser(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
-        currentReserve[req.user[0]].reserveMqttUser = data;
-      });
-  });
-  pool.acquire(function (err, connection) {
-      if (err) {
-          console.error(err);
-          connection.release();
-          return;
-      }
-      parkingspot.getMqttPass(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
-        currentReserve[req.user[0]].reserveMqttPass = data;
-      });
-  });
-  pool.acquire(function (err, connection) {
-      if (err) {
-          console.error(err);
-          connection.release();
-          return;
-      }
-      parkingspot.getMqttPort(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
-        currentReserve[req.user[0]].reserveMqttPort = data;
-      });
-  });
-  await sleep(100);
   var mqtt = {
   	mqtt_websockets_port:currentReserve[req.user[0]].reserveMqttPort,
   	mqtt_user:currentReserve[req.user[0]].reserveMqttUser,
@@ -894,7 +863,7 @@ app.route('/getUser').get(async function(req, res, next){
 });
 
 app.get('/getReserveSpot', function(req, res){
-    res.send(currentReserve[req.user[0]].reserveSlot);
+    res.send(currentReserve[req.user[0]].reserveBuildingname);
 });
 
 app.get('/scanner', function(req,res){
@@ -1161,6 +1130,36 @@ app.post('/reserve',loggedIn,async function(req, res){
       parkingspot.getIsFull(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
         currentReserve[req.user[0]].reserveIsfull = data;
         console.log(currentReserve[req.user[0]].reserveIsfull);
+      });
+  });
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+          return;
+      }
+      parkingspot.getMqttUser(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
+        currentReserve[req.user[0]].reserveMqttUser = data;
+      });
+  });
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+          return;
+      }
+      parkingspot.getMqttPass(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
+        currentReserve[req.user[0]].reserveMqttPass = data;
+      });
+  });
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+          return;
+      }
+      parkingspot.getMqttPort(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
+        currentReserve[req.user[0]].reserveMqttPort = data;
       });
   });
   if(currentCustomer[req.user[0]].customerReservable == 0 || currentReserve[req.user[0]].reserveIsfull == 1){
