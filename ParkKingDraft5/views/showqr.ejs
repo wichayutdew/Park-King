@@ -28,30 +28,31 @@
     }
   </style>
   <script>
-// var config = {
-// 	mqtt_server: "m24.cloudmqtt.com",
-// 	mqtt_websockets_port: 34366,
-// 	mqtt_user: "vxamsplq",
-// 	mqtt_password: "VQ5vPZMpOmrc"
-// };
 var config = {
-	mqtt_server:"m24.cloudmqtt.com",
-	mqtt_websockets_port:null,
-	mqtt_user:null,
-	mqtt_password:null
+	mqtt_server: "m24.cloudmqtt.com",
+	mqtt_websockets_port: 34366,
+	mqtt_user: "vxamsplq",
+	mqtt_password: "VQ5vPZMpOmrc"
 };
-function checkUser(){
-  $.get('/getUser', function(data){
-    config.mqtt_user = data.mqtt_user;
-    console.log('Mqtt User: '+ config.mqtt_user);
-    config.mqtt_password = data.mqtt_password;
-    console.log('Mqtt Password: '+ config.mqtt_password);
-    config.mqtt_websockets_port = data.mqtt_websockets_port;
-    console.log('Mqtt Port: '+ config.mqtt_websockets_port);
-    console.log('Mqtt Server: '+ config.mqtt_server);
-  });
-}
-setInterval(checkUser,1000);
+
+// var config = {
+// 	mqtt_server:"m24.cloudmqtt.com",
+// 	mqtt_websockets_port:null,
+// 	mqtt_user:null,
+// 	mqtt_password:null
+// };
+// function checkUser(){
+//   $.get('/getUser', function(data){
+//     config.mqtt_user = data.mqtt_user+"";
+//     console.log('Mqtt User: '+ config.mqtt_user);
+//     config.mqtt_password = data.mqtt_password+"";
+//     console.log('Mqtt Password: '+ config.mqtt_password);
+//     config.mqtt_websockets_port = data.mqtt_websockets_port;
+//     console.log('Mqtt Port: '+ config.mqtt_websockets_port);
+//     console.log('Mqtt Server: '+ config.mqtt_server);
+//   });
+// }
+// setInterval(checkUser,1000);
 
 $(document).ready(function(e) {
 	// Create a client instance

@@ -442,7 +442,7 @@ app.get('/home',loggedIn, async function(req, res){
       customer.setHasStopWatch(connection,req.user[1],req.user[0]);
     });
     }
-    await sleep(200);
+    await sleep(300);
     pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
@@ -853,45 +853,45 @@ app.route('/getScan').get(function(req, res, next){
   res.json(obb);
 });
 
-app.route('/getUser').get(async function(req, res, next){
-  pool.acquire(function (err, connection) {
-      if (err) {
-          console.error(err);
-          connection.release();
-          return;
-      }
-      parkingspot.getMqttUser(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
-        currentReserve[req.user[0]].reserveMqttUser = data;
-      });
-  });
-  pool.acquire(function (err, connection) {
-      if (err) {
-          console.error(err);
-          connection.release();
-          return;
-      }
-      parkingspot.getMqttPass(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
-        currentReserve[req.user[0]].reserveMqttPass = data;
-      });
-  });
-  pool.acquire(function (err, connection) {
-      if (err) {
-          console.error(err);
-          connection.release();
-          return;
-      }
-      parkingspot.getMqttPort(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
-        currentReserve[req.user[0]].reserveMqttPort = data;
-      });
-  });
-  await sleep(100);
-  var mqtt = {
-  	mqtt_websockets_port:currentReserve[req.user[0]].reserveMqttPort,
-  	mqtt_user:currentReserve[req.user[0]].reserveMqttUser,
-  	mqtt_password:currentReserve[req.user[0]].reserveMqttPass
-  }
-  res.json(mqtt);
-});
+// app.route('/getUser').get(async function(req, res, next){
+//   pool.acquire(function (err, connection) {
+//       if (err) {
+//           console.error(err);
+//           connection.release();
+//           return;
+//       }
+//       parkingspot.getMqttUser(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
+//         currentReserve[req.user[0]].reserveMqttUser = data;
+//       });
+//   });
+//   pool.acquire(function (err, connection) {
+//       if (err) {
+//           console.error(err);
+//           connection.release();
+//           return;
+//       }
+//       parkingspot.getMqttPass(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
+//         currentReserve[req.user[0]].reserveMqttPass = data;
+//       });
+//   });
+//   pool.acquire(function (err, connection) {
+//       if (err) {
+//           console.error(err);
+//           connection.release();
+//           return;
+//       }
+//       parkingspot.getMqttPort(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
+//         currentReserve[req.user[0]].reserveMqttPort = data;
+//       });
+//   });
+//   await sleep(100);
+//   var mqtt = {
+//   	mqtt_websockets_port:currentReserve[req.user[0]].reserveMqttPort,
+//   	mqtt_user:currentReserve[req.user[0]].reserveMqttUser,
+//   	mqtt_password:currentReserve[req.user[0]].reserveMqttPass
+//   }
+//   res.json(mqtt);
+// });
 
 app.get('/scanner', function(req,res){
   res.render('scanner');
@@ -1109,6 +1109,7 @@ app.get('/payment',loggedIn,function(req,res){
 //MAKING RESERVATION
 //ADD SENSOR CHECK
 app.post('/reserve',loggedIn,async function(req, res){
+  await sleep(100)
   currentReserve[req.user[0]].reservePlatenumber = req.body.plateNumber;
   currentReserve[req.user[0]].reserveBuildingname = req.body.buildingName;
   console.log(currentReserve[req.user[0]].reservePlatenumber);
@@ -1122,7 +1123,6 @@ app.post('/reserve',loggedIn,async function(req, res){
         currentCustomer[req.user[0]].customerReservable = data;
         console.log(currentCustomer[req.user[0]].customerReservable);
       });
-
   });
   pool.acquire(function (err, connection) {
       if (err) {
@@ -1157,36 +1157,6 @@ app.post('/reserve',loggedIn,async function(req, res){
       parkingspot.getIsFull(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
         currentReserve[req.user[0]].reserveIsfull = data;
         console.log(currentReserve[req.user[0]].reserveIsfull);
-      });
-  });
-  pool.acquire(function (err, connection) {
-      if (err) {
-          console.error(err);
-          connection.release();
-          return;
-      }
-      parkingspot.getMqttUser(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
-        currentReserve[req.user[0]].reserveMqttUser = data;
-      });
-  });
-  pool.acquire(function (err, connection) {
-      if (err) {
-          console.error(err);
-          connection.release();
-          return;
-      }
-      parkingspot.getMqttPass(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
-        currentReserve[req.user[0]].reserveMqttPass = data;
-      });
-  });
-  pool.acquire(function (err, connection) {
-      if (err) {
-          console.error(err);
-          connection.release();
-          return;
-      }
-      parkingspot.getMqttPort(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
-        currentReserve[req.user[0]].reserveMqttPort = data;
       });
   });
   if(currentCustomer[req.user[0]].customerReservable == 0 || currentReserve[req.user[0]].reserveIsfull == 1){
