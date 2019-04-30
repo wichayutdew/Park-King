@@ -690,7 +690,19 @@ app.get('/getTimeandFee', function(req, res){
     parkingFee: currentReserve[req.user[0]].currentFee
   });
 });
-
+app.get('/getReserveStatus', function(req, res){
+  pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      reserve.getReserveStatus(connection,currentReserve.reserveId,function(data){
+        currentReserve.reserveStatus = data;
+        console.log("Check Status = " + currentReserve.reserveStatus);
+      });
+      res.send(currentReserve.reserveStatus);
+  });
+});
 //------------------------------------------------------------------------------------------------------------//
 //------------------------------------------------------------------------------------------------------------//
 //ROUTES TO REGISTER PAGE
