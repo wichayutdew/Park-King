@@ -78,7 +78,7 @@ app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(session({
-    secret: "Fuck You",
+    secret: "Park King",
     resave: true,
     saveUninitialized: true
 }));
@@ -442,6 +442,7 @@ app.get('/home',loggedIn, async function(req, res){
       customer.setHasStopWatch(connection,req.user[1],req.user[0]);
     });
     }
+    await sleep(200);
     pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
@@ -577,7 +578,7 @@ app.get('/home',loggedIn, async function(req, res){
         currentCar[req.user[0]].currentCarPicture = data;
       });
     });
-    await sleep(1000);
+    await sleep(100);
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
@@ -636,6 +637,24 @@ app.get('/home',loggedIn, async function(req, res){
           reserve.getReserveStatus(connection,currentReserve[req.user[0]].reserveId,function(data){
             currentReserve[req.user[0]].reserveStatus = data;
             console.log("Check Status = " + currentReserve[req.user[0]].reserveStatus);
+          });
+      });
+      pool.acquire(function (err, connection) {
+          if (err) {
+            console.error(err);
+            connection.release();
+          }
+          reserve.getCurrentTime(connection,currentReserve[req.user[0]].reserveId,function(data){
+            currentReserve[req.user[0]].currentTime = data;
+          });
+      });
+      pool.acquire(function (err, connection) {
+          if (err) {
+            console.error(err);
+            connection.release();
+          }
+          reserve.getCurrentFee(connection,currentReserve[req.user[0]].reserveId,function(data){
+            currentReserve[req.user[0]].currentFee = data;
           });
       });
       await sleep(500);
@@ -706,15 +725,29 @@ app.get('/home',loggedIn, async function(req, res){
               isScan = false;
             }
       }
-      if(req.user[0]!= null){
-      currentReserve[req.user[0]].currentTime = parseInt(stopwatch[req.user[0]].read()/1000);
+      if(req.user[0] != null){
+        pool.acquire(function (err, connection) {
+          if (err) {
+            console.error(err);
+            connection.release();
+          }
+          currentReserve[req.user[0]].currentTime = parseInt(stopwatch[req.user[0]].read()/1000);
+          reserve.setCurrentTime(connection,currentReserve[req.user[0]].reserveId,currentReserve[req.user[0]].currentTime);
+        });
+        pool.acquire(function (err, connection) {
+          if (err) {
+            console.error(err);
+            connection.release();
+          }
+          currentReserve[req.user[0]].currentFee = parseInt(currentReserve[req.user[0]].currentTime * currentReserve[req.user[0]].feeRate);
+          reserve.setCurrentFee(connection,currentReserve[req.user[0]].reserveId,currentReserve[req.user[0]].currentFee);
+        });
       }
-      currentReserve[req.user[0]].currentFee = parseInt(currentReserve[req.user[0]].currentTime * currentReserve[req.user[0]].feeRate);
       console.log(currentReserve[req.user[0]].currentTime);
       console.log(currentReserve[req.user[0]].currentFee);
       console.log(currentReserve[req.user[0]].reserveTimein);
       console.log(currentReserve[req.user[0]].reserveTimeout);
-    },1000);
+    },2000);
 });
 
 app.get('/getTimeandFee', function(req, res){
@@ -1188,6 +1221,15 @@ app.post('/cancel',loggedIn,async function(req,res){
       currentCustomer[req.user[0]].cancelTime = data;
     })
   });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    reserve.getTimeIn(connection,currentReserve[req.user[0]].reserveId,function(data){
+      currentReserve[req.user[0]].reserveTimein = data;
+    })
+  });
   if(currentReserve[req.user[0]].reserveTimein != check){
       console.log('You cannot cancel the reservation');
       req.flash('error', 'You cannot cancel the reservation');
@@ -1399,6 +1441,16 @@ app.post('/pay',loggedIn,async function(req,res){
 });
 
 app.post('/paymentaction',loggedIn,async function(req, res){
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    transaction.getPaymentMethod(connection,currentTransaction[req.user[0]].transactionId,function(data){
+      currentTransaction[req.user[0]].paymentmethod = data;
+    });
+  });
+  await sleep(100);
   pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
