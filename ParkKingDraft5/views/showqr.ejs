@@ -116,15 +116,15 @@ var mqttSend = function(topic, msg) {
 function getCurrentReserveStatus(){
   $.get('/getReserveStatus')
   .done(function(rs){
-    console.log('Reserve Status: '+rs);
+    console.log('Reserve Status: '+ rs);
     if(rs == 'Checked In'){
-      clearInterval(getStatusID);
       console.log('Checked in Complete');
       alert('You have Checked In!');
-    } else if (rs == 'Checked Out'){
       clearInterval(getStatusID);
+    } else if (rs == 'Checked Out'){
       console.log('Check out complete');
       alert('You have Checked Out!');
+      clearInterval(getStatusID);
     }
   })
   .fail(function(err){

@@ -747,7 +747,7 @@ app.get('/home',loggedIn, async function(req, res){
       console.log(currentReserve[req.user[0]].currentFee);
       console.log(currentReserve[req.user[0]].reserveTimein);
       console.log(currentReserve[req.user[0]].reserveTimeout);
-    },2000);
+    },1000);
 });
 
 app.get('/getTimeandFee', function(req, res){
@@ -765,17 +765,27 @@ app.get('/getTimeandFee', function(req, res){
     parkingFee: currentReserve[req.user[0]].currentFee
   });
 });
+
 app.get('/getReserveStatus', function(req, res){
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    reserve.getReserveID(connection,req.user[1],function(data){
+      currentReserve[req.user[0]].reserveId = data;
+    });
+  });
   pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
         connection.release();
       }
-      reserve.getReserveStatus(connection,currentReserve.reserveId,function(data){
-        currentReserve.reserveStatus = data;
+      reserve.getReserveStatus(connection,currentReserve[req.user[0]].reserveId,function(data){
+        currentReserve[req.user[0]].reserveStatus = data;
         console.log("Check Status = " + currentReserve.reserveStatus);
       });
-      res.send(currentReserve.reserveStatus);
+      res.send(currentReserve[req.user[0]].reserveStatus);
   });
 });
 //------------------------------------------------------------------------------------------------------------//
@@ -815,6 +825,15 @@ app.get('/reserve',loggedIn, function(req, res){
 
 //ROUTE TO QR CODE PAGE
 app.get('/showqr', loggedIn,hasReserved,function(req, res){
+  pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      reserve.getReserveStatus(connection,currentReserve[req.user[0]].reserveId,function(data){
+        currentReserve[req.user[0]].reserveStatus = data;
+      });
+  });
   if(currentReserve[req.user[0]].reserveStatus == "Paid"){
     res.render('showqr', {qrCode: currentTransaction[req.user[0]].qrCode,
                           currentUsername: currentCustomer[req.user[0]].currentUsername,
@@ -839,6 +858,15 @@ app.get('/scanner', function(req,res){
 
 //ROUTE TO STATUS
 app.get('/status', loggedIn,hasReserved, async function(req, res){
+  pool.acquire(function (err, connection) {
+      if (err) {
+        console.error(err);
+        connection.release();
+      }
+      reserve.getReserveStatus(connection,currentReserve[req.user[0]].reserveId,function(data){
+        currentReserve[req.user[0]].reserveStatus = data;
+      });
+  });
   pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
@@ -1338,6 +1366,7 @@ app.post('/pay',loggedIn,async function(req,res){
       currentReserve[req.user[0]].reserveId = data;
     });
   });
+  await sleep(100);
   pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
