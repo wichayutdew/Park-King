@@ -1,6 +1,6 @@
 var isScan;
 var obb = {isScan: isScan};
-var stopwatch = "nothing";
+//var stopwatch = "nothing";
 //require Customer.js file
 const customer = require('./Customer.js');
 // var currentCustomer = new customer.createCustomer();
@@ -21,6 +21,7 @@ function createDeserializer() {
    this.currentReserve = null;
    this.currentTransaction = null;
    this.currentReceipt = null;
+   this.stopwatch = null;
 }
 
 //NPM REQUIRE
@@ -583,16 +584,17 @@ passport.deserializeUser(async function(user, done) {
         deserializing.currentReserve = currentReserve;
         deserializing.currentTransaction = currentTransaction;
         deserializing.currentReceipt = currentReceipt;
-<<<<<<< HEAD
+        //deserializing.stopwatch = null;
         if(deserializing.stopwatch == null){
-          deserializing.stopwatch = new Stopwatch();
-=======
-        deserializing.stopwatch = stopwatch;
-        if(deserializing.stopwatch == "nothing"){
-          deserializing.stopwatch = new Stopwatch();
-          console.log('Initializing stopwatch');
->>>>>>> 06a097b0e44d4050546e0b7e76c599232b68e95a
+            var Stopwatch = require('statman-stopwatch');
+            deserializing.stopwatch = new Stopwatch();
         }
+        // //deserializing.stopwatch = stopwatch;
+        // // if(deserializing.stopwatch == "nothing"){
+        // //   deserializing.stopwatch = new Stopwatch();
+        // //   console.log('Initializing stopwatch');
+        //
+        // }
         pool.acquire(function (err, connection) {
             if (err) {
               console.error(err);
@@ -798,7 +800,8 @@ passport.use('local-login', new LocalStrategy({
 // Operation
 //===================================================================================================================================================
 // ALL TIMER IS IN SECOND(TO CHANGE TO MINUTES CHANGE /1000 TO /60000)
-var Stopwatch = require('statman-stopwatch');
+
+
 //start user's timer
 function startUserTimer(){
   req.user.stopwatch.start();
@@ -1319,8 +1322,8 @@ app.get('/home',loggedIn, async function(req, res){
               });
               isScan = true;
           }
-          
-          if(stopwatch==null)
+          // var Stopwatch = require('statman-stopwatch');
+          // req.user.stopwatch = new Stopwatch();
       }
       else if(req.user.currentReserve.reserveTimeout != check && req.user.currentReserve.reserveStatus == "Paid"){
         pool.acquire(function (err, connection) {
@@ -1695,6 +1698,7 @@ app.get('/receipt',loggedIn, function(req, res){
 //ADD SENSOR CHECK
 app.post('/reserve',loggedIn,async function(req, res){
   console.log('Reserve Pressed');
+
   req.user.currentReserve.reservePlatenumber = req.body.plateNumber;
   req.user.currentReserve.reserveBuildingname = req.body.buildingName;
   console.log('reserve Plate number: '+req.user.currentReserve.reservePlatenumber);
@@ -2000,21 +2004,16 @@ app.post('/pay',loggedIn,async function(req,res){
       req.user.currentTransaction.qrCode = [req.user.currentTransaction.transactionId,req.user.currentCustomer.currentUsername];
       isScan = false;
       obb = {isScan: isScan};
-<<<<<<< HEAD
-=======
 
->>>>>>> 06a097b0e44d4050546e0b7e76c599232b68e95a
-
+      //var Ctime = req.user.stopwatch.stop();
+      //console.log('Stopped time : '+Ctime);
       req.user.currentReserve.feeRate = feeRate(req.user.currentCustomer.currentCustomerType);
-      req.user.currentTransaction.totaltime =  parseInt(req.user.stopwatch.stop()/1000);
+      req.user.stopwatch.stop();
+      req.user.currentTransaction.totaltime =  parseInt(req.user.stopwatch.read()/1000);
       console.log('SET TOTAL TIME: '+req.user.currentTransaction.totaltime);
       req.user.currentTransaction.parkingFee = parseInt((req.user.currentTransaction.totaltime * req.user.currentReserve.feeRate));
       req.user.stopwatch.reset();
-<<<<<<< HEAD
-=======
 
-
->>>>>>> 06a097b0e44d4050546e0b7e76c599232b68e95a
       if(req.user.currentTransaction.exceedCheckoutTime == true){
         req.user.currentTransaction.addedFee = 0;
         req.user.currentTransaction.exceedCheckoutTime = false;
@@ -2312,7 +2311,7 @@ app.post('/qrcode',async function(req, res){
       console.log("TransactionID" + transactionID);
     })
   });
-  await sleep(200);
+  await sleep(500);
   if(qr[0] == reserveID){
     console.log('Check in qrCode has been scanned');
     pool.acquire(function (err, connection) {
