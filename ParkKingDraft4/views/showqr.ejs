@@ -113,7 +113,7 @@ var mqttSend = function(topic, msg) {
 	client.send(message);
 }
 
-var getReserveStatusID = setInterval(getReserveStatus, 500);
+var getReserveStatusID = setInterval(getReserveStatus, 1000);
 
 function getReserveStatus() {
   $.get('/reserveStatus')
