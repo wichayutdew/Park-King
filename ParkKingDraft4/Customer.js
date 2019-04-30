@@ -327,6 +327,29 @@ exports.getReservable = function(connection,username,Callback) {
     connection.execSql(request);
 }
 
+exports.getHasStopWatch = function(connection,username,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT hasStopwatch FROM dbo.Customer WHERE Username = @username',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('username',TYPES.VarChar,username);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
 //*******************************************************Customer's Setter***********************************************
 exports.setUsername = function(connection, username, newUsername) {
   var request = new Request("UPDATE dbo.Customer SET Username = @newUsername WHERE Username = @username",
@@ -570,6 +593,44 @@ exports.editCustomer = function(connection,username,edited_info){
     request.addParameter('lastName',TYPES.VarChar,edited_info.lastname);
     request.addParameter('email',TYPES.VarChar,edited_info.email);
     request.addParameter('customerpicture',TYPES.VarChar,edited_info.CustomerPicture);
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+}
+
+exports.setReservable = function(connection, username, reservable) {
+  var request = new Request("UPDATE dbo.Customer SET Reserveable =  @reservable WHERE Username = @username",
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+      } else {
+        connection.release();
+      }
+    });
+    request.addParameter('reservable',TYPES.Bit,reservable);
+    request.addParameter('username',TYPES.VarChar,username);
+  request.on('requestCompleted', function() {
+    //connection.close();
+    //error here
+  });
+  connection.execSql(request);
+}
+
+exports.setHasStopWatch = function(connection, username, hasStopWatch) {
+  var request = new Request("UPDATE dbo.Customer SET hasStopWatch =  @hasStopWatch WHERE Username = @username",
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+      } else {
+        connection.release();
+      }
+    });
+    request.addParameter('hasStopWatch',TYPES.Int,hasStopWatch);
+    request.addParameter('username',TYPES.VarChar,username);
   request.on('requestCompleted', function() {
     //connection.close();
     //error here

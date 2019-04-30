@@ -51,7 +51,7 @@
                 <li style="margin-top: 30px;"><a href="/edituserinfo" class="button green">Edit profile</a></li>
             </div>
 
-            <div id="car-display" class="infoDiv dark-grey-div-gradient center">
+            <div class="infoDiv dark-grey-div-gradient center">
                 <h2>My Car</h2>
 
                 <% for(i = 0; i < currentPlateNumber.length; i++){ %>
@@ -68,36 +68,6 @@
                   </div>
                 <% } %>
                 <script>
-                //----------------------------------
-                var car = [];
-                $.get('/getCarInfo')
-                  .done(function(d){
-                    // console.log(d+'!!!!!!!!!!!!!');
-                    // reqUser = d;
-                    car = d;
-                  })
-                  .fail(function(){
-                    console.log('err');
-                  });
-
-                for(i=0; i < car.length; i++){
-                  $('#car-display').html(
-                    <div class="car-div">
-                      <li><img src="data:image/png;base64,<%= currentCarPicture[i] %>" width="50%" style="border-radius:10px;"></li>
-                      <li style="padding-bottom: 20px;">Plate Number : <%=currentPlateNumber[i]%><br>
-                                                        Province : <%=currentPlateProvince[i]%><br>
-                                                        Brand : <%=currentBrand[i]%><br>
-                                                        Model : <%=currentModel[i]%><br>
-                                                        Color : <%=currentColor[i]%></li>
-                    <form action="/deletecar/<%= i %>" class="deletecar" enctype="multipart/form-data" method="POST">
-                      <li><button type="submit" class="button purple" style="width: auto;">Delete Car</button></li>
-                    </form>
-                    </div>
-                  );
-                }
-
-                //----------------------------------
-
                 $('form.deletecar').submit(function(event){
                         var r = confirm("Delete this car?");
                         if (r == true) {

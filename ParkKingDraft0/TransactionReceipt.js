@@ -63,7 +63,7 @@ exports.Transaction = function(connection,platenumber,username,floor,slot,buildi
 exports.getTransactionID = function(connection,username,Callback) {
   var returnedValue  = [];
   var request = new Request(
-    'SELECT TransactionID FROM dbo.TransactionReceipt WHERE Username = @username AND transactionStatus != @transactionstatus',
+    'SELECT TransactionID FROM dbo.TransactionReceipt WHERE Username = @username AND transactionStatus = @transactionstatus',
     function(err, rowCount, rows) {
       if (err) {
         console.log(err);
@@ -75,7 +75,7 @@ exports.getTransactionID = function(connection,username,Callback) {
       }
     });
     request.addParameter('username',TYPES.VarChar,username);
-    request.addParameter('transactionstatus',TYPES.VarChar,"Checked Out");
+    request.addParameter('transactionstatus',TYPES.VarChar,"Paid");
     request.on('row', function (columns) {
         columns.forEach(function(column) {
             returnedValue.push(column.value);
@@ -375,6 +375,29 @@ exports.getAllPaymentMethod = function(connection,username,Callback) {
       }
     });
     request.addParameter('username',TYPES.VarChar,username);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getTransactionStatus = function(connection,transactionid,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT transactionStatus FROM dbo.Reserve WHERE TransactionID = @transactionid',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('transactionid',TYPES.VarChar,transactionid);
     request.on('row', function (columns) {
         columns.forEach(function(column) {
             returnedValue.push(column.value);

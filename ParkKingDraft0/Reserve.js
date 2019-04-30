@@ -25,6 +25,7 @@ exports.createReserve = function() {
    this.qrCode = null;
    this.currentFee = null;
    this.currentTime = null;
+   this.feeRage = null;
 }
 
 //*******************************************************Inserting new Reserve into database***********************************************
@@ -46,9 +47,9 @@ exports.Reserve = function(connection,platenumber, username, floor, slot, buildi
   request.addParameter('buildingname',TYPES.VarChar,buildingname);
   request.addParameter('qrcodein',TYPES.VarChar,null);
   request.addParameter('qrcodeout',TYPES.VarChar,null);
-  request.addParameter('time_in',TYPES.VarChar,"initialize");
-  request.addParameter('time_out',TYPES.VarChar,"initialize");
-  request.addParameter('reservestatus',TYPES.VarChar,"Reserved");
+  request.addParameter('time_in',TYPES.VarChar,'initialize');
+  request.addParameter('time_out',TYPES.VarChar,'initialize');
+  request.addParameter('reservestatus',TYPES.VarChar,'Reserved');
   request.addParameter('reserveid',TYPES.VarChar,reserveid);
   request.addParameter('haspaid',TYPES.Bit,0);
 
@@ -510,7 +511,7 @@ exports.setReserveStatus = function(connection,reserveid,reservestatus) {
       connection.release();
     }
   });
-  request.addParameter('reservestatus',TYPES.Bit,reservestatus);
+  request.addParameter('reservestatus',TYPES.VarChar,reservestatus);
   request.addParameter('reserveid',TYPES.VarChar,reserveid);
   request.on('requestCompleted', function() {
     //connection.close();
@@ -529,7 +530,7 @@ exports.setCurrentFee = function(connection,reserveid,currentfee) {
       connection.release();
     }
   });
-  request.addParameter('currentfee',TYPES.Bit,currentfee);
+  request.addParameter('currentfee',TYPES.VarChar,currentfee);
   request.addParameter('reserveid',TYPES.VarChar,reserveid);
   request.on('requestCompleted', function() {
     //connection.close();
@@ -548,7 +549,7 @@ exports.setCurrentTime = function(connection,reserveid,currenttime) {
       connection.release();
     }
   });
-  request.addParameter('currenttime',TYPES.Bit,currenttime);
+  request.addParameter('currenttime',TYPES.VarChar,currenttime);
   request.addParameter('reserveid',TYPES.VarChar,reserveid);
   request.on('requestCompleted', function() {
     //connection.close();

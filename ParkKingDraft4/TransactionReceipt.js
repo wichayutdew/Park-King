@@ -530,7 +530,7 @@ exports.setExceedCheckoutTime = function(connection,transactionid,exceedcheckout
       connection.release();
     }
   });
-  request.addParameter('exceedcheckouttime',TYPES.VarChar,exceedcheckouttime);
+  request.addParameter('exceedcheckouttime',TYPES.Bit,exceedcheckouttime);
   request.addParameter('transactionid',TYPES.VarChar,transactionid);
   request.on('requestCompleted', function() {
     //connection.close();
