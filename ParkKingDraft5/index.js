@@ -333,7 +333,7 @@ function loggedIn(req, res, next) {
 }
 
 // Middleware Check if the user has already reaserved return next()
-function hasReserved(req, res, next) {
+async function hasReserved(req, res, next) {
   pool.acquire(function (err, connection) {
     if (err) {
         console.error(err);
@@ -343,6 +343,7 @@ function hasReserved(req, res, next) {
       currentCustomer[req.user[0]].customerReservable = data;
     });
   });
+  await sleep(1000);
     if (currentCustomer[req.user[0]].customerReservable == 1) {
       res.redirect('/reserve');
     }else{
@@ -857,7 +858,7 @@ app.get('/scanner', function(req,res){
 });
 
 //ROUTE TO STATUS
-app.get('/status', loggedIn,hasReserved, async function(req, res){
+app.get('/status', loggedIn, hasReserved, async function(req, res){
   pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
@@ -903,7 +904,7 @@ app.get('/status', loggedIn,hasReserved, async function(req, res){
       currentReserve[req.user[0]].reserveColor = data;
     })
   });
-  await sleep(500)
+  await sleep(1000);
   pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
@@ -1005,7 +1006,7 @@ app.get('/userinfo', loggedIn, async function(req, res){
          currentReceipt[req.user[0]].receiptTotaltime = data;
        })
    });
-   await sleep(500);
+   await sleep(1000);
    pool.acquire(function (err, connection) {
        if (err) {
            console.error(err);
