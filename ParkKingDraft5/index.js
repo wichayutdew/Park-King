@@ -1,6 +1,5 @@
 var totalArtsFreeSpot,totalPoliFreeSpot,lowestFloorArts,lowestSlotArts,lowestFloorPoli,lowestSlotPoli;
-var isScan;
-var obb = {isScan: isScan};
+var obb;
 var check = "initialize";
 
 //require .js file
@@ -663,7 +662,7 @@ app.get('/home',loggedIn, async function(req, res){
                     reserve.setReserveStatus(connection,currentReserve[req.user[0]].reserveId,"Checked In");
                     console.log("Checked in Status = " + currentReserve[req.user[0]].reserveStatus);
                 });
-                isScan = true;
+                currentReserve[req.user[0]].isScan = true;
             }
       }else if(currentReserve[req.user[0]].reserveTimeout != check && currentReserve[req.user[0]].reserveTimeout != null && currentReserve[req.user[0]].reserveStatus == "Paid"){
             pool.acquire(function (err, connection) {
@@ -787,12 +786,12 @@ app.get('/showqr', loggedIn,hasReserved,function(req, res){
     res.render('showqr', {qrCode: currentTransaction[req.user[0]].qrCode,
                           currentUsername: currentCustomer[req.user[0]].currentUsername,
                           currentPicture: currentCustomer[req.user[0]].currentPicture,
-                          isScan: isScan});
+                          isScan: currentReserve[req.user[0]].isScan});
   }else{
     res.render('showqr', {qrCode: currentReserve[req.user[0]].qrCode,
                           currentUsername: currentCustomer[req.user[0]].currentUsername,
                           currentPicture: currentCustomer[req.user[0]].currentPicture,
-                          isScan: isScan});
+                          isScan: currentReserve[req.user[0]].isScan});
   }
 
 });
@@ -1072,7 +1071,7 @@ app.post('/reserve',loggedIn,async function(req, res){
         }
         currentReserve[req.user[0]].reserveId = generateTokenID();
         currentReserve[req.user[0]].qrCode = [currentReserve[req.user[0]].reserveId,req.user[1]];
-        obb = {isScan: isScan};
+        obb = {isScan: currentReserve[req.user[0]].isScan};
         reserve.Reserve(connection,currentReserve[req.user[0]].reservePlatenumber,req.user[1], currentReserve[req.user[0]].reserveFloor, currentReserve[req.user[0]].reserveSlot,currentReserve[req.user[0]].reserveBuildingname, currentReserve[req.user[0]].reserveId);
         console.log('Reserve finished');
     });
@@ -1333,8 +1332,8 @@ app.post('/pay',loggedIn,async function(req,res){
       }
       currentTransaction[req.user[0]].transactionId = generateTokenID();
       currentTransaction[req.user[0]].qrCode = [currentTransaction[req.user[0]].transactionId,req.user[1]];
-      isScan = false;
-      obb = {isScan: isScan};
+      currentReserve[req.user[0]].isScan = false;
+      obb = {isScan: currentReserve[req.user[0]].isScan};
       currentTransaction[req.user[0]].totaltime = parseInt(stopwatch[req.user[0]].stop()/1000);
       stopwatch[req.user[0]].reset();
       currentTransaction[req.user[0]].parkingFee = parseInt((currentTransaction[req.user[0]].totaltime * currentReserve[req.user[0]].feeRate) + currentTransaction[req.user[0]].addedFee);
@@ -1489,7 +1488,6 @@ app.post('/deletecar/:id',loggedIn, function(req,res){
   });
 
 },autoReap);
-
 
 //RECEIPT POST REQUEST
 app.post('/receipt/:id',loggedIn,async function(req,res){
