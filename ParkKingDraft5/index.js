@@ -1556,10 +1556,14 @@ app.post('/paymentaction',loggedIn,async function(req, res){
     }
     currentTransaction[req.user[0]].paymentmethod = req.body.paymentChoice;
     transaction.setPaymentMethod(connection,currentTransaction[req.user[0]].transactionId,currentTransaction[req.user[0]].paymentmethod);
-    res.render('showqr', {qrCode:currentTransaction[req.user[0]].qrCode,
-                          currentUsername: req.user[1],
-                          currentPicture: currentCustomer[req.user[0]].currentPicture
-                        });
+                        res.render('showqr', {
+                            qrCode:currentTransaction[req.user[0]].qrCode,
+                            currentUsername: req.user[1],
+                            currentPicture: currentCustomer[req.user[0]].currentPicture,ฃ
+                            MqttUser:currentReserve[req.user[0]].reserveMqttUser,
+                            MqttPass:currentReserve[req.user[0]].reserveMqttPass,
+                            MqttPort:currentReserve[req.user[0]].reserveMqttPort
+                          });
   });
 })
 //CAR REGISTER POST REQUEST
