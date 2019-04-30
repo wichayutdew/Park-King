@@ -61,12 +61,12 @@ exports.insert_newCustomer = function(connection,customer_info,done,newUserMysql
 //*******************************************************Only used in Index.js***********************************************
 exports.getID = function(user) {
   var userID;
-  if(user[6] == "Student"){
-    userID = user[7];
-  }else if(user[6] == "Professor"){
-    userID = user[8];
+  if(user[2] == "Student"){
+    userID = user[3];
+  }else if(user[2] == "Professor"){
+    userID = user[4];
   }else{
-    userID = user[9];
+    userID = user[5];
   }
   return userID;
 }

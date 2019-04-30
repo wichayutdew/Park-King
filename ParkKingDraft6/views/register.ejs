@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login</title>
+
+    <link rel="stylesheet" href="/stylesheet/form.css">
+    <link rel="stylesheet" href="/stylesheet/style.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+</head>
+
+
+<body>
+
+        <form action="/register" class="login100-form validate-form" enctype="multipart/form-data" method="POST">
+            <div class="container-login100" style="background-color: black;">
+              <div class="wrap-login100 p-l-55 p-r-55 p-t-80 p-b-30">
+                <span class="login100-form-title p-b-37">Register</span>
+
+                <div class="wrap-input100 validate-input m-b-20">
+                  <input class="input100" type="text" name="username" placeholder="Username" id="username" required>
+                  <span class="focus-input100"></span>
+                </div>
+
+                <div class="wrap-input100 validate-input m-b-25">
+                  <input class="input100" type="password" name="password" placeholder="Password" id="password" required>
+                  <span class="focus-input100"></span>
+                </div>
+
+                <div class="wrap-input100 validate-input m-b-25" >
+                  <input class="input100" type="password" name="passwordConfirmation" placeholder="Re-Enter your Password" id="passwordConfirmation">
+                  <span class="focus-input100"></span>
+                </div>
+
+                <div class="wrap-input100 validate-input m-b-25">
+                  <input class="input100" type="email" name="email" placeholder="E-Mail" id="email" required>
+                  <span class="focus-input100"></span>
+                </div>
+
+                <div class="wrap-input100 validate-input m-b-20">
+                  <input class="input100" type="text" name="firstName" placeholder="First Name" id="firstname" required>
+                  <span class="focus-input100"></span>
+                </div>
+
+                <div class="wrap-input100 validate-input m-b-25">
+                  <input class="input100" type="text" name="lastName" placeholder="Last Name" id="lastname" required>
+                  <span class="focus-input100"></span>
+                </div>
+                                <!-- <div class="wrap-input100 validate-input m-b-25" data-validate = "Enter password">
+                                        <input class="input100" type="text" name="profession" placeholder="Profession">
+                                        <span class="focus-input100"></span>
+                                </div>   -->
+                <div class="wrap-input100 validate-input m-b-25" >
+                  <select class="input100 select100" name="occupation" onchange="occupationCheck(this)" id="occupation" style="border:none;">
+                    <option>Select Your Occupation</option>
+                    <option value="Student">Student</option>
+                    <option value="Professor">Professor or Faculty member</option>
+                    <option value="Guest">Others</option>
+                  </select>
+                </div>
+
+                                <!-- hidden input for student id -->
+                                <div id="inputStudentID" class="wrap-input100 validate-input m-b-25" style="display: none;">
+                                        <input class="input100" type="text" name="studentID" placeholder="Student ID" id="studentID">
+                                        <span class="focus-input100"></span>
+                                </div>
+                                <!-- hidden input for professor id -->
+                                <div id="inputProfessorID" class="wrap-input100 validate-input m-b-25" style="display: none;">
+                                        <input class="input100" type="text" name="professorID" placeholder="Professor ID" id="professorID">
+                                        <span class="focus-input100"></span>
+                                </div>
+                                <!-- hidden input for national id -->
+                                <div id="inputNationalID" class="wrap-input100 validate-input m-b-25" style="display: none;">
+                                        <input class="input100" type="text" name="NationalID" placeholder="National ID" id="nationalID">
+                                        <span class="focus-input100"></span>
+                                </div>
+                                                            <!-- JS for occupation checking -->
+                                                            <script type="text/javascript">
+                                                                function occupationCheck(that){
+                                                                if(that.value == "Student"){
+                                                                    document.getElementById("inputStudentID").style.display = "block";
+                                                                    document.getElementById("inputProfessorID").style.display = "none";
+                                                                    document.getElementById("inputNationalID").style.display = "none";
+                                                                } else if(that.value == "Professor"){
+                                                                    document.getElementById("inputStudentID").style.display = "none";
+                                                                    document.getElementById("inputProfessorID").style.display = "block";
+                                                                    document.getElementById("inputNationalID").style.display = "none";
+                                                                } else if(that.value == "Guest"){
+                                                                    document.getElementById("inputStudentID").style.display = "none";
+                                                                    document.getElementById("inputProfessorID").style.display = "none";
+                                                                    document.getElementById("inputNationalID").style.display = "block";
+                                                                } else{
+                                                                    document.getElementById("inputStudentID").style.display = "none";
+                                                                    document.getElementById("inputProfessorID").style.display = "none";
+                                                                    document.getElementById("inputNationalID").style.display = "none";
+                                                                }
+                                                                }
+                                                            </script>
+
+                                <div class="wrap-input100 validate-input m-b-25 p-2" data-validate = "Enter password">
+                                        <!--id="uploadPicBut"-->
+                                        <input type='file' name="profilePic" accept="image/*"/>
+                                        <!-- onchange="reasURL(this); -->
+                                        <span class="focus-input100"></span>
+                                        <!-- <img src="" id="uploadPic" width=100 height=100> -->
+                                        <p class="d-inline" style="margin-left: 10px;">Upload Your Picture</p>
+                                </div>
+
+                                <div class="container-login100-form-btn">
+                                    <button type="submit" class="login100-form-btn">
+                                        Submit
+                                    </a>
+                                </div>
+
+                                <div class="text-center" style="margin-top: 10px;">
+                                    <a href="/login" class="txt2 hov1">
+                                        Go Back
+                                    </a>
+                                </div>
+
+            </div></div>
+
+                        </form>
+
+
+                            <script type="text/javascript">
+                                function readURL(input) {
+                                   if (input.files && input.files[0]) {
+                                       var reader = new FileReader();
+
+                                       reader.onload = function (e) {
+                                           $('#blah')
+                                               .attr('src', e.target.result);
+                                       };
+
+                                       reader.readAsDataURL(input.files[0]);
+                                   }
+                               }
+                              </script>
+
+<script src="/js/registerScript.js"></script>
+
+</body>
+</html>

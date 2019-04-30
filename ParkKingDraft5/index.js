@@ -104,7 +104,7 @@ passport.serializeUser(function(user, done) {
         console.log('serializer');
         done(null, user[0]);
     });
-passport.deserializeUser(function(user, done) {
+passport.deserializeUser(async function(user, done) {
         console.log('deserializer');
         var deserializing = [];
         pool.acquire(function (err, connection) {
@@ -113,7 +113,44 @@ passport.deserializeUser(function(user, done) {
               connection.release();
           }
           customer.getHasStopWatch(connection,user,function(data){
-            deserializing.push(data);
+            deserializing[0] = data;
+          });
+        });
+        deserializing[1] = user;
+        pool.acquire(function (err, connection) {
+          if (err) {
+              console.error(err);
+              connection.release();
+          }
+          customer.getCustomerType(connection,user,function(data){
+            deserializing[2] = data;
+          });
+        });
+        pool.acquire(function (err, connection) {
+          if (err) {
+              console.error(err);
+              connection.release();
+          }
+          customer.getStudentID(connection,user,function(data){
+            deserializing[3] = data;
+          });
+        });
+        pool.acquire(function (err, connection) {
+          if (err) {
+              console.error(err);
+              connection.release();
+          }
+          customer.getProfessorID(connection,user,function(data){
+            deserializing[4] = data;
+          });
+        });
+        pool.acquire(function (err, connection) {
+          if (err) {
+              console.error(err);
+              connection.release();
+          }
+          customer.getNationalID(connection,user,function(data){
+            deserializing[5] = data;
           });
         });
         pool.acquire(function (err, connection) {
@@ -123,7 +160,7 @@ passport.deserializeUser(function(user, done) {
               return;
             }
             var request = new Request(
-                "SELECT * FROM dbo.Customer WHERE Username = @username",
+                "SELECT NationalID FROM dbo.Customer WHERE Username = @username",
                 function(err,rows){
                     if(err){
                         connection.release();
@@ -133,12 +170,8 @@ passport.deserializeUser(function(user, done) {
                     connection.release();
                 }
             );
-            //set parameterized query
             request.addParameter('username',TYPES.VarChar,user);
             request.on('row', function (columns) {
-                columns.forEach(function(column) {
-                    deserializing.push(column.value);
-                });
             });
             connection.execSql(request);
           });
@@ -371,7 +404,6 @@ function createstopwatch(){
   var stopwatchLength = stopwatch.push(tempstopwatch);
   return stopwatchLength-1;
 }
-
 //=======================================================
 // ROUTES
 //=======================================================
@@ -389,10 +421,10 @@ app.get('/logout',loggedIn,function(req, res){
 //ROUTE TO HOME
 app.get('/home',loggedIn, async function(req, res){
     if(req.user[0] == null){
-    var tempIndex = createstopwatch();
-    console.log('stopwatch Rightnow: '+stopwatch);
-    console.log('stopwatchIndex: '+tempIndex);
-    pool.acquire(function (err, connection) {
+      var tempIndex = createstopwatch();
+      console.log('stopwatch Rightnow: '+ stopwatch);
+      console.log('stopwatchIndex: ' + tempIndex);
+      pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
           connection.release();
@@ -401,7 +433,7 @@ app.get('/home',loggedIn, async function(req, res){
       req.user[0] = tempIndex;
       customer.setHasStopWatch(connection,req.user[1],req.user[0]);
     });
-  }
+    }
     pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
@@ -666,7 +698,9 @@ app.get('/home',loggedIn, async function(req, res){
               isScan = false;
             }
       }
+      if(req.user[0]!= null){
       currentReserve[req.user[0]].currentTime = parseInt(stopwatch[req.user[0]].read()/1000);
+      }
       currentReserve[req.user[0]].currentFee = parseInt(currentReserve[req.user[0]].currentTime * currentReserve[req.user[0]].feeRate);
       console.log(currentReserve[req.user[0]].currentTime);
       console.log(currentReserve[req.user[0]].currentFee);
