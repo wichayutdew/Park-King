@@ -335,6 +335,15 @@ function loggedIn(req, res, next) {
 
 // Middleware Check if the user has already reaserved return next()
 function hasReserved(req, res, next) {
+  pool.acquire(function (err, connection) {
+    if (err) {
+        console.error(err);
+        connection.release();
+    }
+    customer.getReservable(connection,req.user[1],function(data){
+      currentCustomer[req.user[0]].customerReservable = data;
+    });
+  });
     if (currentCustomer[req.user[0]].customerReservable == 1) {
       res.redirect('/reserve');
     }else{
@@ -1284,6 +1293,15 @@ app.post('/pay',loggedIn,async function(req,res){
       console.error(err);
       connection.release();
     }
+    reserve.getReserveID(connection,req.user[1],function(data){
+      currentReserve[req.user[0]].reserveId = data;
+    });
+  });
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
     reserve.getTimeIn(connection,currentReserve[req.user[0]].reserveId,function(data){
       currentReserve[req.user[0]].reserveTimein = data;
     });
@@ -1324,9 +1342,9 @@ app.post('/pay',loggedIn,async function(req,res){
         currentTransaction[req.user[0]].addedFee = 0;
         currentTransaction[req.user[0]].exceedCheckoutTime = false;
       }
-
+      currentTransaction[req.user[0]].paymentmethod = null;
       currentTransaction[req.user[0]].date = transaction.getCurrentDate();
-      transaction.Transaction(connection,currentReserve[req.user[0]].reservePlatenumber,req.user[1],currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,currentReserve[req.user[0]].reserveBuildingname,currentTransaction[req.user[0]].transactionId,currentTransaction[req.user[0]].parkingFee,null,currentTransaction[req.user[0]].totaltime,currentTransaction[req.user[0]].date);
+      transaction.Transaction(connection,currentReserve[req.user[0]].reservePlatenumber,req.user[1],currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,currentReserve[req.user[0]].reserveBuildingname,currentTransaction[req.user[0]].transactionId,currentTransaction[req.user[0]].parkingFee,currentTransaction[req.user[0]].paymentmethod,currentTransaction[req.user[0]].totaltime,currentTransaction[req.user[0]].date);
       res.redirect('/payment');
     });
     sleep(1000*60*15).then(() => {
