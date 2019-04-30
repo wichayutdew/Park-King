@@ -892,6 +892,13 @@ app.route('/getScan').get(function(req, res, next){
 //   }
 //   res.json(mqtt);
 // });
+<<<<<<< HEAD
+=======
+
+app.get('/getReserveSpot', function(req, res){
+    res.send(currentReserve[req.user[0]].reserveSlot);
+});
+>>>>>>> 11952e92163b50ff36e94cf80f3787c6f9d77b7e
 
 app.get('/scanner', function(req,res){
   res.render('scanner');
