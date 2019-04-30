@@ -27,132 +27,7 @@
       border-radius: 10px;
     }
   </style>
-  <script>
-// var config = {
-// 	mqtt_server: "m24.cloudmqtt.com",
-// 	mqtt_websockets_port: 34366,
-// 	mqtt_user: "vxamsplq",
-// 	mqtt_password: "VQ5vPZMpOmrc"
-// };
-var config = {
-	mqtt_server:"m24.cloudmqtt.com",
-	mqtt_websockets_port:null,
-	mqtt_user:null,
-	mqtt_password:null
-};
-function checkUser(){
-  $.get('/getUser', function(data){
-    config.mqtt_user = data.mqtt_user;
-    console.log('Mqtt User: '+ config.mqtt_user);
-    config.mqtt_password = data.mqtt_password;
-    console.log('Mqtt Password: '+ config.mqtt_password);
-    config.mqtt_websockets_port = data.mqtt_websockets_port;
-    console.log('Mqtt Port: '+ config.mqtt_websockets_port);
-    console.log('Mqtt Server: '+ config.mqtt_server);
-  });
-}
-setInterval(checkUser,1000);
 
-$(document).ready(function(e) {
-	// Create a client instance
-	client = new Paho.MQTT.Client(config.mqtt_server, config.mqtt_websockets_port, "web_" + parseInt(Math.random() * 100, 10));
-	//Example client = new Paho.MQTT.Client("m11.cloudmqtt.com", 32903, "web_" + parseInt(Math.random() * 100, 10));
-	// connect the client
-	client.connect({
-		useSSL: true,
-		userName: config.mqtt_user,
-		password: config.mqtt_password,
-		onSuccess: function() {
-			// Once a connection has been made, make a subscription and send a message.
-			// console.log("onConnect");
-			$("#status").text("Connected").removeClass().addClass("connected");
-			client.subscribe("/PARKINGFLAP");
-			mqttSend("/PARKINGFLAP", "PREVIOUS");
-		},
-		onFailure: function(e) {
-			$("#status").text("Error : " + e).removeClass().addClass("error");
-			// console.log(e);
-		}
-	});
-
-	client.onConnectionLost = function(responseObject) {
-		if (responseObject.errorCode !== 0) {
-			$("#status").text("onConnectionLost:" + responseObject.errorMessage).removeClass().addClass("connect");
-			setTimeout(function() { client.connect() }, 1000);
-		}
-	}
-
-	client.onMessageArrived = function(message) {
-		// $("#status").text("onMessageArrived:" + message.payloadString).removeClass().addClass("error");
-		console.log(message.payloadString);
-		if (message.payloadString == "open" || message.payloadString == "close") {
-			$("#open").attr("disabled", (message.payloadString == "open" ? true : false));
-			$("#close").attr("disabled", (message.payloadString == "close" ? true : false));
-		}
-	}
-
-  var isScan;
-  function checkScan(){
-    $.get('/getScan', function(data){
-      isScan = data.isScan;
-      console.log('Scan status:'+isScan);
-    });
-  }
-  setInterval(checkScan,1000)
-
-	$("#open").click(function(e) {
-    if(isScan){
-      console.log('openning flap');
-      mqttSend("/PARKINGFLAP", "OPEN");
-    } else {
-      console.log('scan first');
-    }
-    var r = confirm("Do you want to open the parking flap?");
-    if (r == true) {
-      return;
-    } else {
-      return false;
-  }
-  });
-	$("#close").click(function(e) {
-      mqttSend("/PARKINGFLAP", "CLOSE");
-      var r = confirm("Do you want to close the parking flap?");
-      if (r == true) {
-        return;
-      } else {
-        return false;
-    }
-  });
-});
-
-var mqttSend = function(topic, msg) {
-	var message = new Paho.MQTT.Message(msg);
-	message.destinationName = topic;
-	client.send(message);
-}
-
-function getCurrentReserveStatus(){
-  $.get('/getReserveStatus')
-  .done(function(rs){
-    console.log('Reserve Status: '+ rs);
-    if(rs == 'Checked In'){
-      console.log('Checked in Complete');
-      alert('You have Checked In!');
-      clearInterval(getStatusID);
-    } else if (rs == 'Checked Out'){
-      console.log('Check out complete');
-      alert('You have Checked Out!');
-      clearInterval(getStatusID);
-    }
-  })
-  .fail(function(err){
-    console.log('something went wrong getting current status...'+err);
-  });
-}
-
-var getStatusID = setInterval(getCurrentReserveStatus, 1000);
-
-</script>
 
 </head>
 
@@ -208,6 +83,133 @@ var getStatusID = setInterval(getCurrentReserveStatus, 1000);
         element.appendChild(showQRCode(text));
     }
     updateQRCode('<%= qrCode %>');
+
+
+    function getCurrentReserveStatus(){
+      $.get('/getReserveStatus')
+      .done(function(rs){
+        console.log('Reserve Status: '+ rs);
+        if(rs == 'Checked In'){
+          console.log('Checked in Complete');
+          alert('You have Checked In!');
+          clearInterval(getStatusID);
+        } else if (rs == 'Checked Out'){
+          console.log('Check out complete');
+          alert('You have Checked Out!');
+          clearInterval(getStatusID);
+        }
+      })
+      .fail(function(err){
+        console.log('something went wrong getting current status...'+err);
+      });
+    }
+    var getStatusID = setInterval(getCurrentReserveStatus, 1000);
+
+    //Parking Flapppp
+
+
+      var parkingSpot;
+
+      $.get('/getReserveSpot')
+      .done(function(data){
+        parkingSpot = data;
+        console.log(parkingSpot);
+      })
+      .fail(function(){
+        console.log('err');
+      });
+
+
+
+      var config = {
+      	     mqtt_server: "m24.cloudmqtt.com",
+      	     mqtt_websockets_port: 34366,
+      	     mqtt_user: "vxamsplq",
+      	     mqtt_password: "VQ5vPZMpOmrc"
+          };
+
+    // var intervallID = setInterval(setConfig, 500);
+    //
+    // function setConfig(){
+    //   if(parkingSpot == "p1"){
+    //     console.log('first flap');
+    //     config = {
+    // 	     mqtt_server: "m24.cloudmqtt.com",
+    // 	     mqtt_websockets_port: 34366,
+    // 	     mqtt_user: "vxamsplq",
+    // 	     mqtt_password: "VQ5vPZMpOmrc"
+    //     };
+    //     clearInterval(intervallID);
+    //   } else  {
+    //     console.log('second flap');
+    //     config = {
+  	//        mqtt_server: "m24.cloudmqtt.com",
+  	//         mqtt_websockets_port: 33596,
+  	//          mqtt_user: "nujmgvxl",
+  	//           mqtt_password: "F0zHX4VBIz9H"
+    //         }
+    //         clearInterval(intervallID);
+    //   }
+    // }
+
+
+
+
+
+
+$(document).ready(function(e) {
+	// Create a client instance
+	client = new Paho.MQTT.Client(config.mqtt_server, config.mqtt_websockets_port, "web_" + parseInt(Math.random() * 100, 10));
+	//Example client = new Paho.MQTT.Client("m11.cloudmqtt.com", 32903, "web_" + parseInt(Math.random() * 100, 10));
+
+	// connect the client
+	client.connect({
+		useSSL: true,
+		userName: config.mqtt_user,
+		password: config.mqtt_password,
+		onSuccess: function() {
+			// Once a connection has been made, make a subscription and send a message.
+			// console.log("onConnect");
+			$("#status").text("Connected").removeClass().addClass("connected");
+			client.subscribe("/PARKINGFLAP");
+			mqttSend("/PARKINGFLAP", "PREVIOUS");
+		},
+		onFailure: function(e) {
+			$("#status").text("Error : " + e).removeClass().addClass("error");
+			// console.log(e);
+		}
+	});
+
+	client.onConnectionLost = function(responseObject) {
+		if (responseObject.errorCode !== 0) {
+			$("#status").text("onConnectionLost:" + responseObject.errorMessage).removeClass().addClass("connect");
+			setTimeout(function() { client.connect() }, 1000);
+		}
+	}
+
+	client.onMessageArrived = function(message) {
+		// $("#status").text("onMessageArrived:" + message.payloadString).removeClass().addClass("error");
+		console.log(message.payloadString);
+		if (message.payloadString == "open" || message.payloadString == "close") {
+			$("#open").attr("disabled", (message.payloadString == "open" ? true : false));
+			$("#close").attr("disabled", (message.payloadString == "close" ? true : false));
+		}
+	}
+
+	$("#open").click(function(e) {
+        mqttSend("/PARKINGFLAP", "OPEN");
+    });
+
+	$("#close").click(function(e) {
+        mqttSend("/PARKINGFLAP", "CLOSE");
+    });
+});
+
+  var mqttSend = function(topic, msg) {
+	var message = new Paho.MQTT.Message(msg);
+	message.destinationName = topic;
+	client.send(message);
+  }
   </script>
 
 
