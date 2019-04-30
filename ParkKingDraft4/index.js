@@ -1,6 +1,6 @@
 //VARIABLES
-var isScan;
-var obb = {isScan: isScan};
+var isScan = [];
+var obb = {isScan: isScan[req.user.currentCustomer.customerHasStopWatch]};
 var stopwatch = [];
 var totalArtsFreeSpot,totalPoliFreeSpot,lowestFloorArts,lowestSlotArts,lowestFloorPoli,lowestSlotPoli;
 var artsCapacity, poliCapacity;
@@ -1135,7 +1135,7 @@ app.get('/home',loggedIn, async function(req, res){
                 req.user.currentReserve.reserveStatus = "Checked In";
                 reserve.setReserveStatus(connection,req.user.currentReserve.reserveId,"Checked In");
               });
-              isScan = true;
+              isScan[req.user.currentCustomer.customerHasStopWatch] = true;
           }
       }
       else if(req.user.currentReserve.reserveTimeout != check && req.user.currentReserve.reserveStatus == "Paid"){
@@ -1181,7 +1181,7 @@ app.get('/home',loggedIn, async function(req, res){
               }
               transaction.setTransactionStatus(connection,req.user.currentTransaction.transactionId,"Checked Out");
             });
-            isScan = false;
+            isScan[req.user.currentCustomer.customerHasStopWatch] = false;
           }
       }
       pool.acquire(function (err, connection) {
@@ -1276,13 +1276,13 @@ app.get('/showqr', loggedIn,hasReserved,async function(req, res){
     res.render('showqr', {qrCode: req.user.currentTransaction.qrCode,
                           currentUsername: req.user.currentCustomer.currentUsername,
                           currentPicture: req.user.currentCustomer.currentPicture,
-                          isScan: isScan});
+                          isScan: isScan[req.user.currentCustomer.customerHasStopWatch]});
   }else{
     req.user.currentTransaction.qrCode = [req.user.currentReserve.reserveId,req.user.currentCustomer.currentUsername];
     res.render('showqr', {qrCode: req.user.currentReserve.qrCode,
                           currentUsername: req.user.currentCustomer.currentUsername,
                           currentPicture: req.user.currentCustomer.currentPicture,
-                          isScan: isScan});
+                          isScan: isScan[req.user.currentCustomer.customerHasStopWatch]});
   }
 });
 app.get('/scanner', function(req,res){
@@ -1626,7 +1626,7 @@ app.post('/reserve',loggedIn,async function(req, res){
         }
         req.user.currentReserve.reserveId = generateTokenID();
         req.user.currentReserve.qrCode = [req.user.currentReserve.reserveId,req.user.currentCustomer.currentUsername];
-        obb = {isScan: isScan};
+        obb = {isScan: isScan[req.user.currentCustomer.customerHasStopWatch]};
         reserve.Reserve(connection,req.user.currentReserve.reservePlatenumber,req.user.currentCustomer.currentUsername, req.user.currentReserve.reserveFloor, req.user.currentReserve.reserveSlot,req.user.currentReserve.reserveBuildingname, req.user.currentReserve.reserveId);
         console.log('Reserve finished');
     });
@@ -1917,8 +1917,8 @@ app.post('/pay',loggedIn,async function(req,res){
       }
       req.user.currentTransaction.transactionId = generateTokenID();
       req.user.currentTransaction.qrCode = [req.user.currentTransaction.transactionId,req.user.currentCustomer.currentUsername];
-      isScan = false;
-      obb = {isScan: isScan};
+      isScan[req.user.currentCustomer.customerHasStopWatch] = false;
+      obb = {isScan: isScan[req.user.currentCustomer.customerHasStopWatch]};
       req.user.currentReserve.feeRate = feeRate(req.user.currentCustomer.currentCustomerType);
       req.user.currentTransaction.totaltime =  parseInt(stopwatch[req.user.currentCustomer.customerHasStopWatch].stop()/1000);
       console.log('SET TOTAL TIME: '+req.user.currentTransaction.totaltime);
