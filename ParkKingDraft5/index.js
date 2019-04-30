@@ -333,7 +333,7 @@ function loggedIn(req, res, next) {
 }
 
 // Middleware Check if the user has already reaserved return next()
-async function hasReserved(req, res, next) {
+function hasReserved(req, res, next) {
   pool.acquire(function (err, connection) {
     if (err) {
         console.error(err);
@@ -343,7 +343,6 @@ async function hasReserved(req, res, next) {
       currentCustomer[req.user[0]].customerReservable = data;
     });
   });
-  await sleep(1000);
     if (currentCustomer[req.user[0]].customerReservable == 1) {
       res.redirect('/reserve');
     }else{
@@ -835,16 +834,52 @@ app.get('/showqr', loggedIn,hasReserved,function(req, res){
         currentReserve[req.user[0]].reserveStatus = data;
       });
   });
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+          return;
+      }
+      parkingspot.getMqttUser(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
+        currentReserve[req.user[0]].reserveMqttUser = data;
+      });
+  });
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+          return;
+      }
+      parkingspot.getMqttPass(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
+        currentReserve[req.user[0]].reserveMqttPass = data;
+      });
+  });
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+          return;
+      }
+      parkingspot.getMqttPort(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
+        currentReserve[req.user[0]].reserveMqttPort = data;
+      });
+  });
   if(currentReserve[req.user[0]].reserveStatus == "Paid"){
     res.render('showqr', {qrCode: currentTransaction[req.user[0]].qrCode,
                           currentUsername: currentCustomer[req.user[0]].currentUsername,
                           currentPicture: currentCustomer[req.user[0]].currentPicture,
-                          isScan: currentReserve[req.user[0]].isScan});
+                          isScan: currentReserve[req.user[0]].isScan,
+                          MqttUser:currentReserve[req.user[0]].reserveMqttUser,
+                          MqttPass:currentReserve[req.user[0]].reserveMqttPass,
+                          MqttPort:currentReserve[req.user[0]].reserveMqttPort});
   }else{
     res.render('showqr', {qrCode: currentReserve[req.user[0]].qrCode,
                           currentUsername: currentCustomer[req.user[0]].currentUsername,
                           currentPicture: currentCustomer[req.user[0]].currentPicture,
-                          isScan: currentReserve[req.user[0]].isScan});
+                          isScan: currentReserve[req.user[0]].isScan,
+                          MqttUser:currentReserve[req.user[0]].reserveMqttUser,
+                          MqttPass:currentReserve[req.user[0]].reserveMqttPass,
+                          MqttPort:currentReserve[req.user[0]].reserveMqttPort});
   }
 
 });
@@ -858,7 +893,7 @@ app.get('/scanner', function(req,res){
 });
 
 //ROUTE TO STATUS
-app.get('/status', loggedIn, hasReserved, async function(req, res){
+app.get('/status', loggedIn,hasReserved, async function(req, res){
   pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
@@ -904,7 +939,7 @@ app.get('/status', loggedIn, hasReserved, async function(req, res){
       currentReserve[req.user[0]].reserveColor = data;
     })
   });
-  await sleep(1000);
+  await sleep(500)
   pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
@@ -1006,7 +1041,7 @@ app.get('/userinfo', loggedIn, async function(req, res){
          currentReceipt[req.user[0]].receiptTotaltime = data;
        })
    });
-   await sleep(1000);
+   await sleep(500);
    pool.acquire(function (err, connection) {
        if (err) {
            console.error(err);
@@ -1119,6 +1154,36 @@ app.post('/reserve',loggedIn,async function(req, res){
         console.log(currentReserve[req.user[0]].reserveIsfull);
       });
   });
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+          return;
+      }
+      parkingspot.getMqttUser(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
+        currentReserve[req.user[0]].reserveMqttUser = data;
+      });
+  });
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+          return;
+      }
+      parkingspot.getMqttPass(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
+        currentReserve[req.user[0]].reserveMqttPass = data;
+      });
+  });
+  pool.acquire(function (err, connection) {
+      if (err) {
+          console.error(err);
+          connection.release();
+          return;
+      }
+      parkingspot.getMqttPort(connection,currentReserve[req.user[0]].reserveBuildingname,currentReserve[req.user[0]].reserveFloor,currentReserve[req.user[0]].reserveSlot,function(data){
+        currentReserve[req.user[0]].reserveMqttPort = data;
+      });
+  });
   if(currentCustomer[req.user[0]].customerReservable == 0 || currentReserve[req.user[0]].reserveIsfull == 1){
     console.log('your accout is decline to reserve');
     req.flash('error', 'Your account cannot reserve.');
@@ -1162,7 +1227,10 @@ app.post('/reserve',loggedIn,async function(req, res){
             qrCode:currentReserve[req.user[0]].qrCode,
             currentUsername: req.user[1],
             currentPicture: currentCustomer[req.user[0]].currentPicture,
-            message: 'You have made a reservation. Use this QR Code to enter the parking lot.'
+            message: 'You have made a reservation. Use this QR Code to enter the parking lot.',
+            MqttUser:currentReserve[req.user[0]].reserveMqttUser,
+            MqttPass:currentReserve[req.user[0]].reserveMqttPass,
+            MqttPort:currentReserve[req.user[0]].reserveMqttPort
           });
     });
     pool.acquire(function (err, connection) {

@@ -195,6 +195,81 @@ exports.getTotalSpot = function(connection,buildingname,Callback) {
     connection.execSql(request);
 }
 
+exports.getMqttUser = function(connection,buildingname,floor,slot,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT mqttUser FROM dbo.ParkingSpot WHERE BuildingName = @buildingname AND Floor = @floor AND Slot = @slot',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('buildingname',TYPES.VarChar,buildingname);
+    request.addParameter('floor',TYPES.VarChar,floor);
+    request.addParameter('slot',TYPES.VarChar,slot);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getMqttPass = function(connection,buildingname,floor,slot,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT mqttPass FROM dbo.ParkingSpot WHERE BuildingName = @buildingname AND Floor = @floor AND Slot = @slot',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('buildingname',TYPES.VarChar,buildingname);
+    request.addParameter('floor',TYPES.VarChar,floor);
+    request.addParameter('slot',TYPES.VarChar,slot);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
+exports.getMqttPort = function(connection,buildingname,floor,slot,Callback) {
+  var returnedValue  = [];
+  var request = new Request(
+    'SELECT mqttPort FROM dbo.ParkingSpot WHERE BuildingName = @buildingname AND Floor = @floor AND Slot = @slot',
+    function(err, rowCount, rows) {
+      if (err) {
+        console.log(err);
+        connection.release();
+        returnedValue = null;
+      } else {
+        connection.release();
+        return Callback(returnedValue[0]);
+      }
+    });
+    request.addParameter('buildingname',TYPES.VarChar,buildingname);
+    request.addParameter('floor',TYPES.VarChar,floor);
+    request.addParameter('slot',TYPES.VarChar,slot);
+    request.on('row', function (columns) {
+        columns.forEach(function(column) {
+            returnedValue.push(column.value);
+        });
+    });
+    connection.execSql(request);
+}
+
 //*******************************************************ParkingSpot's Setter***********************************************
 exports.setIsFull = function(connection,buildingname,floor,slot,isfull) {
   var request = new Request("UPDATE dbo.ParkingSpot SET isFUll = @isfull WHERE Buildingname = @buildingname AND Floor = @floor AND Slot = @slot",
