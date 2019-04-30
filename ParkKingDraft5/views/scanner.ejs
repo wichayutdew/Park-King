@@ -9,15 +9,38 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css" integrity="sha384-PDle/QlgIONtM1aqA2Qemk5gPOE7wFq8+Em+G/hmo5Iq0CCmYZLv3fVRDJ4MMwEA" crossorigin="anonymous">
     <title>Instascan</title>
     <script type="text/javascript" src="./js/instascan.min.js"></script>
+    <style media="screen">
+      #cam-div {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        justify-content: center;
+        align-items: center;
+      }
+      #cam-text{
+        padding: 10px 10px;
+      }
+      #preview {
+        border: 4px solid grey;
+      }
+
+    </style>
   </head>
   <body>
-    <video id="preview"></video>
+    <div id="cam-div">
+      <p id="cam-text">Scanning...</p>
+      <video id="preview"></video>
+    </div>
     <script type="text/javascript">
           console.log('scanner');
           let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
           scanner.addListener('scan', function (content) {
             $.post('/qrcode', {data: content});
             console.log(content);
+            $('#cam-text').text('Scanned: '+content);
+            setTimeout(function(){
+              $('#cam-text').text('Scanning...');
+            },5000)
           });
           Instascan.Camera.getCameras().then(cameras =>
           {

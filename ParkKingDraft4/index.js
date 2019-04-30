@@ -1,6 +1,7 @@
 //VARIABLES
 var isScan = [];
-var obb = {isScan: isScan[req.user.currentCustomer.customerHasStopWatch]};
+var obb;
+// = {isScan: isScan[req.user.currentCustomer.customerHasStopWatch]};
 var stopwatch = [];
 var totalArtsFreeSpot,totalPoliFreeSpot,lowestFloorArts,lowestSlotArts,lowestFloorPoli,lowestSlotPoli;
 var artsCapacity, poliCapacity;
@@ -1612,6 +1613,7 @@ app.post('/reserve',loggedIn,async function(req, res){
 
       });
   });
+  await(2000)
   if(req.user.currentCustomer.customerReservable == 0 || req.user.currentReserve.reserveIsfull == 1){
     console.log('your accout is decline to reserve');
     req.flash('error', 'Your account cannot reserve.');

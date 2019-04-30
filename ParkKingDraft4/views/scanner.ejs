@@ -40,7 +40,7 @@
             $('#cam-text').text('Scanned: '+content);
             setTimeout(function(){
               $('#cam-text').text('Scanning...');
-            })
+            },5000)
           });
           Instascan.Camera.getCameras().then(cameras =>
           {
