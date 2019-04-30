@@ -994,7 +994,7 @@ app.get('/home',loggedIn, async function(req, res){
         req.user.currentCar.currentCarPicture = data;
       });
     });
-    await sleep(1000);
+    await sleep(3000);
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
@@ -1084,7 +1084,34 @@ app.get('/home',loggedIn, async function(req, res){
           req.user.currentReserve.reserveStatus= data;
         });
       });
-      await sleep(500);
+      pool.acquire(function (err, connection) {
+        if (err) {
+          console.error(err);
+          connection.release();
+        }
+        reserve.getFloor(connection,req.user.currentReserve.reserveId,function(data){
+          req.user.currentReserve.reserveFloor = data;
+        });
+      });
+      pool.acquire(function (err, connection) {
+        if (err) {
+          console.error(err);
+          connection.release();
+        }
+        reserve.getSlot(connection,req.user.currentReserve.reserveId,function(data){
+          req.user.currentReserve.reserveSlot = data;
+        });
+      });
+      pool.acquire(function (err, connection) {
+        if (err) {
+          console.error(err);
+          connection.release();
+        }
+        reserve.getBuildingname(connection,req.user.currentReserve.reserveId,function(data){
+          req.user.currentReserve.reserveBuildingname = data;
+        });
+      });
+      await sleep(1000);
       if(req.user.currentReserve.reserveTimein != check && req.user.currentReserve.reserveTimeout == check && req.user.currentReserve.reserveStatus == "Reserved"){
           pool.acquire(function (err, connection) {
             if (err) {
@@ -1177,7 +1204,7 @@ app.get('/home',loggedIn, async function(req, res){
       console.log(req.user.currentReserve.currentFee);
       console.log(req.user.currentReserve.reserveTimein);
       console.log(req.user.currentReserve.reserveTimeout);
-    },1000);
+    },2000);
 });
 app.get('/',loggedIn, function(req, res){
     res.redirect('/home');
@@ -1188,7 +1215,17 @@ app.get('/register', function(req, res){
 app.get('/carregister',loggedIn, function(req, res){
     res.render('carregister');
 });
-app.get('/reserve',loggedIn, function(req, res){
+app.get('/reserve',loggedIn,async function(req, res){
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
+    car.getAllCarPicture(connection,req.user.currentCustomer.currentUsername,function(data){
+      req.user.currentCar.currentCarPicture = data;
+    });
+  });
+  await sleep(1000);
   pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
@@ -1223,7 +1260,7 @@ app.get('/showqr', loggedIn,hasReserved,async function(req, res){
       req.user.currentTransaction.transactionId = data;
     });
   });
-  await sleep(200);
+  await sleep(2000);
   pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
@@ -1233,7 +1270,7 @@ app.get('/showqr', loggedIn,hasReserved,async function(req, res){
       req.user.currentReserve.reserveId = data;
     });
   });
-  await sleep(200);
+  await sleep(2000);
   if(req.user.currentReserve.reserveStatus == "Paid"){
     req.user.currentTransaction.qrCode = [req.user.currentTransaction.transactionId,req.user.currentCustomer.currentUsername];
     res.render('showqr', {qrCode: req.user.currentTransaction.qrCode,
@@ -2029,7 +2066,7 @@ app.post('/paymentAction',loggedIn,async function(req,res){
       req.user.currentTransaction.transactionId = data;
     });
   });
-  await sleep(500);
+  await sleep(2000);
   pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
