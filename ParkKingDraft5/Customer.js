@@ -15,6 +15,7 @@ exports.createCustomer = function() {
    this.currentPicture = null;
    this.cancelTime = null;
    this.customerReservable = null;
+   this.feeRate = null;
 }
 
 

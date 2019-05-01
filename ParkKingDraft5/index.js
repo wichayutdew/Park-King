@@ -352,13 +352,15 @@ function hasReserved(req, res, next) {
 
 //Calculate the fee rate
 function feeRate(customerType){
-  if(customerType = 'Student'){
-    return (10/60);
-  }else if(customerType = 'Professor'){
-    return (5/60);
+  var returnedValue;
+  if(customerType == "Student"){
+    returnedValue = 10/60;
+  }else if(customerType == "Professor"){
+    returnedValue = 5/60;
   }else{
-    return (15/60);
+    returnedValue = 15/60;
   }
+  return returnedValue;
 }
 
 // SET STORAGE
@@ -442,7 +444,7 @@ app.get('/home',loggedIn, async function(req, res){
       customer.setHasStopWatch(connection,req.user[1],req.user[0]);
     });
     }
-    await sleep(300);
+    await sleep(500);
     pool.acquire(function (err, connection) {
       if (err) {
           console.error(err);
@@ -578,7 +580,7 @@ app.get('/home',loggedIn, async function(req, res){
         currentCar[req.user[0]].currentCarPicture = data;
       });
     });
-    await sleep(100);
+    await sleep(300);
     pool.acquire(function (err, connection) {
       if (err) {
         console.error(err);
@@ -606,9 +608,10 @@ app.get('/home',loggedIn, async function(req, res){
         // ====================================================================
       });
     });
-    //------------------------------------------------------------------------------------------------------------//
-    //------------------------------------------------------------------------------------------------------------//
-    currentReserve[req.user[0]].feeRate = feeRate(currentCustomer[req.user[0]].currentCustomerType);
+    currentReserve[req.user[0]].feeRate = feeRate(req.user[2]);
+    await sleep(300);
+    console.log("Customer Type = " + req.user[2]);
+    console.log("Fee Rate = " + currentReserve[req.user[0]].feeRate);
     setInterval(async function() {
       console.log('Please wait for check-in/check-out');
       pool.acquire(function (err, connection) {
@@ -917,7 +920,7 @@ app.get('/status', loggedIn,hasReserved, async function(req, res){
       currentReserve[req.user[0]].reserveColor = data;
     })
   });
-  await sleep(500)
+  await sleep(1000);
   pool.acquire(function (err, connection) {
     if (err) {
       console.error(err);
@@ -1519,6 +1522,16 @@ app.post('/paymentaction',loggedIn,async function(req, res){
       console.error(err);
       connection.release();
     }
+    transaction.getTransactionID(connection,req.user[1],function(data){
+      currentTransaction[req.user[0]].transactionId = data;
+    });
+  });
+  await sleep(100);
+  pool.acquire(function (err, connection) {
+    if (err) {
+      console.error(err);
+      connection.release();
+    }
     transaction.getPaymentMethod(connection,currentTransaction[req.user[0]].transactionId,function(data){
       currentTransaction[req.user[0]].paymentmethod = data;
     });
@@ -1537,7 +1550,8 @@ app.post('/paymentaction',loggedIn,async function(req, res){
                             currentPicture: currentCustomer[req.user[0]].currentPicture
                           });
   });
-})
+});
+
 //CAR REGISTER POST REQUEST
 app.post('/carregister',loggedIn,upload.single('carPic'),function(req,res){
   console.log('Trying to add car');

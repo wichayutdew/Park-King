@@ -27,7 +27,6 @@ exports.createReserve = function() {
    this.qrCode = null;
    this.currentTime = null;
    this.currentFee = null;
-   this.feeRate = null;
    this.isScan = null;
 }
 
